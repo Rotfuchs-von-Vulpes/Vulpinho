@@ -76,10 +76,12 @@ func main() {
 		default:
 			words := strings.Split(strings.ToLower(message.Content), " ")
 
-			for _, line := range bible {
-				if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-					discord.ChannelMessageSend(channelID, line[4])
-					break
+			if len(words) == 3 {
+				for _, line := range bible {
+					if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
+						discord.ChannelMessageSend(channelID, line[4])
+						break
+					}
 				}
 			}
 
