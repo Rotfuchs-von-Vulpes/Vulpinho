@@ -1,4 +1,4 @@
-module vulpinho
+module src/vulpinho
 
 go 1.25.0
 
