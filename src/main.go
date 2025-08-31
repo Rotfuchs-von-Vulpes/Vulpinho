@@ -54,8 +54,6 @@ func main() {
 
 	bible := readCsvFile("bible.csv")
 
-	log.Print(bible[0][0])
-
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.Author.Bot {
 			return
