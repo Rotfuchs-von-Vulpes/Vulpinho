@@ -79,8 +79,7 @@ func main() {
 			for _, word := range words {
 				for _, fops := range fops_list {
 					if word == fops {
-						err := discord.MessageReactionAdd(channelID, message.ID, "🦊")
-						log.Print(err)
+						discord.MessageReactionAdd(channelID, message.ID, "🦊")
 						break loop
 					}
 				}
