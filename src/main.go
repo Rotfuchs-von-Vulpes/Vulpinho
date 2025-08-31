@@ -74,6 +74,18 @@ func main() {
 		default:
 			words := strings.Split(strings.ToLower(message.Content), " ")
 
+			fops_list := []string{"raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fops", "fox", "poposa", "poposas", "foxes", "fxoe"}
+		loop:
+			for _, word := range words {
+				for _, fops := range fops_list {
+					if word == fops {
+						err := discord.MessageReactionAdd(channelID, message.ID, "🦊")
+						log.Print(err)
+						break loop
+					}
+				}
+			}
+
 			if len(words) == 3 {
 				for _, line := range bible {
 					if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
