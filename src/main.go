@@ -86,11 +86,29 @@ func main() {
 			}
 
 			if len(words) == 3 {
-				for _, line := range bible {
-					if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-						discord.ChannelMessageSend(channelID, line[4])
-						break
+				rang := strings.Split(words[2], "-")
+				if len(rang) == 1 {
+					for _, line := range bible {
+						if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
+							discord.ChannelMessageSend(channelID, line[3]+". "+line[4])
+							break
+						}
 					}
+				} else if len(rang) == 2 {
+					reading := false
+					text := ""
+					for _, line := range bible {
+						if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
+							reading = true
+						}
+						if reading {
+							text += "\n" + line[3] + ". " + line[4]
+							if line[1] == words[0] && line[2] == words[1] && line[3] == rang[1] {
+								break
+							}
+						}
+					}
+					discord.ChannelMessageSend(channelID, text)
 				}
 			}
 
