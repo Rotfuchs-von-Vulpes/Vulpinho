@@ -85,7 +85,24 @@ func main() {
 				}
 			}
 
+			var versicle_temp []string
+			if len(words) == 2 {
+				versicle_temp = strings.Split(words[1], ",")
+			}
+
+			if len(versicle_temp) == 2 {
+				words[1] = versicle_temp[0]
+				words = append(words, versicle_temp[1])
+			}
+
 			if len(words) == 3 {
+				words[1] = strings.Map(func(r rune) rune {
+					if r == ',' {
+						return -1
+					}
+					return r
+				}, words[1])
+
 				rang := strings.Split(words[2], "-")
 				if len(rang) == 1 {
 					for _, line := range bible {
