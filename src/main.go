@@ -31,13 +31,13 @@ func readCsvFile(filePath string) [][]string {
 	return records
 }
 
-func SnowflakeToUint64(snowflake string) uint64 {
+func SnowflakeToUint64(snowflake string) (uint64, bool) {
 	result, err := strconv.ParseUint(snowflake, 10, 64)
 	if err != nil {
-		log.Fatalf("error: %s", err.Error())
-		return 0
+		// log.Fatalf("error: %s", err.Error())
+		return 0, false
 	}
-	return result
+	return result, true
 }
 
 func main() {
@@ -53,6 +53,21 @@ func main() {
 	}
 
 	bible := readCsvFile("bible.csv")
+
+	// var previous uint64 = 0
+	// for _, line := range bible {
+	// 	num, ok := SnowflakeToUint64(line[3])
+	// 	if !ok {
+	// 		log.Printf("estranho")
+	// 	}
+	// 	if num == 1 {
+	// 		previous = 0
+	// 	}
+	// 	if num-previous > 1 {
+	// 		fmt.Printf(line[1]+" "+line[2]+" %d não existe\n", previous+1)
+	// 	}
+	// 	previous = num
+	// }
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.Author.Bot {
@@ -87,12 +102,18 @@ func main() {
 
 			var versicle_temp []string
 			if len(words) == 2 {
-				versicle_temp = strings.Split(words[1], ",")
-			}
+				pair_1 := strings.Split(words[1], ",")
+				pair_2 := strings.Split(words[1], ":")
+				if len(pair_1) == 2 {
+					versicle_temp = pair_1
+				} else if len(pair_2) == 2 {
+					versicle_temp = pair_2
+				}
 
-			if len(versicle_temp) == 2 {
-				words[1] = versicle_temp[0]
-				words = append(words, versicle_temp[1])
+				if len(versicle_temp) == 2 {
+					words[1] = versicle_temp[0]
+					words = append(words, versicle_temp[1])
+				}
 			}
 
 			if len(words) == 3 {
@@ -104,28 +125,36 @@ func main() {
 				}, words[1])
 
 				rang := strings.Split(words[2], "-")
+
 				if len(rang) == 1 {
 					for _, line := range bible {
 						if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-							discord.ChannelMessageSend(channelID, line[3]+". "+line[4])
+							discord.ChannelMessageSend(channelID, "**"+line[3]+"**. "+line[4])
 							break
 						}
 					}
 				} else if len(rang) == 2 {
-					reading := false
-					text := ""
-					for _, line := range bible {
-						if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
-							reading = true
-						}
-						if reading {
-							text += "\n" + line[3] + ". " + line[4]
-							if line[1] == words[0] && line[2] == words[1] && line[3] == rang[1] {
-								break
+					_, ok1 := SnowflakeToUint64(rang[0])
+					_, ok2 := SnowflakeToUint64(rang[1])
+					if ok1 && ok2 {
+						reading := false
+						chapter := ""
+						text := ""
+						for _, line := range bible {
+							if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
+								chapter = line[2]
+								reading = true
+							}
+							if reading {
+								text += "**" + line[3] + "**. " + line[4]
+								if line[3] == rang[1] || line[2] != chapter {
+									break
+								}
+								text += "\n"
 							}
 						}
+						discord.ChannelMessageSend(channelID, text)
 					}
-					discord.ChannelMessageSend(channelID, text)
 				}
 			}
 
