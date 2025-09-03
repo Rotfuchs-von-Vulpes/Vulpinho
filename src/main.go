@@ -48,26 +48,31 @@ func main() {
 	}
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
-		log.Fatalf("error when connecting to discord: %s", err.Error())
+		log.Fatalf("Error when connecting to discord: %s", err.Error())
 		return
 	}
 
 	bible := readCsvFile("bible.csv")
 
-	// var previous uint64 = 0
-	// for _, line := range bible {
-	// 	num, ok := SnowflakeToUint64(line[3])
-	// 	if !ok {
-	// 		log.Printf("estranho")
-	// 	}
-	// 	if num == 1 {
-	// 		previous = 0
-	// 	}
-	// 	if num-previous > 1 {
-	// 		fmt.Printf(line[1]+" "+line[2]+" %d não existe\n", previous+1)
-	// 	}
-	// 	previous = num
-	// }
+	f, err := os.Create("resources/missing.txt")
+	if err != nil {
+		log.Fatalf("Can't create missing list file")
+	}
+
+	var previous int64 = 0
+	for _, line := range bible {
+		num, err := strconv.ParseInt(line[3], 10, 32)
+		if err == nil {
+			if num == 1 {
+				previous = 0
+			}
+			if num-previous > 1 {
+				f.WriteString(line[1] + " " + line[2] + " " + strconv.FormatInt(previous+1, 10) + " não existe\n")
+			}
+			previous = num
+		}
+	}
+	f.Close()
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.Author.Bot {
