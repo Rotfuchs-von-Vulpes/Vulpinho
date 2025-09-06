@@ -1,15 +1,3 @@
-deuteronomio 9 8 não existe
-josue 5 4 não existe
-josue 22 4 não existe
-josue 24 19 não existe
-rute 1 19 não existe
-ii-reis 19 22 não existe
-i-cronicas 1 11 não existe
-i-cronicas 5 2 não existe
-i-cronicas 10 15 não existe
-i-cronicas 11 26 não existe
-esdras 8 3 não existe
-judite 8 4 não existe
 ester 16 7 não existe
 jo 18 12 não existe
 jo 34 18 não existe
