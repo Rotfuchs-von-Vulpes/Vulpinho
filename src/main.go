@@ -107,6 +107,8 @@ func main() {
 					repeatedMsgCount[channelID] += 1
 				}
 			} else if msgText != bannedMsg[channelID] {
+				bannedPeople[channelID] = nil
+				bannedPeople[channelID] = append(bannedPeople[channelID], message.Author.ID)
 				lastMsg[channelID] = msgText
 				repeatedMsgCount[channelID] = 0
 			}
