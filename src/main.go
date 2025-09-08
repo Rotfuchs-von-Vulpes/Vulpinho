@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"slices"
 	"strconv"
 	"strings"
 	"syscall"
@@ -74,6 +75,12 @@ func main() {
 	}
 	f.Close()
 
+	lastMsg := map[string]string{}
+	bannedPeople := map[string][]string{}
+	bannedMsg := map[string]string{}
+	repeatedMsgCount := map[string]int{}
+	minimum := 2
+
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.Author.Bot {
 			return
@@ -92,6 +99,27 @@ func main() {
 			latency := time.Now().UTC().UnixMilli() - message.Timestamp.UnixMilli()
 			discord.ChannelMessageSend(channelID, fmt.Sprintf("Pong! Latência é %dms", latency))
 		default:
+			msgText := message.Content
+			if msgText == lastMsg[channelID] {
+				banned := slices.Contains(bannedPeople[channelID], message.Author.ID)
+				if !banned {
+					bannedPeople[channelID] = append(bannedPeople[channelID], message.Author.ID)
+					repeatedMsgCount[channelID] += 1
+				}
+			} else if msgText != bannedMsg[channelID] {
+				lastMsg[channelID] = msgText
+				repeatedMsgCount[channelID] = 0
+			}
+
+			if repeatedMsgCount[channelID] == minimum {
+				discord.ChannelMessageSend(channelID, lastMsg[channelID])
+				bannedPeople[channelID] = nil
+
+				bannedMsg[channelID] = lastMsg[channelID]
+				lastMsg[channelID] = ""
+				minimum += 1
+			}
+
 			words := strings.Split(strings.ToLower(message.Content), " ")
 
 			fops_list := []string{"raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fops", "fox", "poposa", "poposas", "foxes", "fxoe"}
