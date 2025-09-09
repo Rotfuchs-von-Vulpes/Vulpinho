@@ -89,14 +89,15 @@ func main() {
 			return
 		}
 
-		_, ok := minimum[message.GuildID]
-
-		if !ok {
-			minimum[message.GuildID] = 2
-		}
-
 		channelID := message.ChannelID
 		serverID := message.GuildID
+
+		_, ok := minimum[serverID]
+
+		if !ok {
+			minimum[serverID] = 2
+		}
+
 		messageContent := strings.ToLower(message.Content)
 
 		switch messageContent {
