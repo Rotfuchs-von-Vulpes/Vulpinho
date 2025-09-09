@@ -79,7 +79,7 @@ func main() {
 	bannedPeople := map[string][]string{}
 	bannedMsg := map[string]string{}
 	repeatedMsgCount := map[string]int{}
-	minimum := 2
+	minimum := map[string]int{}
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.Author.Bot {
@@ -89,7 +89,14 @@ func main() {
 			return
 		}
 
+		_, ok := minimum[message.GuildID]
+
+		if !ok {
+			minimum[message.GuildID] = 2
+		}
+
 		channelID := message.ChannelID
+		serverID := message.GuildID
 		messageContent := strings.ToLower(message.Content)
 
 		switch messageContent {
@@ -113,13 +120,14 @@ func main() {
 				repeatedMsgCount[channelID] = 0
 			}
 
-			if repeatedMsgCount[channelID] == minimum {
+			if repeatedMsgCount[channelID] == minimum[serverID] {
 				discord.ChannelMessageSend(channelID, lastMsg[channelID])
-				bannedPeople[channelID] = nil
 
 				bannedMsg[channelID] = lastMsg[channelID]
+				bannedPeople[channelID] = nil
+				repeatedMsgCount[channelID] = 0
 				lastMsg[channelID] = ""
-				minimum += 1
+				minimum[serverID] += 1
 			}
 
 			words := strings.Split(strings.ToLower(message.Content), " ")
