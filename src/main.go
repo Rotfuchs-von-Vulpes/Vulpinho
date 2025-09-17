@@ -82,7 +82,7 @@ func main() {
 	minimum := map[string]int{}
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
-		if message.Author.Bot {
+		if message.Author.ID == discord.State.User.ID {
 			return
 		}
 		if len(message.Content) <= 0 {
