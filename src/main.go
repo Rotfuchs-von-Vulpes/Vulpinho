@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -81,16 +80,26 @@ func main() {
 	repeatedMsgCount := map[string]int{}
 	minimum := map[string]int{}
 
+	waitingPong := false
+	last_time := int64(0)
+
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
+		channelID := message.ChannelID
+		serverID := message.GuildID
+
 		if message.Author.ID == discord.State.User.ID {
+			if waitingPong {
+				if message.Content == "Pong!" {
+					latency := message.Timestamp.UnixMilli() - last_time
+					discord.ChannelMessageEdit(channelID, message.ID, fmt.Sprintf("Pong! Latência é %dms", latency))
+					waitingPong = false
+				}
+			}
 			return
 		}
 		if len(message.Content) <= 0 {
 			return
 		}
-
-		channelID := message.ChannelID
-		serverID := message.GuildID
 
 		_, ok := minimum[serverID]
 
@@ -104,8 +113,9 @@ func main() {
 		case "fox!":
 			discord.ChannelMessageSend(channelID, ":fox::+1:")
 		case "fox! ping":
-			latency := time.Now().UTC().UnixMilli() - message.Timestamp.UnixMilli()
-			discord.ChannelMessageSend(channelID, fmt.Sprintf("Pong! Latência é %dms", latency))
+			last_time = message.Timestamp.UnixMilli()
+			waitingPong = true
+			discord.ChannelMessageSend(channelID, "Pong!")
 		default:
 			msgText := message.Content
 			if msgText == lastMsg[channelID] {
