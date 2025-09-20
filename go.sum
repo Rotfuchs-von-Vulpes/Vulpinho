@@ -1,3 +1,5 @@
+github.com/badgerodon/peg v0.0.0-20130729175151-9e5f7f4d07ca h1:77KAMse6RWRpPfVnIZcAtJ/5ZK/oRCeY94ZjIWSbe0g=
+github.com/badgerodon/peg v0.0.0-20130729175151-9e5f7f4d07ca/go.mod h1:TWe0N2hv5qvpLHT+K16gYcGBllld4h65dQ/5CNuirmk=
 github.com/bwmarrin/discordgo v0.29.0 h1:FmWeXFaKUwrcL3Cx65c20bTRW+vOb6k8AnaP+EgjDno=
 github.com/bwmarrin/discordgo v0.29.0/go.mod h1:NJZpH+1AfhIcyQsPeuBKsUtYrRnjkyu0kIVMCHkZtRY=
 github.com/gorilla/websocket v1.4.2 h1:+/TMaTYc4QFitKJxsQ7Yye35DkWvkdLcvGKqM+x0Ufc=

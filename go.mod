@@ -3,6 +3,7 @@ module src/vulpinho
 go 1.25.0
 
 require (
+	github.com/badgerodon/peg v0.0.0-20130729175151-9e5f7f4d07ca
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/joho/godotenv v1.5.1

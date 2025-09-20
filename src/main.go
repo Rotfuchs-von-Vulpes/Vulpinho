@@ -11,6 +11,7 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/badgerodon/peg"
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -38,6 +39,121 @@ func SnowflakeToUint64(snowflake string) (uint64, bool) {
 		return 0, false
 	}
 	return result, true
+}
+
+type Value int
+
+const (
+	Number = iota
+	operator
+)
+
+type (
+	OP struct {
+		val  float64
+		op   int
+		next *OP
+	}
+)
+
+var (
+	prec = []int{'*', '/', '+', '-'}
+	ops  = map[int]func(float64, float64) (bool, float64){
+		'*': func(a, b float64) (bool, float64) {
+			return true, a * b
+		},
+		'/': func(a, b float64) (bool, float64) {
+			if b == 0 {
+				return false, 0
+			}
+			return true, a / b
+		},
+		'+': func(a, b float64) (bool, float64) {
+			return true, a + b
+		},
+		'-': func(a, b float64) (bool, float64) {
+			return true, a - b
+		},
+	}
+)
+
+func reduce(tree *peg.ExpressionTree) (bool, float64) {
+	// If we're at a number just parse it
+	if tree.Name == "Number" {
+		str := ""
+		for _, c := range tree.Children {
+			str += string(c.Value)
+		}
+		i, _ := strconv.ParseFloat(str, 64)
+		return true, i
+	}
+
+	// We have to collapse all sub expressions into a flattened linked list
+	//   of expressions each of which has an operator. We will then execute
+	//   each of the operators in order of precedence.
+	fst := &OP{0, '+', nil}
+	lst := fst
+	var visit func(*peg.ExpressionTree)
+	visit = func(t *peg.ExpressionTree) {
+		switch t.Name {
+		case "Expression":
+			if len(t.Children) > 1 {
+				_, reduced := reduce(t.Children[0])
+				nxt := &OP{reduced, t.Children[1].Value, nil}
+				lst.next = nxt
+				lst = nxt
+				visit(t.Children[2])
+				return
+			}
+		case "Parentheses":
+			_, reduced := reduce(t.Children[1])
+			nxt := &OP{reduced, 0, nil}
+			lst.next = nxt
+			lst = nxt
+			return
+		}
+
+		if len(t.Children) > 0 {
+			_, reduced := reduce(t.Children[0])
+			nxt := &OP{reduced, 0, nil}
+			lst.next = nxt
+			lst = nxt
+		}
+	}
+	visit(tree)
+
+	// Foreach operator in order of precedence
+	for _, o := range prec {
+		cur := fst
+		for cur.next != nil {
+			if cur.op == o {
+				ok := true
+				ok, cur.val = ops[o](cur.val, cur.next.val)
+				if !ok {
+					return false, 0
+				}
+				cur.op = cur.next.op
+				cur.next = cur.next.next
+			} else {
+				cur = cur.next
+			}
+		}
+	}
+
+	return true, fst.val
+}
+
+func (op *OP) String() string {
+	str := ""
+	if op.op == 0 {
+		str = "(" + fmt.Sprint(op.val) + ") "
+	} else {
+		str = "(" + fmt.Sprint(op.val) + " " + string(op.op) + ") "
+	}
+	if op.next != nil {
+		str += op.next.String()
+	}
+	return str
 }
 
 func main() {
@@ -73,6 +189,56 @@ func main() {
 		}
 	}
 	f.Close()
+
+	parser := peg.NewParser()
+
+	start := parser.NonTerminal("Start")
+	expr := parser.NonTerminal("Expression")
+	paren := parser.NonTerminal("Parentheses")
+	number := parser.NonTerminal("Number")
+
+	start.Expression = expr
+	expr.Expression = parser.Sequence(
+		parser.OrderedChoice(
+			paren,
+			number,
+		),
+		parser.Optional(
+			parser.Sequence(
+				parser.OrderedChoice(
+					parser.Terminal('-'),
+					parser.Terminal('+'),
+					parser.Terminal('*'),
+					parser.Terminal('/'),
+				),
+				expr,
+			),
+		),
+	)
+	paren.Expression = parser.Sequence(
+		parser.Terminal('('),
+		expr,
+		parser.Terminal(')'),
+	)
+	number.Expression = parser.Sequence(
+		parser.Sequence(
+			parser.OneOrMore(
+				parser.Range('0', '9'),
+			),
+		),
+		parser.Optional(
+			parser.Terminal('.'),
+		),
+		parser.Sequence(
+			parser.ZeroOrMore(
+				parser.Range('0', '9'),
+			),
+		),
+	)
+
+	// tree := parser.Parse("(0.5123651*3.14159+15)/2")
+	// fmt.Println(tree)
+	// fmt.Println(reduce(tree))
 
 	lastMsg := map[string]string{}
 	bannedPeople := map[string][]string{}
@@ -142,6 +308,26 @@ func main() {
 			}
 
 			words := strings.Split(strings.ToLower(message.Content), " ")
+
+			if len(words) >= 3 {
+				if words[0] == "fox!" && words[1] == "calc" {
+					final_str := ""
+
+					for i, word := range words {
+						if i < 2 {
+							continue
+						}
+						final_str = fmt.Sprintf("%s%s", final_str, word)
+					}
+					tree := parser.Parse(final_str)
+					ok, result := reduce(tree)
+					if ok {
+						discord.ChannelMessageSend(channelID, fmt.Sprint(result))
+					} else {
+						discord.ChannelMessageSend(channelID, "Uma ideterminação foi encontrada")
+					}
+				}
+			}
 
 			fops_list := []string{"raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fops", "fox", "poposa", "poposas", "foxes", "fxoe"}
 		loop:
