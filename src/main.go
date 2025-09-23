@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/csv"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"slices"
 	"strconv"
@@ -17,7 +19,7 @@ import (
 )
 
 func readCsvFile(filePath string) [][]string {
-	f, err := os.Open("resources/" + filePath)
+	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal("Unable to read input file "+filePath+": ", err)
 	}
@@ -82,7 +84,7 @@ func reduce(tree *peg.ExpressionTree) (bool, float64) {
 	if tree.Name == "Number" {
 		str := ""
 		for _, c := range tree.Children {
-			str += string(c.Value)
+			str += string(rune(c.Value))
 		}
 		i, _ := strconv.ParseFloat(str, 64)
 		return true, i
@@ -148,7 +150,7 @@ func (op *OP) String() string {
 	if op.op == 0 {
 		str = "(" + fmt.Sprint(op.val) + ") "
 	} else {
-		str = "(" + fmt.Sprint(op.val) + " " + string(op.op) + ") "
+		str = "(" + fmt.Sprint(op.val) + " " + string(rune(op.op)) + ") "
 	}
 	if op.next != nil {
 		str += op.next.String()
@@ -168,9 +170,9 @@ func main() {
 		return
 	}
 
-	bible := readCsvFile("bible.csv")
+	bible := readCsvFile("resources/bible/bible.csv")
 
-	f, err := os.Create("resources/missing.txt")
+	f, err := os.Create("resources/bible/missing.txt")
 	if err != nil {
 		log.Fatalf("Can't create missing list file")
 	}
@@ -403,7 +405,29 @@ func main() {
 			} else {
 				for _, user := range message.Mentions {
 					if user.ID == discord.State.User.ID {
-						discord.ChannelMessageSend(channelID, "<:pepe_ping:954135254329852014>")
+						text, found := strings.CutPrefix(messageContent, fmt.Sprintf("<@%s> ", discord.State.User.ID))
+						if found {
+							cmd := "node"
+							args := []string{"resources/javascript/run_camxes", "-m", "N", text}
+							process := exec.Command(cmd, args...)
+							stdin, err := process.StdinPipe()
+							if err != nil {
+								fmt.Println(err)
+							}
+							defer stdin.Close()
+							buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
+							process.Stdout = buf
+							process.Stderr = os.Stderr
+
+							if err = process.Start(); err != nil {
+								fmt.Println("An error occured: ", err)
+							}
+
+							process.Wait()
+							discord.ChannelMessageSend(channelID, buf.String())
+						} else {
+							fmt.Println("ue")
+						}
 						break
 					}
 				}
