@@ -121,20 +121,20 @@ async function run_camxes_loop(mode, engine) {
 
 function run_camxes(input, mode, engine) {
 	var result;
-	var syntax_error = false;
 	result = camxes_preproc.preprocessing(input);
 	try {
         result = engine.parse(result);
-	} catch (e) {
-        var location_info = ' Location: [' + e.location.start.offset + ', ' + e.location.end.offset + ']';
-        location_info += ' …' + input.substring(e.location.start.offset, e.location.start.offset + 12) + '…';
-		result = e.toString() + location_info;
-		syntax_error = true;
-	} finally {
-        if (!syntax_error)
-            result = camxes_postproc.postprocessing(result, mode);
+        result = camxes_postproc.postprocessing(result, mode);
         return result;
-    }
+	} catch (e) {
+        let location_info = ""
+        if (e.location !== undefined) {
+            location_info = ' Location: [' + e.location.start.offset + ', ' + e.location.end.offset + ']';
+            location_info += ' …' + input.substring(e.location.start.offset, e.location.start.offset + 12) + '…';
+        }
+		result = e.toString() + location_info;
+        return result
+	}
 }
 
 

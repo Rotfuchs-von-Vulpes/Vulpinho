@@ -403,32 +403,50 @@ func main() {
 			if message.MentionEveryone {
 				discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
 			} else {
-				for _, user := range message.Mentions {
-					if user.ID == discord.State.User.ID {
-						text, found := strings.CutPrefix(messageContent, fmt.Sprintf("<@%s> ", discord.State.User.ID))
-						if found {
-							cmd := "node"
-							args := []string{"resources/javascript/run_camxes", "-m", "N", text}
-							process := exec.Command(cmd, args...)
-							stdin, err := process.StdinPipe()
-							if err != nil {
-								fmt.Println(err)
+				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
+					text, found := strings.CutPrefix(message.Content, fmt.Sprintf("<@%s> ", discord.State.User.ID))
+					if found {
+						commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
+						words := strings.Split(text, " ")
+						invalid := false
+						for _, r := range words[0] {
+							found := false
+							for _, m := range commands {
+								if m == r {
+									found = true
+									break
+								}
 							}
-							defer stdin.Close()
-							buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
-							process.Stdout = buf
-							process.Stderr = os.Stderr
-
-							if err = process.Start(); err != nil {
-								fmt.Println("An error occured: ", err)
+							if !found {
+								invalid = true
+								break
 							}
-
-							process.Wait()
-							discord.ChannelMessageSend(channelID, buf.String())
-						} else {
-							fmt.Println("ue")
 						}
-						break
+
+						cmd := "node"
+						var args []string
+						if invalid {
+							args = []string{"resources/javascript/run_camxes", text}
+						} else {
+							command := words[0]
+							text, _ = strings.CutPrefix(text, command)
+							args = []string{"resources/javascript/run_camxes", "-m", command, text}
+						}
+						process := exec.Command(cmd, args...)
+						stdin, err := process.StdinPipe()
+						if err != nil {
+							fmt.Println(err)
+						}
+						defer stdin.Close()
+						buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
+						process.Stdout = buf
+						process.Stderr = os.Stderr
+
+						if err = process.Start(); err != nil {
+							fmt.Println("An error occured: ", err)
+						}
+						process.Wait()
+						discord.ChannelMessageSend(channelID, buf.String())
 					}
 				}
 			}
