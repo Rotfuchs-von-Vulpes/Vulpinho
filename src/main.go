@@ -330,7 +330,7 @@ func main() {
 							discord.ChannelMessageSend(channelID, "Uma ideterminação foi encontrada")
 						}
 					} else if words[1] == "gerna" {
-						text, found := strings.CutPrefix(message.Content, "fox! gerna")
+						text, found := strings.CutPrefix(message.Content, "fox! gerna ")
 						if found {
 							commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
 							words := strings.Split(text, " ")
