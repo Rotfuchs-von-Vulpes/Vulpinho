@@ -410,13 +410,7 @@ func main() {
 						words := strings.Split(text, " ")
 						invalid := false
 						for _, r := range words[0] {
-							found := false
-							for _, m := range commands {
-								if m == r {
-									found = true
-									break
-								}
-							}
+							found := slices.Contains(commands, r)
 							if !found {
 								invalid = true
 								break
