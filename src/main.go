@@ -312,21 +312,62 @@ func main() {
 			words := strings.Split(strings.ToLower(message.Content), " ")
 
 			if len(words) >= 3 {
-				if words[0] == "fox!" && words[1] == "calc" {
-					final_str := ""
+				if words[0] == "fox!" {
+					if words[1] == "calc" {
+						final_str := ""
 
-					for i, word := range words {
-						if i < 2 {
-							continue
+						for i, word := range words {
+							if i < 2 {
+								continue
+							}
+							final_str = fmt.Sprintf("%s%s", final_str, word)
 						}
-						final_str = fmt.Sprintf("%s%s", final_str, word)
-					}
-					tree := parser.Parse(final_str)
-					ok, result := reduce(tree)
-					if ok {
-						discord.ChannelMessageSend(channelID, fmt.Sprint(result))
-					} else {
-						discord.ChannelMessageSend(channelID, "Uma ideterminação foi encontrada")
+						tree := parser.Parse(final_str)
+						ok, result := reduce(tree)
+						if ok {
+							discord.ChannelMessageSend(channelID, fmt.Sprint(result))
+						} else {
+							discord.ChannelMessageSend(channelID, "Uma ideterminação foi encontrada")
+						}
+					} else if words[1] == "gerna" {
+						text, found := strings.CutPrefix(message.Content, "fox! gerna")
+						if found {
+							commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
+							words := strings.Split(text, " ")
+							invalid := false
+							for _, r := range words[0] {
+								found := slices.Contains(commands, r)
+								if !found {
+									invalid = true
+									break
+								}
+							}
+
+							cmd := "node"
+							var args []string
+							if invalid {
+								args = []string{"resources/javascript/run_camxes", text}
+							} else {
+								command := words[0]
+								text, _ = strings.CutPrefix(text, command)
+								args = []string{"resources/javascript/run_camxes", "-m", command, text}
+							}
+							process := exec.Command(cmd, args...)
+							stdin, err := process.StdinPipe()
+							if err != nil {
+								fmt.Println(err)
+							}
+							defer stdin.Close()
+							buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
+							process.Stdout = buf
+							process.Stderr = os.Stderr
+
+							if err = process.Start(); err != nil {
+								fmt.Println("An error occured: ", err)
+							}
+							process.Wait()
+							discord.ChannelMessageSend(channelID, buf.String())
+						}
 					}
 				}
 			}
@@ -404,43 +445,13 @@ func main() {
 				discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
 			} else {
 				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
-					text, found := strings.CutPrefix(message.Content, fmt.Sprintf("<@%s> ", discord.State.User.ID))
-					if found {
-						commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
-						words := strings.Split(text, " ")
-						invalid := false
-						for _, r := range words[0] {
-							found := slices.Contains(commands, r)
-							if !found {
-								invalid = true
-								break
-							}
+					discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
+				} else if len(message.Mentions) > 1 {
+					for _, user := range message.Mentions {
+						if user.ID == discord.State.User.ID {
+							discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
+							break
 						}
-
-						cmd := "node"
-						var args []string
-						if invalid {
-							args = []string{"resources/javascript/run_camxes", text}
-						} else {
-							command := words[0]
-							text, _ = strings.CutPrefix(text, command)
-							args = []string{"resources/javascript/run_camxes", "-m", command, text}
-						}
-						process := exec.Command(cmd, args...)
-						stdin, err := process.StdinPipe()
-						if err != nil {
-							fmt.Println(err)
-						}
-						defer stdin.Close()
-						buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
-						process.Stdout = buf
-						process.Stderr = os.Stderr
-
-						if err = process.Start(); err != nil {
-							fmt.Println("An error occured: ", err)
-						}
-						process.Wait()
-						discord.ChannelMessageSend(channelID, buf.String())
 					}
 				}
 			}
