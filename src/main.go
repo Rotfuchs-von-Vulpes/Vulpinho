@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/xml"
 	"fmt"
 	"log"
 	"os"
@@ -32,6 +33,129 @@ func readCsvFile(filePath string) [][]string {
 	}
 
 	return records
+}
+
+type Dictionary struct {
+	XMLName   xml.Name `xml:"dictionary"`
+	Text      string   `xml:",chardata"`
+	Direction []struct {
+		Text  string `xml:",chardata"`
+		From  string `xml:"from,attr"`
+		To    string `xml:"to,attr"`
+		Valsi []struct {
+			Text       string `xml:",chardata"`
+			Word       string `xml:"word,attr"`
+			Type       string `xml:"type,attr"`
+			Unofficial string `xml:"unofficial,attr"`
+			Selmaho    string `xml:"selmaho"`
+			User       struct {
+				Text     string `xml:",chardata"`
+				Username string `xml:"username"`
+				Realname string `xml:"realname"`
+			} `xml:"user"`
+			Definition   string `xml:"definition"`
+			Definitionid string `xml:"definitionid"`
+			Score        string `xml:"score"`
+			Glossword    []struct {
+				Text  string `xml:",chardata"`
+				Word  string `xml:"word,attr"`
+				Sense string `xml:"sense,attr"`
+			} `xml:"glossword"`
+			Notes   string `xml:"notes"`
+			Keyword []struct {
+				Text  string `xml:",chardata"`
+				Word  string `xml:"word,attr"`
+				Place string `xml:"place,attr"`
+				Sense string `xml:"sense,attr"`
+			} `xml:"keyword"`
+			Rafsi []string `xml:"rafsi"`
+		} `xml:"valsi"`
+		Nlword []struct {
+			Text  string `xml:",chardata"`
+			Word  string `xml:"word,attr"`
+			Sense string `xml:"sense,attr"`
+			Valsi string `xml:"valsi,attr"`
+			Place string `xml:"place,attr"`
+		} `xml:"nlword"`
+	} `xml:"direction"`
+}
+
+var lojbanDictionary Dictionary
+
+func parseNotes(note string) string {
+	noteBuilder := strings.Builder{}
+	for _, r := range note {
+		if r != '{' && r != '}' {
+			noteBuilder.WriteRune(r)
+		}
+	}
+	return noteBuilder.String()
+}
+
+func parseDefinition(def string) string {
+	readingArgument := false
+	readingSubscript := false
+	defBuinder := strings.Builder{}
+	for _, r := range def {
+		if r == '$' {
+			if readingArgument {
+				readingArgument = false
+				readingSubscript = false
+				defBuinder.WriteRune('_')
+			} else {
+				readingArgument = true
+				defBuinder.WriteRune('_')
+			}
+		} else {
+			if readingArgument {
+				if r == '_' {
+					readingSubscript = true
+				}
+			}
+			if readingSubscript {
+				if r == '{' || r == '}' {
+					continue
+				}
+				switch r {
+				case '0':
+					defBuinder.WriteRune('₀')
+				case '1':
+					defBuinder.WriteRune('₁')
+				case '2':
+					defBuinder.WriteRune('₂')
+				case '3':
+					defBuinder.WriteRune('₃')
+				case '4':
+					defBuinder.WriteRune('₄')
+				case '5':
+					defBuinder.WriteRune('₅')
+				case '6':
+					defBuinder.WriteRune('₆')
+				case '7':
+					defBuinder.WriteRune('₇')
+				case '8':
+					defBuinder.WriteRune('₈')
+				case '9':
+					defBuinder.WriteRune('₉')
+				}
+			} else if r != '_' && r != '{' && r != '}' {
+				defBuinder.WriteRune(r)
+			}
+		}
+	}
+
+	return defBuinder.String()
+}
+
+func readLojbanDict(filepath string) {
+	f, err := os.ReadFile(filepath)
+	if err != nil {
+		log.Fatal("unable to read input file "+filepath+": ", err)
+	}
+
+	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
+		log.Fatal("unable to parse xml file: ", err)
+	}
 }
 
 func SnowflakeToUint64(snowflake string) (uint64, bool) {
@@ -171,6 +295,7 @@ func main() {
 	}
 
 	bible := readCsvFile("resources/bible/bible.csv")
+	readLojbanDict("resources/lojban/dictionary/jbovlaste-en.xml")
 
 	f, err := os.Create("resources/bible/missing.txt")
 	if err != nil {
@@ -346,11 +471,11 @@ func main() {
 							cmd := "node"
 							var args []string
 							if invalid {
-								args = []string{"resources/javascript/ilmentufa/run_camxes", text}
+								args = []string{"resources/lojban/ilmentufa/run_camxes", text}
 							} else {
 								command := words[0]
 								text, _ = strings.CutPrefix(text, command)
-								args = []string{"resources/javascript/ilmentufa/run_camxes", "-m", command, text}
+								args = []string{"resources/lojban/ilmentufa/run_camxes", "-m", command, text}
 							}
 							process := exec.Command(cmd, args...)
 							stdin, err := process.StdinPipe()
@@ -367,6 +492,14 @@ func main() {
 							}
 							process.Wait()
 							discord.ChannelMessageSend(channelID, buf.String())
+						}
+					} else if words[1] == "sisku" {
+						word := strings.Split(message.Content, " ")[2]
+						for _, valsi := range lojbanDictionary.Direction[0].Valsi {
+							if valsi.Word == word {
+								response := "**" + valsi.Word + "** [" + valsi.Type + "]: " + parseDefinition(valsi.Definition) + " " + parseNotes(valsi.Notes)
+								discord.ChannelMessageSend(channelID, response)
+							}
 						}
 					}
 				}
