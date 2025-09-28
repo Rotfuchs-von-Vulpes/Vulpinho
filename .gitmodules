@@ -1,0 +1,3 @@
+[submodule "resources/javascript/ilmentufa"]
+	path = resources/javascript/ilmentufa
+	url = https://github.com/Rotfuchs-von-Vulpes/ilmentufa.git
