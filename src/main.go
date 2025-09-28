@@ -346,11 +346,11 @@ func main() {
 							cmd := "node"
 							var args []string
 							if invalid {
-								args = []string{"resources/javascript/run_camxes", text}
+								args = []string{"resources/javascript/ilmentufa/run_camxes", text}
 							} else {
 								command := words[0]
 								text, _ = strings.CutPrefix(text, command)
-								args = []string{"resources/javascript/run_camxes", "-m", command, text}
+								args = []string{"resources/javascript/ilmentufa/run_camxes", "-m", command, text}
 							}
 							process := exec.Command(cmd, args...)
 							stdin, err := process.StdinPipe()
