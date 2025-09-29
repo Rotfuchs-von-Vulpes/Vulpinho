@@ -624,13 +624,15 @@ func main() {
 		if message.MentionEveryone {
 			discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
 		} else {
-			if len(message.Mentions) == 1 && message.Type != discordgo.MessageTypeReply && message.Mentions[0].ID == discord.State.User.ID {
-				discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
-			} else if len(message.Mentions) > 1 && message.Type != discordgo.MessageTypeReply {
-				for _, user := range message.Mentions {
-					if user.ID == discord.State.User.ID {
-						discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
-						break
+			if message.Type != discordgo.MessageTypeReply {
+				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
+					discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
+				} else if len(message.Mentions) > 1 {
+					for _, user := range message.Mentions {
+						if user.ID == discord.State.User.ID {
+							discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
+							break
+						}
 					}
 				}
 			}
