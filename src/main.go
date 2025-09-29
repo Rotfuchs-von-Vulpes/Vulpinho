@@ -624,7 +624,14 @@ func main() {
 		if message.MentionEveryone {
 			discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
 		} else {
-			if message.Type != discordgo.MessageTypeReply {
+			msgRef := message.ReferencedMessage
+			to_emote := true
+			if msgRef != nil {
+				if msgRef.Author.ID == discord.State.User.ID {
+					to_emote = false
+				}
+			}
+			if to_emote {
 				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
 					discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
 				} else if len(message.Mentions) > 1 {
