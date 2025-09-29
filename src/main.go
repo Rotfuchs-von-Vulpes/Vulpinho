@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"unicode"
 
 	"github.com/badgerodon/peg"
 	"github.com/bwmarrin/discordgo"
@@ -83,6 +84,7 @@ type Dictionary struct {
 var lojbanDictionary Dictionary
 
 func parseNotes(note string) string {
+	note = parseDefinition(note)
 	noteBuilder := strings.Builder{}
 	for _, r := range note {
 		if r != '{' && r != '}' {
@@ -156,6 +158,17 @@ func readLojbanDict(filepath string) {
 	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
 		log.Fatal("unable to parse xml file: ", err)
 	}
+}
+
+func removePonctuation(text string) string {
+	respondeBuilder := strings.Builder{}
+	for _, r := range text {
+		if unicode.IsLetter(r) {
+			respondeBuilder.WriteRune(r)
+		}
+	}
+
+	return respondeBuilder.String()
 }
 
 func SnowflakeToUint64(snowflake string) (uint64, bool) {
@@ -400,44 +413,45 @@ func main() {
 			minimum[serverID] = 2
 		}
 
-		messageContent := strings.ToLower(message.Content)
-
-		switch messageContent {
-		case "fox!":
-			discord.ChannelMessageSend(channelID, ":fox::+1:")
-		case "fox! ping":
-			last_time = message.Timestamp.UnixMilli()
-			waitingPong = true
-			discord.ChannelMessageSend(channelID, "Pong!")
-		default:
-			msgText := message.Content
-			if msgText == lastMsg[channelID] {
-				banned := slices.Contains(bannedPeople[channelID], message.Author.ID)
-				if !banned {
-					bannedPeople[channelID] = append(bannedPeople[channelID], message.Author.ID)
-					repeatedMsgCount[channelID] += 1
-				}
-			} else if msgText != bannedMsg[channelID] {
-				bannedPeople[channelID] = nil
+		msgText := message.Content
+		if msgText == lastMsg[channelID] {
+			banned := slices.Contains(bannedPeople[channelID], message.Author.ID)
+			if !banned {
 				bannedPeople[channelID] = append(bannedPeople[channelID], message.Author.ID)
-				lastMsg[channelID] = msgText
-				repeatedMsgCount[channelID] = 0
+				repeatedMsgCount[channelID] += 1
 			}
+		} else if msgText != bannedMsg[channelID] {
+			bannedPeople[channelID] = nil
+			bannedPeople[channelID] = append(bannedPeople[channelID], message.Author.ID)
+			lastMsg[channelID] = msgText
+			repeatedMsgCount[channelID] = 0
+		}
 
-			if repeatedMsgCount[channelID] == minimum[serverID] {
-				discord.ChannelMessageSend(channelID, lastMsg[channelID])
+		if repeatedMsgCount[channelID] == minimum[serverID] {
+			discord.ChannelMessageSend(channelID, lastMsg[channelID])
 
-				bannedMsg[channelID] = lastMsg[channelID]
-				bannedPeople[channelID] = nil
-				repeatedMsgCount[channelID] = 0
-				lastMsg[channelID] = ""
-				minimum[serverID] += 1
-			}
+			bannedMsg[channelID] = lastMsg[channelID]
+			bannedPeople[channelID] = nil
+			repeatedMsgCount[channelID] = 0
+			lastMsg[channelID] = ""
+			minimum[serverID] += 1
+		}
 
-			words := strings.Split(strings.ToLower(message.Content), " ")
+		words := strings.Split(strings.ToLower(message.Content), " ")
+		fops_list := []string{"raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fops", "fox", "poposa", "poposas", "foxes", "fxoe"}
 
-			if len(words) >= 3 {
-				if words[0] == "fox!" {
+		if len(words) >= 1 {
+			word_minus, found := strings.CutSuffix(words[0], "!")
+			if found && slices.Contains(fops_list, word_minus) {
+				if len(words) == 1 {
+					discord.ChannelMessageSend(channelID, ":fox::+1:")
+				} else if len(words) == 2 {
+					if words[1] == "ping" {
+						last_time = message.Timestamp.UnixMilli()
+						waitingPong = true
+						discord.ChannelMessageSend(channelID, "Pong!")
+					}
+				} else if len(words) >= 3 {
 					if words[1] == "calc" {
 						final_str := ""
 
@@ -495,96 +509,128 @@ func main() {
 						}
 					} else if words[1] == "sisku" {
 						word := strings.Split(message.Content, " ")[2]
+						has_definition := false
 						for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 							if valsi.Word == word {
+								has_definition = true
 								response := "**" + valsi.Word + "** [" + valsi.Type + "]: " + parseDefinition(valsi.Definition) + " " + parseNotes(valsi.Notes)
 								discord.ChannelMessageSend(channelID, response)
+								break
 							}
 						}
-					}
-				}
-			}
-
-			fops_list := []string{"raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fops", "fox", "poposa", "poposas", "foxes", "fxoe"}
-		loop:
-			for _, word := range words {
-				for _, fops := range fops_list {
-					if word == fops {
-						discord.MessageReactionAdd(channelID, message.ID, "🦊")
-						break loop
-					}
-				}
-			}
-
-			var versicle_temp []string
-			if len(words) == 2 {
-				pair_1 := strings.Split(words[1], ",")
-				pair_2 := strings.Split(words[1], ":")
-				if len(pair_1) == 2 {
-					versicle_temp = pair_1
-				} else if len(pair_2) == 2 {
-					versicle_temp = pair_2
-				}
-
-				if len(versicle_temp) == 2 {
-					words[1] = versicle_temp[0]
-					words = append(words, versicle_temp[1])
-				}
-			}
-
-			if len(words) == 3 {
-				words[1] = strings.Map(func(r rune) rune {
-					if r == ',' {
-						return -1
-					}
-					return r
-				}, words[1])
-
-				rang := strings.Split(words[2], "-")
-
-				if len(rang) == 1 {
-					for _, line := range bible {
-						if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-							discord.ChannelMessageSend(channelID, "**"+line[3]+"**. "+line[4])
-							break
+						if !has_definition {
+							discord.ChannelMessageSend(channelID, "Such lojban word does not occurr in my database.")
 						}
-					}
-				} else if len(rang) == 2 {
-					_, ok1 := SnowflakeToUint64(rang[0])
-					_, ok2 := SnowflakeToUint64(rang[1])
-					if ok1 && ok2 {
-						reading := false
-						chapter := ""
-						text := ""
-						for _, line := range bible {
-							if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
-								chapter = line[2]
-								reading = true
-							}
-							if reading {
-								text += "**" + line[3] + "**. " + line[4]
-								if line[3] == rang[1] || line[2] != chapter {
-									break
+					} else if words[1] == "facki" {
+						word, found := strings.CutPrefix(message.Content, "fox! facki ")
+						if found {
+							has_translation := false
+							for _, nlword := range lojbanDictionary.Direction[1].Nlword {
+								if nlword.Word == word {
+									has_translation = true
+									var response string
+									var valsi string
+									if nlword.Place == "" {
+										valsi = nlword.Valsi
+									} else {
+										valsi = nlword.Valsi + " (" + nlword.Place + ")"
+									}
+									if nlword.Sense == "" {
+										response = "**" + valsi + "**"
+									} else {
+										response = "**" + valsi + "** [" + nlword.Sense + "]"
+									}
+									discord.ChannelMessageSend(channelID, response)
 								}
-								text += "\n"
+							}
+							if !has_translation {
+								discord.ChannelMessageSend(channelID, "No literal lojban translation word has founded in the database.")
 							}
 						}
-						discord.ChannelMessageSend(channelID, text)
 					}
 				}
 			}
+		}
 
-			if message.MentionEveryone {
-				discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
-			} else {
-				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
-					discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
-				} else if len(message.Mentions) > 1 {
-					for _, user := range message.Mentions {
-						if user.ID == discord.State.User.ID {
-							discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
-							break
+	loop:
+		for _, word := range words {
+			word = removePonctuation(word)
+			for _, fops := range fops_list {
+				if word == fops {
+					discord.MessageReactionAdd(channelID, message.ID, "🦊")
+					break loop
+				}
+			}
+		}
+
+		var versicle_temp []string
+		if len(words) == 2 {
+			pair_1 := strings.Split(words[1], ",")
+			pair_2 := strings.Split(words[1], ":")
+			if len(pair_1) == 2 {
+				versicle_temp = pair_1
+			} else if len(pair_2) == 2 {
+				versicle_temp = pair_2
+			}
+
+			if len(versicle_temp) == 2 {
+				words[1] = versicle_temp[0]
+				words = append(words, versicle_temp[1])
+			}
+		}
+
+		if len(words) == 3 {
+			words[1] = strings.Map(func(r rune) rune {
+				if r == ',' {
+					return -1
+				}
+				return r
+			}, words[1])
+
+			rang := strings.Split(words[2], "-")
+
+			if len(rang) == 1 {
+				for _, line := range bible {
+					if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
+						discord.ChannelMessageSend(channelID, "**"+line[3]+"**. "+line[4])
+						break
+					}
+				}
+			} else if len(rang) == 2 {
+				_, ok1 := SnowflakeToUint64(rang[0])
+				_, ok2 := SnowflakeToUint64(rang[1])
+				if ok1 && ok2 {
+					reading := false
+					chapter := ""
+					text := ""
+					for _, line := range bible {
+						if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
+							chapter = line[2]
+							reading = true
 						}
+						if reading {
+							text += "**" + line[3] + "**. " + line[4]
+							if line[3] == rang[1] || line[2] != chapter {
+								break
+							}
+							text += "\n"
+						}
+					}
+					discord.ChannelMessageSend(channelID, text)
+				}
+			}
+		}
+
+		if message.MentionEveryone {
+			discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
+		} else {
+			if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
+				discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
+			} else if len(message.Mentions) > 1 {
+				for _, user := range message.Mentions {
+					if user.ID == discord.State.User.ID {
+						discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
+						break
 					}
 				}
 			}
