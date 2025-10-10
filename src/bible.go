@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/csv"
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -14,21 +14,21 @@ func readBible() {
 	filePath := "resources/bible/bible.csv"
 	f1, err := os.Open(filePath)
 	if err != nil {
-		log.Fatal("Unable to read input file "+filePath+": ", err)
+		slog.Error("Unable to read input file "+filePath, "error", err.Error())
 	}
 	defer f1.Close()
 
 	csvReader := csv.NewReader(f1)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		log.Fatal("Unable to parse file as CSV for "+filePath+": ", err)
+		slog.Error("Unable to parse file as CSV for "+filePath, "error", err.Error())
 	}
 
 	bible = records
 
 	f2, err := os.Create("resources/bible/missing.txt")
 	if err != nil {
-		log.Fatalf("Can't create missing list file")
+		slog.Error("Can't create missing list file")
 	}
 
 	var previous int64 = 0

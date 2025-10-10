@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"slices"
@@ -95,7 +95,7 @@ func removePonctuation(text string) string {
 func SnowflakeToUint64(snowflake string) (uint64, bool) {
 	result, err := strconv.ParseUint(snowflake, 10, 64)
 	if err != nil {
-		// log.Fatalf("error: %s", err.Error())
+		// slog.Error("error: %s", err.Error())
 		return 0, false
 	}
 	return result, true
@@ -104,12 +104,12 @@ func SnowflakeToUint64(snowflake string) (uint64, bool) {
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Fatalf("Error loading .env file")
+		slog.Error("Error loading .env file")
 		return
 	}
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
-		log.Fatalf("Error when connecting to discord: %s", err.Error())
+		slog.Error("Error when connecting to discord", "error", err.Error())
 		return
 	}
 
@@ -257,19 +257,19 @@ func main() {
 
 	err = discord.Open()
 	if err != nil {
-		log.Fatalf("error opening discord session: %s", err.Error())
+		slog.Error("error opening discord session", "error", err.Error())
 		return
 	}
 	defer func() {
-		log.Printf("closing discord session...")
+		slog.Info("closing discord session...")
 		if err := discord.Close(); err != nil {
-			log.Fatalf("error closing discord session: %s", err.Error())
+			slog.Error("error closing discord session", "error", err.Error())
 		}
 	}()
 
-	log.Printf("Online")
+	slog.Info("Online")
 
 	<-signalChannel
 
-	log.Print("Shutting down")
+	slog.Info("Shutting down")
 }

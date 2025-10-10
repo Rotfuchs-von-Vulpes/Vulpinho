@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"os/exec"
 	"slices"
@@ -62,11 +62,11 @@ func readLojbanDict() {
 	filePath := "resources/lojban/dictionary/jbovlaste-en.xml"
 	f, err := os.ReadFile(filePath)
 	if err != nil {
-		log.Fatal("unable to read input file "+filePath+": ", err)
+		slog.Error("unable to read input file "+filePath, "error", err)
 	}
 
 	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
-		log.Fatal("unable to parse xml file: ", err)
+		slog.Error("unable to parse xml file", "error", err)
 	}
 }
 
