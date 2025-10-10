@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -11,19 +12,39 @@ var bible [][]string
 
 func readBible() {
 	filePath := "resources/bible/bible.csv"
-	f, err := os.Open(filePath)
+	f1, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal("Unable to read input file "+filePath+": ", err)
 	}
-	defer f.Close()
+	defer f1.Close()
 
-	csvReader := csv.NewReader(f)
+	csvReader := csv.NewReader(f1)
 	records, err := csvReader.ReadAll()
 	if err != nil {
 		log.Fatal("Unable to parse file as CSV for "+filePath+": ", err)
 	}
 
 	bible = records
+
+	f2, err := os.Create("resources/bible/missing.txt")
+	if err != nil {
+		log.Fatalf("Can't create missing list file")
+	}
+
+	var previous int64 = 0
+	for _, line := range bible {
+		num, err := strconv.ParseInt(line[3], 10, 32)
+		if err == nil {
+			if num == 1 {
+				previous = 0
+			}
+			if num-previous > 1 {
+				f2.WriteString(line[1] + " " + line[2] + " " + strconv.FormatInt(previous+1, 10) + " não existe\n")
+			}
+			previous = num
+		}
+	}
+	f2.Close()
 }
 
 func versicle(say func(string), raw string) {
