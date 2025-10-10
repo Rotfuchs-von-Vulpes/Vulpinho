@@ -1,13 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"encoding/csv"
-	"encoding/xml"
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
 	"slices"
 	"strconv"
@@ -19,69 +15,6 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
-
-func readCsvFile(filePath string) [][]string {
-	f, err := os.Open(filePath)
-	if err != nil {
-		log.Fatal("Unable to read input file "+filePath+": ", err)
-	}
-	defer f.Close()
-
-	csvReader := csv.NewReader(f)
-	records, err := csvReader.ReadAll()
-	if err != nil {
-		log.Fatal("Unable to parse file as CSV for "+filePath+": ", err)
-	}
-
-	return records
-}
-
-type Dictionary struct {
-	XMLName   xml.Name `xml:"dictionary"`
-	Text      string   `xml:",chardata"`
-	Direction []struct {
-		Text  string `xml:",chardata"`
-		From  string `xml:"from,attr"`
-		To    string `xml:"to,attr"`
-		Valsi []struct {
-			Text       string `xml:",chardata"`
-			Word       string `xml:"word,attr"`
-			Type       string `xml:"type,attr"`
-			Unofficial string `xml:"unofficial,attr"`
-			Selmaho    string `xml:"selmaho"`
-			User       struct {
-				Text     string `xml:",chardata"`
-				Username string `xml:"username"`
-				Realname string `xml:"realname"`
-			} `xml:"user"`
-			Definition   string `xml:"definition"`
-			Definitionid string `xml:"definitionid"`
-			Score        string `xml:"score"`
-			Glossword    []struct {
-				Text  string `xml:",chardata"`
-				Word  string `xml:"word,attr"`
-				Sense string `xml:"sense,attr"`
-			} `xml:"glossword"`
-			Notes   string `xml:"notes"`
-			Keyword []struct {
-				Text  string `xml:",chardata"`
-				Word  string `xml:"word,attr"`
-				Place string `xml:"place,attr"`
-				Sense string `xml:"sense,attr"`
-			} `xml:"keyword"`
-			Rafsi []string `xml:"rafsi"`
-		} `xml:"valsi"`
-		Nlword []struct {
-			Text  string `xml:",chardata"`
-			Word  string `xml:"word,attr"`
-			Sense string `xml:"sense,attr"`
-			Valsi string `xml:"valsi,attr"`
-			Place string `xml:"place,attr"`
-		} `xml:"nlword"`
-	} `xml:"direction"`
-}
-
-var lojbanDictionary Dictionary
 
 func parseNotes(note string) string {
 	note = parseDefinition(note)
@@ -147,17 +80,6 @@ func parseDefinition(def string) string {
 	}
 
 	return defBuinder.String()
-}
-
-func readLojbanDict(filepath string) {
-	f, err := os.ReadFile(filepath)
-	if err != nil {
-		log.Fatal("unable to read input file "+filepath+": ", err)
-	}
-
-	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
-		log.Fatal("unable to parse xml file: ", err)
-	}
 }
 
 func removePonctuation(text string) string {
@@ -307,8 +229,8 @@ func main() {
 		return
 	}
 
-	bible := readCsvFile("resources/bible/bible.csv")
-	readLojbanDict("resources/lojban/dictionary/jbovlaste-en.xml")
+	readBible()
+	readLojbanDict()
 
 	f, err := os.Create("resources/bible/missing.txt")
 	if err != nil {
@@ -390,6 +312,15 @@ func main() {
 	last_time := int64(0)
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
+		say := func(text string) {
+			discord.ChannelMessageSend(message.ChannelID, text)
+		}
+		sayList := func(list []string) {
+			for _, text := range list {
+				discord.ChannelMessageSend(message.ChannelID, text)
+			}
+		}
+
 		channelID := message.ChannelID
 		serverID := message.GuildID
 
@@ -428,7 +359,7 @@ func main() {
 		}
 
 		if repeatedMsgCount[channelID] == minimum[serverID] {
-			discord.ChannelMessageSend(channelID, lastMsg[channelID])
+			say(lastMsg[channelID])
 
 			bannedMsg[channelID] = lastMsg[channelID]
 			bannedPeople[channelID] = nil
@@ -444,12 +375,12 @@ func main() {
 			word_minus, found := strings.CutSuffix(words[0], "!")
 			if found && slices.Contains(fops_list, word_minus) {
 				if len(words) == 1 {
-					discord.ChannelMessageSend(channelID, ":fox::+1:")
+					say(":fox::+1:")
 				} else if len(words) == 2 {
 					if words[1] == "ping" {
 						last_time = message.Timestamp.UnixMilli()
 						waitingPong = true
-						discord.ChannelMessageSend(channelID, "Pong!")
+						say("Pong!")
 					}
 				} else if len(words) >= 3 {
 					if words[1] == "calc" {
@@ -464,89 +395,21 @@ func main() {
 						tree := parser.Parse(final_str)
 						ok, result := reduce(tree)
 						if ok {
-							discord.ChannelMessageSend(channelID, fmt.Sprint(result))
+							say(fmt.Sprint(result))
 						} else {
-							discord.ChannelMessageSend(channelID, "Uma ideterminação foi encontrada")
+							say("Uma ideterminação foi encontrada")
 						}
 					} else if words[1] == "gerna" {
 						text, found := strings.CutPrefix(message.Content, "fox! gerna ")
 						if found {
-							commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
-							words := strings.Split(text, " ")
-							invalid := false
-							for _, r := range words[0] {
-								found := slices.Contains(commands, r)
-								if !found {
-									invalid = true
-									break
-								}
-							}
-
-							cmd := "node"
-							var args []string
-							if invalid {
-								args = []string{"resources/lojban/ilmentufa/run_camxes", text}
-							} else {
-								command := words[0]
-								text, _ = strings.CutPrefix(text, command)
-								args = []string{"resources/lojban/ilmentufa/run_camxes", "-m", command, text}
-							}
-							process := exec.Command(cmd, args...)
-							stdin, err := process.StdinPipe()
-							if err != nil {
-								fmt.Println(err)
-							}
-							defer stdin.Close()
-							buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
-							process.Stdout = buf
-							process.Stderr = os.Stderr
-
-							if err = process.Start(); err != nil {
-								fmt.Println("An error occured: ", err)
-							}
-							process.Wait()
-							discord.ChannelMessageSend(channelID, buf.String())
+							say(gerna(text))
 						}
 					} else if words[1] == "sisku" {
 						word := strings.Split(message.Content, " ")[2]
-						has_definition := false
-						for _, valsi := range lojbanDictionary.Direction[0].Valsi {
-							if valsi.Word == word {
-								has_definition = true
-								response := "**" + valsi.Word + "** [" + valsi.Type + "]: " + parseDefinition(valsi.Definition) + " " + parseNotes(valsi.Notes)
-								discord.ChannelMessageSend(channelID, response)
-								break
-							}
-						}
-						if !has_definition {
-							discord.ChannelMessageSend(channelID, "Such lojban word does not occurr in my database.")
-						}
+						say(sisku(word))
 					} else if words[1] == "facki" {
-						word, found := strings.CutPrefix(message.Content, "fox! facki ")
-						if found {
-							has_translation := false
-							for _, nlword := range lojbanDictionary.Direction[1].Nlword {
-								if nlword.Word == word {
-									has_translation = true
-									var response string
-									var valsi string
-									if nlword.Place == "" {
-										valsi = nlword.Valsi
-									} else {
-										valsi = nlword.Valsi + " (" + nlword.Place + ")"
-									}
-									if nlword.Sense == "" {
-										response = "**" + valsi + "**"
-									} else {
-										response = "**" + valsi + "** [" + nlword.Sense + "]"
-									}
-									discord.ChannelMessageSend(channelID, response)
-								}
-							}
-							if !has_translation {
-								discord.ChannelMessageSend(channelID, "No literal lojban translation word has founded in the database.")
-							}
-						}
+						word := strings.Split(message.Content, " ")[2]
+						sayList(facki(word))
 					}
 				}
 			}
@@ -563,66 +426,10 @@ func main() {
 			}
 		}
 
-		var versicle_temp []string
-		if len(words) == 2 {
-			pair_1 := strings.Split(words[1], ",")
-			pair_2 := strings.Split(words[1], ":")
-			if len(pair_1) == 2 {
-				versicle_temp = pair_1
-			} else if len(pair_2) == 2 {
-				versicle_temp = pair_2
-			}
-
-			if len(versicle_temp) == 2 {
-				words[1] = versicle_temp[0]
-				words = append(words, versicle_temp[1])
-			}
-		}
-
-		if len(words) == 3 {
-			words[1] = strings.Map(func(r rune) rune {
-				if r == ',' {
-					return -1
-				}
-				return r
-			}, words[1])
-
-			rang := strings.Split(words[2], "-")
-
-			if len(rang) == 1 {
-				for _, line := range bible {
-					if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-						discord.ChannelMessageSend(channelID, "**"+line[3]+"**. "+line[4])
-						break
-					}
-				}
-			} else if len(rang) == 2 {
-				_, ok1 := SnowflakeToUint64(rang[0])
-				_, ok2 := SnowflakeToUint64(rang[1])
-				if ok1 && ok2 {
-					reading := false
-					chapter := ""
-					text := ""
-					for _, line := range bible {
-						if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
-							chapter = line[2]
-							reading = true
-						}
-						if reading {
-							text += "**" + line[3] + "**. " + line[4]
-							if line[3] == rang[1] || line[2] != chapter {
-								break
-							}
-							text += "\n"
-						}
-					}
-					discord.ChannelMessageSend(channelID, text)
-				}
-			}
-		}
+		versicle(say, message.Content)
 
 		if message.MentionEveryone {
-			discord.ChannelMessageSend(channelID, "<:memojo_really:1411209850213498890>")
+			say("<:memojo_really:1411209850213498890>")
 		} else {
 			msgRef := message.ReferencedMessage
 			to_emote := true
@@ -633,11 +440,11 @@ func main() {
 			}
 			if to_emote {
 				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
-					discord.ChannelMessageSend(channelID, "<a:foxexcite:1421359331361816678>")
+					say("<a:foxexcite:1421359331361816678>")
 				} else if len(message.Mentions) > 1 {
 					for _, user := range message.Mentions {
 						if user.ID == discord.State.User.ID {
-							discord.ChannelMessageSend(channelID, "<:pepe_think:1421357826051407962>")
+							say("<:pepe_think:1421357826051407962>")
 							break
 						}
 					}
