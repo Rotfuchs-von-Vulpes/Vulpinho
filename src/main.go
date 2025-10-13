@@ -81,6 +81,16 @@ func parseDefinition(def string) string {
 	return defBuinder.String()
 }
 
+func removeFirstTwo(wordList []string) []string {
+	final := []string{}
+	for i, word := range wordList {
+		if i >= 2 {
+			final = append(final, word)
+		}
+	}
+	return final
+}
+
 func removePonctuation(text string) string {
 	respondeBuilder := strings.Builder{}
 	for _, r := range text {
@@ -199,16 +209,14 @@ func main() {
 				} else if len(words) >= 3 {
 					switch words[1] {
 					case "gerna":
-						text, found := strings.CutPrefix(message.Content, "fox! gerna ")
-						if found {
-							say(gerna(text))
-						}
+						text := removeFirstTwo(strings.Split(message.Content, " "))
+						say(gerna(strings.Join(text, " ")))
 					case "sisku":
 						word := strings.Split(message.Content, " ")[2]
 						say(sisku(word))
 					case "facki":
-						word := strings.Split(message.Content, " ")[2]
-						sayList(facki(word))
+						text := removeFirstTwo(strings.Split(message.Content, " "))
+						sayList(facki(strings.Join(text, " ")))
 					}
 				}
 			}

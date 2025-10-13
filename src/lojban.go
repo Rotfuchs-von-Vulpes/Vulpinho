@@ -80,10 +80,10 @@ func sisku(word string) string {
 	return "Such lojban word does not occurr in my database."
 }
 
-func facki(word string) []string {
+func facki(text string) []string {
 	final := []string{}
 	for _, nlword := range lojbanDictionary.Direction[1].Nlword {
-		if nlword.Word == word {
+		if nlword.Word == text {
 			var response string
 			var valsi string
 			if nlword.Place == "" {
