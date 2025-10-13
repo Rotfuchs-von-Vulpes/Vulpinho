@@ -199,7 +199,7 @@ func main() {
 			word_minus, found := strings.CutSuffix(words[0], "!")
 			if found && slices.Contains(fops_list, word_minus) {
 				if len(words) == 1 {
-					say(":fox::+1:")
+					say("<a:fox_wave:1426439130253885440>")
 				} else if len(words) == 2 {
 					if words[1] == "ping" {
 						last_time = message.Timestamp.UnixMilli()
