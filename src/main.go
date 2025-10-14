@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -14,6 +15,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
+
+var logger *slog.Logger
 
 func parseNotes(note string) string {
 	note = parseDefinition(note)
@@ -105,21 +108,66 @@ func removePonctuation(text string) string {
 func SnowflakeToUint64(snowflake string) (uint64, bool) {
 	result, err := strconv.ParseUint(snowflake, 10, 64)
 	if err != nil {
-		// slog.Error("error: %s", err.Error())
+		// logger.Error("error: %s", err.Error())
 		return 0, false
 	}
 	return result, true
 }
 
+func fileExist(path string) (bool, bool) {
+	_, err := os.Stat(path)
+	if errors.Is(err, os.ErrNotExist) {
+		return false, false
+	} else if err == nil {
+		return true, false
+	} else {
+		slog.Error("error viewing stat", "err", err)
+		return false, true
+	}
+}
+
+func removeAndCreate(path string) (*os.File, bool) {
+	exist, fatal := fileExist(path)
+	if fatal {
+		return nil, true
+	}
+	if exist {
+		if err := os.Remove(path); err != nil {
+			slog.Error("error removing file", "err", err.Error())
+			return nil, true
+		}
+	}
+	f, err := os.OpenFile(path, os.O_CREATE, os.ModeDevice)
+	if err != nil {
+		slog.Error("error opening file", "err", err.Error())
+		return nil, true
+	}
+	return f, false
+}
+
 func main() {
+	folderLog, fatal := fileExist("log/")
+	if fatal {
+		return
+	}
+	if !folderLog {
+		os.Mkdir("log", 0)
+	}
+	var f *os.File
+	f, fatal = removeAndCreate("log/log.txt")
+	if fatal {
+		return
+	}
+	logger = slog.New(NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(f, nil)))
+
 	err := godotenv.Load(".env")
 	if err != nil {
-		slog.Error("Error loading .env file")
+		logger.Error("Error loading .env file")
 		return
 	}
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
-		slog.Error("Error when connecting to discord", "error", err.Error())
+		logger.Error("Error when connecting to discord", "error", err.Error())
 		return
 	}
 
@@ -265,19 +313,19 @@ func main() {
 
 	err = discord.Open()
 	if err != nil {
-		slog.Error("error opening discord session", "error", err.Error())
+		logger.Error("error opening discord session", "error", err.Error())
 		return
 	}
 	defer func() {
-		slog.Info("closing discord session...")
+		logger.Info("closing discord session...")
 		if err := discord.Close(); err != nil {
-			slog.Error("error closing discord session", "error", err.Error())
+			logger.Error("error closing discord session", "error", err.Error())
 		}
 	}()
 
-	slog.Info("Online")
+	logger.Info("Online")
 
 	<-signalChannel
 
-	slog.Info("Shutting down")
+	logger.Info("Shutting down")
 }
