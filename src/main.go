@@ -158,6 +158,7 @@ func main() {
 	if fatal {
 		return
 	}
+	defer f.Close()
 	logger = slog.New(NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(f, nil)))
 
 	err := godotenv.Load(".env")
