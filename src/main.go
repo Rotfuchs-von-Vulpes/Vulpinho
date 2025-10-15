@@ -242,7 +242,7 @@ func main() {
 		}
 
 		words := strings.Split(strings.ToLower(message.Content), " ")
-		fops_list := []string{"vulpinho", "raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fop", "fops", "fox", "poposa", "poposas", "poposo", "poposos", "foxes", "fxoe"}
+		fops_list := []string{"vulpinho", "🦊", "raposa", "raposo", "raposinha", "raposinhas", "raposas", "raposos", "fop", "fops", "fox", "poposa", "poposas", "poposo", "poposos", "foxes", "fxoe"}
 
 		if len(words) >= 1 {
 			word_minus, found := strings.CutSuffix(words[0], "!")
