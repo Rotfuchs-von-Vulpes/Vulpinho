@@ -328,7 +328,7 @@ func main() {
 						lastErr = err.Error()
 						logger.Error("error opening discord session", "error", err.Error())
 					}
-					logger.Info("reconnect...", "seconds", seconds)
+					logger.Info("reconnect...")
 					time.Sleep(time.Duration(seconds) * time.Second)
 					if seconds < limit {
 						seconds *= seconds
