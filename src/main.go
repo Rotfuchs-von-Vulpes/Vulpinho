@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 	"unicode"
 
 	"github.com/bwmarrin/discordgo"
@@ -312,11 +313,38 @@ func main() {
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
-	err = discord.Open()
-	if err != nil {
-		logger.Error("error opening discord session", "error", err.Error())
-		return
-	}
+	go func() {
+		seconds := 2
+		limit := 60 * 60
+		var lastErr string
+		for {
+			select {
+			case <-signalChannel:
+				return
+			default:
+				err = discord.Open()
+				if err != nil {
+					if err.Error() != lastErr {
+						lastErr = err.Error()
+						logger.Error("error opening discord session", "error", err.Error())
+					}
+					logger.Info("reconnect...", "seconds", seconds)
+					time.Sleep(time.Duration(seconds) * time.Second)
+					if seconds < limit {
+						seconds *= seconds
+					}
+				} else {
+					return
+				}
+			}
+		}
+	}()
+
+	// err = discord.Open()
+	// if err != nil {
+	// 	logger.Error("error opening discord session", "error", err.Error())
+	// 	return
+	// }
 	defer func() {
 		logger.Info("closing discord session...")
 		if err := discord.Close(); err != nil {
