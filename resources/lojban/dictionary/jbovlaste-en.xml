@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="jbovlaste.xsl"?>
 <dictionary>
-<direction from="lojban" to="English">
-<valsi word="a" type="cmavo">
+<direction from="lojban" to="English"><valsi word="a" type="cmavo">
   <selmaho>A</selmaho>
   <user>
     <username>officialdata</username>
     <realname>Official Data</realname>
   </user>
-  <definition>logical connective: sumti afterthought or.</definition>
-  <definitionid>1339</definitionid>
-  <score>100003</score>
-  <glossword word="and/or" sense="inclusive or" />
-  <glossword word="or" sense="inclusive or" />
-  <glossword word="sumti or" />
+      <definition>logical connective: sumti afterthought or.</definition>
+      <definitionid>1339</definitionid>
+      <score>100003</score>
+      <glossword word="and/or" sense="inclusive or" />
+      <glossword word="or" sense="inclusive or" />
+      <glossword word="sumti or" />
 </valsi>
 <valsi word="a'a" type="cmavo">
   <selmaho>UI1</selmaho>
@@ -5560,7 +5559,7 @@
   </user>
       <definition>$x_1$ is the language with ISO 639-3 code &apos;&apos;eng&apos;&apos; (English).</definition>
       <definitionid>18364</definitionid>
-      <score>2</score>
+      <score>3</score>
       <notes>Cf. {bangenugu}, {gliglibau}, {merbau}, {xinglibau}, {kadnyglibau}, {sralybau}, {kisyglibau}, {nanfi&apos;oglibau}, {bangrnaidjiria}.</notes>
       <glossword word="English" sense="language" />
 </valsi>
@@ -9180,6 +9179,16 @@ ni&apos;o Recommended ways to explicitly declare the former (scope of permanent 
       <glossword word="son-in-law" />
       <glossword word="spouse of one&apos;s child" />
 </valsi>
+<valsi word="bebgau" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$x_1$ (event/person) infatuates, causes them to act foolish $x_2$ (person) in manner $x_3$</definition>
+      <definitionid>74273</definitionid>
+      <score>2</score>
+      <notes>cf. {bebna} {gasnu}</notes>
+</valsi>
 <valsi word="bebgei" type="lujvo">
   <user>
     <username>arj</username>
@@ -11440,6 +11449,20 @@ ni&apos;o Recommended ways to explicitly declare the former (scope of permanent 
       <score>2</score>
       <notes>Cf. {degycidni}.</notes>
       <glossword word="elbow" sense="body part" />
+</valsi>
+<valsi unofficial="true" word="birco" type="experimental gismu">
+  <user>
+    <username>samflir</username>
+    <realname>la samflir</realname>
+  </user>
+      <definition>$x_1$&apos;s face is completely cleansed of facial hair apart from $x_2$.</definition>
+      <definitionid>74289</definitionid>
+      <score>2</score>
+      <notes>This word was revealed to me in a dream.</notes>
+      <glossword word="clean shaven person" />
+      <glossword word="clean shaven person apart from moustache" />
+      <keyword word="person" place="1" />
+      <keyword word="facial hair" place="2" />
 </valsi>
 <valsi word="birdadykla" type="lujvo">
   <user>
@@ -21635,18 +21658,6 @@ see also {bukpu}, {sunla}, {fibra}.</notes>
       <score>3</score>
       <glossword word="kneel" sense="posture" />
 </valsi>
-<valsi word="cidytsecorci" type="lujvo">
-  <user>
-    <username>krtisfranks</username>
-    <realname>Curtis W Franks</realname>
-  </user>
-      <definition>$x_1$ kneels/genuflects with meaning $x_2$ on surface $x_3$ on/with limb(s) $x_4$ of body $x_5$.</definition>
-      <definitionid>73545</definitionid>
-      <score>1</score>
-      <notes>Usually implies obeisance, homage, devotion, loyalty, obedience, subservience, vulnerability, or some other form of inferiority or trust. Specify the recipient of said inferiority or trust expression via/in $x_2$. Mere &quot;{cidytse}&quot; is an action which may not convey any semantic information; cidytsecorci refers to a strict/proper subset of actions which are cidytse. This word uses experimental rafsi &quot;-coc-&quot;, which has been proposed to be assigned to experimental gismu &quot;{corci}&quot;. This word is, for now, equivalent to &quot;{cocyborcidytse}&quot;, mostly because .krtisfranks. cannot semantically distinguish between &quot;a kneeling-type-of semantic-gesture&quot; and &quot;a semantic-gesture-type-of kneeling&quot;.</notes>
-      <glossword word="genuflect" sense="semantic gesture" />
-      <glossword word="kneel" sense="semantic gesture" />
-</valsi>
 <valsi word="ci'e" type="cmavo">
   <selmaho>BAI</selmaho>
   <user>
@@ -26056,7 +26067,7 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
   </user>
       <definition>$x_1$ is Brussels sprouts (vegetable)</definition>
       <definitionid>69800</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="Brussels sprouts" sense="vegetable" />
       <keyword word="Brussels sprouts" place="1" sense="vegetable" />
 </valsi>
@@ -29192,7 +29203,7 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
   </user>
       <definition>$x_1$ is a gesture/facial expression/body part motion/body language/expressive (nonverbal or nonvocal) feature/microexpression/stature/posture/sign/body signal [nonverbal expression made using only one&apos;s body parts and items on one&apos;s immediate person as extensions of the body in order to communicate; possibly nonlinguistic/extralinguistic] that conveys/expresses thought/emotion/command/idea $x_2$ (nu/si&apos;o; possibly text and other types) made using body part/utensil/object/at locus $x_3$ in/by motion/action/means $x_4$</definition>
       <definitionid>56846</definitionid>
-      <score>2</score>
+      <score>1</score>
       <notes>Must be body-oriented; any other object involved is simply for the matter of convenience and acts as an extension of the body (and thus must be on the performer&apos;s immediate person at or near the locus of the gesture). Body language, posturing, and stature are usually considered to be nonlocalized (body-general), although they need not be (and technically are not in general). Must be externally visible and/or internally sensed. Any non-body-part utensil/item (including clothing) must function as an extension of the body in the gesture. Need not be conscious or performed by a person (note that agent/performer is not mentioned in this definition); can, but need not, be accompanied by vocalizations (not necessarily linguistic), but the gesture itself is not primarily noise-producing. Might include sign language words or cheremes, although a more explicit word for linguistically organized and “full” cheremes is preferred (and especially for the sign language as a whole). x1 is possibly best typed by {nu} and/or {si&apos;o}. x4 might be best expressed as an event; for example, it could be &quot;the event of the right hand touching the chest near the heart, with fist clenched&quot; for a salute, whereas/wherein x3 would be merely the fist/hand (and the chest near the heart). Use &quot;{cocygau}&quot; resp. &quot;{cocyzu&apos;e}&quot; for: &quot;$x_1$ (agent resp. volitional entity) gestures; $x1$ agentively/actively makes gesture $x2$, communicating $x3$, performed with body part(s) $x4$ in motion $x5$&quot;; this lujvo uses an unofficial cmarafsi. Proposed short rafsi: -coc-.</notes>
       <glossword word="body language" />
       <glossword word="facial expression" sense="generalized" />
@@ -29700,7 +29711,7 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
   </user>
       <definition>$x_1$ is a scarecrow for scaring off birds $x_2$</definition>
       <definitionid>38034</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="scarecrow" />
 </valsi>
 <valsi word="cpitukana" type="fu'ivla">
@@ -33421,6 +33432,16 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
       <glossword word="bagpipe" />
       <keyword word="bagpipe" place="1" />
 </valsi>
+<valsi word="daklystizu" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$s_1$ is a bean bag chair filled with $d_2$ and of material $d_3$</definition>
+      <definitionid>74276</definitionid>
+      <score>2</score>
+      <notes>cf. {dakli} {stizu}</notes>
+</valsi>
 <valsi word="daklytcati" type="lujvo">
   <user>
     <username>jongausib</username>
@@ -36350,6 +36371,19 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
       <glossword word="interest" sense="charge on loan" />
       <keyword word="interest" place="1" sense="charge on loan" />
 </valsi>
+<valsi word="dekci'o" type="lujvo">
+  <user>
+    <username>tijlan</username>
+    <realname>Pascal</realname>
+  </user>
+      <definition>$x_1=c_1$ is a teenager by standard $x_2=c_2$</definition>
+      <definitionid>16873</definitionid>
+      <score>1</score>
+      <notes>Usually between age 13 to 19.</notes>
+      <glossword word="teen" sense="young person" />
+      <glossword word="teenager" />
+      <keyword word="teenager" place="1" />
+</valsi>
 <valsi word="dekna'a" type="lujvo">
   <user>
     <username>ues</username>
@@ -38783,7 +38817,7 @@ ni&apos;o See also {ma&apos;o&apos;ei} (generalized {ci&apos;o&apos;ei} that att
   </user>
       <definition>$x_1$ is the time-duration/interval/period/[elapsed time] of event $x_2$.</definition>
       <definitionid>15153</definitionid>
-      <score>13</score>
+      <score>14</score>
       <notes>short rafsi is -dit-. Cf. {cedra}, {ranji}, {tcika}, {renvi}, {temci}, {canlu}, {kuspe}, {krafamtei}</notes>
       <glossword word="duration" sense="temporal" />
 </valsi>
@@ -42133,6 +42167,19 @@ ni&apos;o «{do&apos;e&apos;e}» is a contraction of «{do&apos;e&apos;e&apos;au
       <definitionid>1500</definitionid>
       <score>100000</score>
       <glossword word="d" />
+</valsi>
+<valsi word="dy.bu" type="bu-letteral">
+  <selmaho>BY*</selmaho>
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>letteral for ð (eth)</definition>
+      <definitionid>74285</definitionid>
+      <score>1</score>
+      <notes>See CLL 17.5 (https://lojban.github.io/cll/17/5/). Thorn (þ) is {ty.bu}. The glottal stop inside this word is mandatory (as in {y&apos;y.bu} &apos;aitch&apos;, {ky.bu} &apos;cue&apos; and {vy.bu} &apos;double-u&apos;).</notes>
+      <glossword word="ð" sense="Latin letter" />
+      <glossword word="eth" sense="Latin letter" />
 </valsi>
 <valsi word="dylez" type="cmevla">
   <user>
@@ -49991,7 +50038,7 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
   </user>
       <definition>$x_1$ is (a) philosophy/ideology (one sense) about/of/pertaining to topic/subfield (one sense) $x_2$ with subfield (different sense)/features/details/specifics/specific idea(s) $x_3$, with methodology $x_4$, followed/thought/considered by $x_5$ (thinker/philosopher/individual); philosophy $x_1$ is characterized by values/thoughts/opinions/ruminations $x_3$ about topic/subject $x_2$.</definition>
       <definitionid>56773</definitionid>
-      <score>3</score>
+      <score>4</score>
       <notes>May also include code of conduct, ethical protocol, mode of thought, life-musings, etc.. x5 need not be an ardent supporter of the philosophy, although a certain degree of substance might be implied by the connection of being a philosophy (rather than a passing thought or idea) thereof; x5 does not need to be professional. Proposed short rafsi: -les-. See also: {pijyske}, {filsofiia}, {filsofo}, {marde}, {lijda}, {saske}, {jinvi}, {sidbo}, {pensi}, {prije}, {djuno}, {krici}, {menli}, {jijnu}, {senpi}, {birti}.</notes>
       <glossword word="philosophy" />
 </valsi>
@@ -52891,7 +52938,7 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
     <username>Qimar</username>
     <realname>Sean S</realname>
   </user>
-      <definition>$x_1$ is a dresser/armoire/wardrobe/closet for storing $x_2$</definition>
+      <definition>$x_1$ is a dresser/armoire/wardrobe/closet (or any freestanding storage compartment) for storing $x_2$</definition>
       <definitionid>73892</definitionid>
       <score>1</score>
       <notes>see also {kajna} {vasru} {nilce}</notes>
@@ -52940,7 +52987,7 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
   </user>
       <definition> $k_1=g_3$ is a/are the whisker(s)/sensory hair(s) /vibrissa(e) attached to $k_2=g_1$ at body part $k_3$ for the detection of stimuli $g_2$ under conditions $g_4$.</definition>
       <definitionid>18427</definitionid>
-      <score>2</score>
+      <score>3</score>
       <notes>Cf. {ganse}, {kerfa}, {zbikre}, {runkre}.</notes>
       <glossword word="hair" sense="sensory" />
       <glossword word="vibrissa" />
@@ -53047,6 +53094,16 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
       <score>4</score>
       <notes>Use jai gastcica for objects; {ganse} {tcica}; {prugastcica}, {narprugastcica}.</notes>
       <glossword word="illusion" sense="mirage" />
+</valsi>
+<valsi word="gasyga'a" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$x_1$ is an antenna/antennae of creature $x_2$</definition>
+      <definitionid>74271</definitionid>
+      <score>2</score>
+      <notes>cf. {ganse} {grana}</notes>
 </valsi>
 <valsi word="gasyju'o" type="lujvo">
   <user>
@@ -56897,16 +56954,6 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
       <notes>Not necessarily negative; refers to any speech act meant to influence public opinion or behavior.</notes>
       <glossword word="propaganda" />
 </valsi>
-<valsi word="gudjrati" type="fu'ivla">
-  <user>
-    <username>phma</username>
-    <realname>Pierre Abbat</realname>
-  </user>
-      <definition>$x_1$ is Gujarati in aspect $x_2$</definition>
-      <definitionid>73149</definitionid>
-      <score>1</score>
-      <glossword word="Gujarati" sense="general" />
-</valsi>
 <valsi word="gu'e" type="cmavo">
   <selmaho>GUhA</selmaho>
   <user>
@@ -58651,6 +58698,15 @@ ni&apos;o Etymology: {fa} and {nu&apos;i}.</notes>
       <score>1</score>
       <notes>Cf. {gutra}, {pilka}, {cirko}.</notes>
       <glossword word="menstruate" />
+</valsi>
+<valsi word="gutrytunba" type="lujvo">
+  <user>
+    <username>Ilmen</username>
+    <realname>Ilmen</realname>
+  </user>
+      <definition>$x_1$ is a twin of $x_2$.</definition>
+      <definitionid>74275</definitionid>
+      <score>3</score>
 </valsi>
 <valsi word="gutyjamkarce" type="lujvo">
   <user>
@@ -62903,7 +62959,7 @@ ni&apos;o When the word is actually the same as the terminator: Rather than bein
   </user>
       <definition>attitudinal modifier: extra properly, primly, &quot;by the book&quot; - rushing things, half-assing.</definition>
       <definitionid>70995</definitionid>
-      <score>2</score>
+      <score>3</score>
       <notes>For example, &quot;mi setca jau&apos;i lo lante lo tanxe&quot; might be neatly placing it in, &quot;jau&apos;icu&apos;i&quot; is just dropping it normally, and &quot;jau&apos;inai&quot; is sorta apathetically tossing it in there. &quot;.a&apos;ijau&apos;i&quot; is careful effort, &quot;.a&apos;ijau&apos;inai&quot; is frantic/messy effort.</notes>
 </valsi>
 <valsi word="jaukpa" type="fu'ivla">
@@ -66451,7 +66507,7 @@ ni&apos;o When the word is actually the same as the terminator: Rather than bein
   </user>
       <definition>$j_1=j_2=n_1$ is a pretzel made from grains $n_2$.</definition>
       <definitionid>15338</definitionid>
-      <score>2</score>
+      <score>3</score>
       <glossword word="pretzel" sense="foodstuff" />
       <keyword word="pretzel" place="1" sense="foodstuff" />
       <keyword word="grain" place="2" />
@@ -69174,6 +69230,26 @@ ni&apos;o When the word is actually the same as the terminator: Rather than bein
       <score>1</score>
       <glossword word="ankle" />
 </valsi>
+<valsi word="jmadakli" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$d_1$ is a footbag/hacky sack with contents $d_2$ and of material $d_3$</definition>
+      <definitionid>74277</definitionid>
+      <score>2</score>
+      <notes>cf. {jamfu} {dakli}</notes>
+</valsi>
+<valsi word="jmadaklyjvi" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$j_1$ plays a game of footbag/hacky sack against $j_2$ in competition $j_3$ for gain/prize $j_4$</definition>
+      <definitionid>74278</definitionid>
+      <score>2</score>
+      <notes>cf. {jamfu} {dakli} {jivna}</notes>
+</valsi>
 <valsi word="jmadegji" type="lujvo">
   <user>
     <username>totus</username>
@@ -69998,7 +70074,7 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
   </user>
       <definition>$x_1$ makes $x_2$ pay attention to $x_3$; $x_1$ directs $x_2$&apos;s attention to $x_3$.</definition>
       <definitionid>13221</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="direct attention" />
 </valsi>
 <valsi word="judri" type="gismu">
@@ -72481,7 +72557,7 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
   </user>
       <definition>$x_1$ is caffeine with chemical purity $x_2$</definition>
       <definitionid>16047</definitionid>
-      <score>2</score>
+      <score>3</score>
       <glossword word="caffeine" />
 </valsi>
 <valsi word="kafxumvi'u" type="lujvo">
@@ -73786,16 +73862,6 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
       <notes>See also: {kamre}, {namcrgogolo}</notes>
       <glossword word="googol" />
 </valsi>
-<valsi unofficial="true" word="kamro" type="experimental gismu">
-  <user>
-    <username>lakanro</username>
-    <realname>Wang Jian</realname>
-  </user>
-      <definition>*$moved to {karmo}$*</definition>
-      <definitionid>70010</definitionid>
-      <score>1</score>
-      <notes>don&apos;t use this word</notes>
-</valsi>
 <valsi word="kamtatpi" type="lujvo">
   <user>
     <username>arj</username>
@@ -74471,9 +74537,9 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
     <username>sarefo</username>
     <realname>sarefo</realname>
   </user>
-      <definition>$s_1=k_1$ is sickly/appears healthy to observer $s_3$ by standard $k_2$.</definition>
+      <definition>$s_1=k_1$ appears healthy to observer $s_3$ by standard $k_2$.</definition>
       <definitionid>17562</definitionid>
-      <score>1</score>
+      <score>4</score>
       <notes>Cf. {bi&apos;amlu}.</notes>
       <glossword word="healthy looking" />
 </valsi>
@@ -75203,7 +75269,7 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
   </user>
       <definition>$x_1$ is a katakana (Japanese syllabary) of sound $x_2$.</definition>
       <definitionid>17311</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>Cf. {lerfu}.</notes>
       <glossword word="katakana" />
 </valsi>
@@ -77152,6 +77218,17 @@ ni&apos;o Synonym: {sei&apos;e}.</notes>
       <score>1</score>
       <notes>Cf. {kibro}, {papri}, {kibyca&apos;o}.</notes>
       <glossword word="web page" />
+</valsi>
+<valsi word="kibypedli'u" type="lujvo">
+  <user>
+    <username>latkerlo</username>
+    <realname>latkerlo</realname>
+  </user>
+      <definition>$x_1$ travels with friends that they made on the internet. $x_1$ travels via route $x_2$ using means/vehicle $x_3$, in the company of internet friend(s) $x_4$.</definition>
+      <definitionid>74295</definitionid>
+      <score>1</score>
+      <notes>See {kibro}, {pendo}, {litru}.</notes>
+      <glossword word="travel with internet friends" />
 </valsi>
 <valsi word="kibypidyfi'a" type="lujvo">
   <user>
@@ -80445,6 +80522,16 @@ ni&apos;o See also: {semai&apos;ai}, {le&apos;oi}, {sedu&apos;i}, {sela&apos;u}.
       <score>1</score>
       <glossword word="Kosova" />
       <glossword word="Kosovo" />
+</valsi>
+<valsi word="kortilo" type="fu'ivla">
+  <user>
+    <username>phma</username>
+    <realname>Pierre Abbat</realname>
+  </user>
+      <definition>$x_1$ is a wren of genus/species $x_2$</definition>
+      <definitionid>74287</definitionid>
+      <score>1</score>
+      <keyword word="wren" place="1" />
 </valsi>
 <valsi unofficial="true" word="korvo" type="experimental gismu">
   <user>
@@ -87356,7 +87443,7 @@ ni&apos;o Example without modal: «lo terle&apos;o be le spofu toknu bei loka na
       <definition>$x_1$ practices, trains its ability $x_2$ (property of $x_1$)</definition>
       <definitionid>70647</definitionid>
       <score>3</score>
-      <notes>Use &apos;$x_2$ {ne} {se} {ta&apos;i}&apos; to specify the method of practise. See also {crezenzu&apos;e}, {kakne}, {cilre}, {atlete}.</notes>
+      <notes>Use &apos;$x_2$ {ne} {se} {ta&apos;i}&apos; to specify the method of practise. See also {crezenzu&apos;e}, {kakne}, {cilre}, {atlete}. Etymology: from Mandarin 練習 liànxí.</notes>
 </valsi>
 <valsi word="li'ante" type="fu'ivla">
   <user>
@@ -87852,7 +87939,7 @@ ni&apos;o Example without modal: «lo terle&apos;o be le spofu toknu bei loka na
   </user>
       <definition>$x_1=r_1=l_1$ is a quantity of lava/magma [liquid rock] of composition including $x_2=r_2=l_2$ from location $x_3=r_3$ under conditions $x_4=l_3$.</definition>
       <definitionid>63589</definitionid>
-      <score>2</score>
+      <score>3</score>
       <notes>No distinction on whether it has erupted yet.</notes>
       <glossword word="lava or magma" />
       <glossword word="liquid rock" />
@@ -87932,7 +88019,7 @@ ni&apos;o Example without modal: «lo terle&apos;o be le spofu toknu bei loka na
   </user>
       <definition>$m_1=l_1$ is a quantity of firewood/fuel wood from tree(s) of type/species $m_2$, for powering $l_2$.</definition>
       <definitionid>38246</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="firewood" />
       <glossword word="fuel wood" />
 </valsi>
@@ -88063,7 +88150,7 @@ ni&apos;o Example without modal: «lo terle&apos;o be le spofu toknu bei loka na
   </user>
       <definition>$k_1$ is a chainsaw cutting/splitting/dividing $k_2$ into pieces $k_3$</definition>
       <definitionid>73366</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>{linsi} + {carka&apos;a}</notes>
       <glossword word="chainsaw" />
 </valsi>
@@ -91691,7 +91778,7 @@ ni&apos;o Example without modal: «lo terle&apos;o be le spofu toknu bei loka na
   </user>
       <definition>$x_1$ is unwelcome by $x_2$ to place/event $x_3$.</definition>
       <definitionid>14230</definitionid>
-      <score>3</score>
+      <score>4</score>
       <notes>See also {fi&apos;inai}; {zanvi&apos;e}</notes>
       <glossword word="unwelcome" />
 </valsi>
@@ -92407,7 +92494,7 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>$b_1$ is a brim of hat $m_1=b_2$</definition>
       <definitionid>72130</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="brim" sense="projecting edge around the bottom of a hat" />
       <keyword word="brim" place="1" sense="projecting edge around the bottom of a hat" />
       <keyword word="brimmed hat" place="2" />
@@ -93865,6 +93952,18 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
       <definition>$x_1$ is a little lesser than $x_2$ in dimension $x_3$; $x_1$ is almost as $x_3$ as $x_2$ is</definition>
       <definitionid>70347</definitionid>
       <score>2</score>
+</valsi>
+<valsi word="me'amfetamina" type="fu'ivla">
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>$x_1$ is (a quantity of) methamphetamines/meth</definition>
+      <definitionid>74286</definitionid>
+      <score>1</score>
+      <notes>Transcribed based on the alternative pronunciation of the aspirate as a dental fricative. Alternatively, this could be {metmfetamina}, and/or the -mf- could be -nf-.</notes>
+      <glossword word="meth" />
+      <glossword word="methamphetamine" />
 </valsi>
 <valsi word="me'andi" type="fu'ivla">
   <user>
@@ -96435,6 +96534,18 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
       <notes>Also machinery/mechanism; a machine is initiated/triggered by an agent/force, but thereafter performs its function automatically; if self-directed, (a minji is an) entity (= {zukte}).  See also {cabra}, {matra}, {tutci}, {zukte}, {pilno}, {skami}.</notes>
       <glossword word="machine" />
 </valsi>
+<valsi word="minle'u" type="lujvo">
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>$x_1$ is an accent mark/diacritic on letter/symbol $x_2$ representing $x_3$</definition>
+      <definitionid>74270</definitionid>
+      <score>3</score>
+      <notes>Calque of Esperanto kromsigno &apos;besides-sign&apos;. &quot;Diacritic&quot; here includes not only what you would typically think of as accent marks, but also Arabic harakat, Hebrew niqqud, Japanese dakuten, etc.</notes>
+      <glossword word="accent mark" />
+      <glossword word="diacritic" />
+</valsi>
 <valsi word="minli" type="gismu">
   <user>
     <username>officialdata</username>
@@ -97260,7 +97371,7 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>$m1$ is alive after being dead/ceasing to be alive; m1 is a zombie.</definition>
       <definitionid>57404</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="zombie" sense="living dead" />
 </valsi>
 <valsi word="mivmu'e" type="lujvo">
@@ -98334,7 +98445,8 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>mark motions in space-time.</definition>
       <definitionid>1818</definitionid>
-      <score>100000</score>
+      <score>100001</score>
+      <notes>Attached before a location preposition, this gives it the meaning of movement. mo&apos;i {ti&apos;a} {plipe} is to jump backwards, while just ti&apos;a plipe is to jump behind (so not backwards, just at some place that is &quot;behind&quot;).</notes>
       <glossword word="space motion" />
 </valsi>
 <valsi word="moi" type="cmavo">
@@ -99086,7 +99198,7 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>$x_1$ is a harmonica/chromonica made of $x_2$</definition>
       <definitionid>73665</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>see also {xarmonika}</notes>
       <glossword word="harmonica" sense="aerophone instrument" />
 </valsi>
@@ -109259,7 +109371,7 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>$x_1$ is a pheromone signifying property $x_2$ produced by $x_3$.</definition>
       <definitionid>74261</definitionid>
-      <score>2</score>
+      <score>3</score>
 </valsi>
 <valsi word="notsku" type="lujvo">
   <user>
@@ -112097,7 +112209,7 @@ ni&apos;o Example: «.i .ui ma&apos;o&apos;ei xajmi mi se snuti .i .u&apos;i».<
   </user>
       <definition>$x_1$ is sad about $x_2$ (event), which has occured contrary to their hopes.</definition>
       <definitionid>72523</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>Disappointed, let down, crestfallen.</notes>
 </valsi>
 <valsi unofficial="true" word="pa'ai" type="experimental cmavo">
@@ -120721,7 +120833,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$x_1$ emits random syllables $x_2$ and hopes that $x_3$ interprets them as meaningful, instead of the bullshit they actually are</definition>
       <definitionid>68542</definitionid>
-      <score>2</score>
+      <score>1</score>
       <notes>See {pe&apos;a}, {bebna}, {metfo}, {pevna}, {sidysmu}</notes>
       <glossword word="postmodern spoken bullshit" />
 </valsi>
@@ -121908,7 +122020,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$x_1$ itches at locus $x_2$</definition>
       <definitionid>57052</definitionid>
-      <score>3</score>
+      <score>4</score>
       <notes>See also: {rakcro}</notes>
       <glossword word="itch" />
 </valsi>
@@ -129330,6 +129442,18 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
       <glossword word="mental" sense="psychic" />
       <glossword word="psychic" sense="mental" />
 </valsi>
+<valsi word="roflma'o" type="fu'ivla">
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>$x_1$ is a ridiculous (useless, etc) cmavo of selma&apos;o $x_2$ by standard $x_3$</definition>
+      <definitionid>74266</definitionid>
+      <score>3</score>
+      <notes>The cmavo doesn&apos;t have to be experimental. I&apos;m still mad they wasted monosyllabic cmavo space on a bunch of letteral stuff. Ex.: zo «tei» je zo «foi» cu roflma&apos;o fi mi. Etymology: English ROFL + -ma&apos;o- (rafsi of {cmavo}).</notes>
+      <glossword word="ridiculous cmavo" />
+      <glossword word="useless cmavo" />
+</valsi>
 <valsi word="rogjinme" type="lujvo">
   <user>
     <username>lakanro</username>
@@ -136356,19 +136480,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="selbancu" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_2=b_1$ exceeds/is beyond limit/boundary $x_1=b_2$ from $x_3=b_3$ in property/amount $x_4=b_4$ (ka/ni).</definition>
-      <definitionid>14666</definitionid>
-      <score>1</score>
-      <notes>{se} {bancu}; see also {korbi}, {jimte}</notes>
-      <glossword word="boundary" sense="something is beyond it" />
-      <glossword word="bound beyond which" />
-      <keyword word="boundary" place="1" sense="something is beyond it" />
-      <keyword word="beyond" place="2" sense="past boundary or exceeding limit" />
-      <keyword word="reference for beyond" place="3" />
-      <keyword word="beyondness property" place="4" />
+      <definition>$x_1$ is the limit/boundary that $x_2$ exceeds from $x_3$ in property/amount $x_4$ (ka/ni).</definition>
+      <definitionid>74290</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="selbandu" type="lujvo">
   <user>
@@ -136467,6 +136584,15 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
       <keyword word="has outside" place="1" />
       <keyword word="outside" place="2" />
 </valsi>
+<valsi word="selbasna" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$x_1$ is emphasized/accentuated by $x_2$ with (action) $x_3$.</definition>
+      <definitionid>74282</definitionid>
+      <score>2</score>
+</valsi>
 <valsi word="selbasti" type="lujvo">
   <user>
     <username>brtais</username>
@@ -136547,6 +136673,15 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
       <glossword word="Malay-Ind aspect" />
       <keyword word="Malay-Ind aspect" place="1" />
       <keyword word="Malay-Indonesian" place="2" />
+</valsi>
+<valsi word="selbebna" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$x_1=b_2$ event/action/property (ka) is foolishness/folly done by fool $x_2=b_1$</definition>
+      <definitionid>74272</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="selbei" type="lujvo">
   <user>
@@ -136641,16 +136776,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="selbetri" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_2=b_1$ is a tragedy/disaster/tragic for $x_1=b_2$.</definition>
-      <definitionid>14758</definitionid>
-      <score>1</score>
-      <notes>{se} {betri}</notes>
-      <glossword word="finds tragic" />
-      <keyword word="finds tragic" place="1" />
-      <keyword word="tragedy" place="2" />
+      <definition>$x_1$ finds tragic/disastrous $x_2$ (tragedy)</definition>
+      <definitionid>74279</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="selbe'u" type="lujvo">
   <user>
@@ -136681,16 +136812,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="selbidju" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_2=b_1$ is a bead/pebble (shape/form) of material $x_1=b_2$.</definition>
-      <definitionid>14765</definitionid>
-      <score>1</score>
-      <notes>{se} {bidju}</notes>
-      <glossword word="bead material" />
-      <keyword word="bead material" place="1" />
-      <keyword word="bead" place="2" />
+      <definition>$x_1$ is a bead material of bead/pebble $x_2$</definition>
+      <definitionid>74274</definitionid>
+      <score>3</score>
 </valsi>
 <valsi word="selbi'e" type="lujvo">
   <user>
@@ -137289,15 +137416,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="selcanja" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_2=c_1$ exchanges/trades/barters commodity $x_1=c_2$ for $x_3=c_3$ with $x_4=c_4$.</definition>
-      <definitionid>15148</definitionid>
-      <score>1</score>
-      <notes>{se} {canja}</notes>
-      <glossword word="exchanged" />
-      <keyword word="exchanged" place="1" />
+      <definition>$x_2$ is a commodity, exchanged by $x_1$ for another commodity $x_3$ with client/exchangee $x_4$</definition>
+      <definitionid>74267</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="selcanre" type="lujvo">
   <user>
@@ -140064,7 +140188,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$m_1=t_2$ is fearsome/terrifying/horrifying to t1</definition>
       <definitionid>16535</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>Cf. {terpa}, {mutce}, {selte&apos;a}, {terpygau}.</notes>
       <glossword word="fearsome" />
       <glossword word="horrifying" />
@@ -143495,7 +143619,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$x_1$ is sesame of species/variety $x_2$.</definition>
       <definitionid>15923</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>syn. {xonxoli}, {jerjelino}</notes>
       <glossword word="sesame" />
 </valsi>
@@ -144626,18 +144750,6 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
       <notes>from {saske} {zukte} c.f. {mi&apos;ircikre}</notes>
       <glossword word="engineer" sense="uses science to solve practical problems" />
 </valsi>
-<valsi unofficial="true" word="skibo" type="experimental gismu">
-  <user>
-    <username>mati</username>
-    <realname>mati</realname>
-  </user>
-      <definition>$x_1$ reflects Generation Alpha/skibidi culture in aspect $x_2$</definition>
-      <definitionid>74262</definitionid>
-      <score>1</score>
-      <notes>From &quot;skibidi&quot;.</notes>
-      <glossword word="Gen Alpha" />
-      <glossword word="skibidi" />
-</valsi>
 <valsi word="skicu" type="gismu">
   <rafsi>ski</rafsi>
   <user>
@@ -145010,7 +145122,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$x_1$ says $x_3$, then $x_2$ says $x_4$, then $x_1$ says $x_5$, then $x_2$ says $x_6$, ...</definition>
       <definitionid>71724</definitionid>
-      <score>2</score>
+      <score>1</score>
       <notes>Like {alcu}, useful for dialogues. See also {cusku}, {skuna}, {alcu}, {tcuskuue}.</notes>
 </valsi>
 <valsi unofficial="true" word="skunkua" type="obsolete fu'ivla">
@@ -154204,18 +154316,6 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
       <score>1</score>
       <glossword word="power set" />
 </valsi>
-<valsi unofficial="true" word="stepmania" type="obsolete fu'ivla">
-  <user>
-    <username>djeikyb</username>
-    <realname>Jacob Thomas Errington</realname>
-  </user>
-      <definition>$x_1$ is Stepmania</definition>
-      <definitionid>20298</definitionid>
-      <score>1</score>
-      <notes>Stepmania, the &quot;Dance Dance Revolution&quot;-style game for Windows/Mac/Linux.</notes>
-      <glossword word="stepmania" sense="the game" />
-      <keyword word="stepmania" place="1" sense="the game" />
-</valsi>
 <valsi word="stero" type="gismu">
   <rafsi>te&apos;o</rafsi>
   <user>
@@ -157633,7 +157733,7 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
   </user>
       <definition>$x_0$: That&apos;s life / There ain&apos;t no justice / It sucks, but what are you gonna do? (nullary predicate)</definition>
       <definitionid>68389</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>Etymology: Combination of TANJ (&quot;There Ain&apos;t No Justice&quot;) with &quot;C&apos;est la vie.&quot;</notes>
       <glossword word="There ain&apos;t no justice" />
 </valsi>
@@ -161867,18 +161967,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="terbancu" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_3=b_1$ exceeds/is beyond limit/boundary $x_2=b_2$ from $x_1=b_3$ in property/amount $x_4=b_4$ (ka/ni).</definition>
-      <definitionid>14665</definitionid>
-      <score>1</score>
-      <notes>{te} {bancu}</notes>
-      <glossword word="reference for beyond" />
-      <keyword word="reference for beyond" place="1" />
-      <keyword word="boundary" place="2" sense="something is beyond it" />
-      <keyword word="beyond" place="3" sense="past boundary or exceeding limit" />
-      <keyword word="beyondness property" place="4" />
+      <definition>$x_1$ is the reference point from the boundary $x_2$ that $x_3$ has exceeded/surpassed in property/amount $x_4$ (ka/ni).</definition>
+      <definitionid>74291</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="terbandu" type="lujvo">
   <user>
@@ -161952,17 +162046,12 @@ ni&apos;o Synonym: {vajli&apos;epoi}.</notes>
 </valsi>
 <valsi word="terbasna" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_3=b_1$ emphasizes/accentuates/gives emphasis/stress/accent to $x_2=b_2$ by (action) $x_1=b_3$.</definition>
-      <definitionid>14716</definitionid>
-      <score>1</score>
-      <notes>{te} {basna}</notes>
-      <glossword word="emphasis" />
-      <keyword word="emphasis" place="1" />
-      <keyword word="stressed" place="2" />
-      <keyword word="emphasis giver" place="3" />
+      <definition>$x_1$ is the action by which $x_2$ is emphasized/accentuated by $x_3$</definition>
+      <definitionid>74283</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="terbasti" type="lujvo">
   <user>
@@ -162525,15 +162614,12 @@ ni&apos;o «{do&apos;e&apos;e}» is a contraction of «{do&apos;e&apos;e&apos;au
 </valsi>
 <valsi word="tercanja" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_3=c_1$ exchanges/trades/barters commodity $x_2=c_2$ for $x_1=c_3$ with $x_4=c_4$.</definition>
-      <definitionid>15147</definitionid>
-      <score>1</score>
-      <notes>{te} {canja}</notes>
-      <glossword word="exchanged for" />
-      <keyword word="exchanged for" place="1" />
+      <definition>$x_3$ is the commodity received in exchange for $x_2$ by trader/exchanger $x_1$ with client/exchangee $x_4$</definition>
+      <definitionid>74268</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="tercanre" type="lujvo">
   <user>
@@ -163327,7 +163413,7 @@ ni&apos;o «{do&apos;e&apos;e}» is a contraction of «{do&apos;e&apos;e&apos;au
   </user>
       <definition>$n_3$ notifies / reports about $n_2$ in message $n_1$ to audience $n_4$.</definition>
       <definitionid>17340</definitionid>
-      <score>1</score>
+      <score>2</score>
       <notes>Cf. {notci}.</notes>
       <glossword word="notify" sense="give notice" />
       <glossword word="report" sense="notify" />
@@ -171253,6 +171339,18 @@ ni&apos;o Synonym: {fu&apos;o}.</notes>
       <notes>Capital of the modern nation of Georgia ({sakartyvelos}, {sakartulos} or {gugdegu&apos;e}). See also {kartuli}.</notes>
       <glossword word="Tbilisi" sense="Georgian city" />
 </valsi>
+<valsi word="ty.bu" type="bu-letteral">
+  <selmaho>BY*</selmaho>
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>letteral for þ (thorn)</definition>
+      <definitionid>74284</definitionid>
+      <score>1</score>
+      <notes>See CLL 17.5 (https://lojban.github.io/cll/17/5/). Eth (ð) is {dy.bu}.</notes>
+      <glossword word="thorn" sense="Icelandic/old Germanic letter" />
+</valsi>
 <valsi word="tylidos" type="cmevla">
   <user>
     <username>krtisfranks</username>
@@ -173714,6 +173812,17 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
       <glossword word="least significant first" sense="endianness" />
       <glossword word="little-endian" sense="endianness" />
 </valsi>
+<valsi word="valcrimtu" type="fu'ivla">
+  <user>
+    <username>mati</username>
+    <realname>mati</realname>
+  </user>
+      <definition>$x_1$ is unnecessary Lojban jargon for natural-language equivalent term $x_2$</definition>
+      <definitionid>74263</definitionid>
+      <score>1</score>
+      <notes>Ex.: zo&apos;oi «modal» valcrimtu zo&apos;oi «preposition». &quot;Modal&quot; or {sumtcita} instead of &quot;preposition&quot;, {selbri} instead of &quot;main verb&quot; and so on. Refers to using Lojban jargon for discussing grammar when there&apos;s perfectly good English words that mean the same and aren&apos;t as opaque.</notes>
+      <glossword word="unnecessary Lojban jargon" />
+</valsi>
 <valsi word="valkra" type="lujvo">
   <user>
     <username>selpahi</username>
@@ -173723,6 +173832,26 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
       <definitionid>67875</definitionid>
       <score>1</score>
       <glossword word="etymology" />
+</valsi>
+<valsi word="valrfa'a" type="fu'ivla">
+  <user>
+    <username>merrybot</username>
+    <realname>evie</realname>
+  </user>
+      <definition>$x_1$ is jargon for $x_2$, which is already jargon</definition>
+      <definitionid>74265</definitionid>
+      <score>1</score>
+      <notes>&quot;spatial tenses&quot; for &quot;prepositions&quot;</notes>
+</valsi>
+<valsi word="valrmodla" type="fu'ivla">
+  <user>
+    <username>merrybot</username>
+    <realname>evie</realname>
+  </user>
+      <definition>$x_1$ is jargon intended to mean $x_2$, but that&apos;s actually a completely different thing</definition>
+      <definitionid>74264</definitionid>
+      <score>2</score>
+      <notes>eg how Lojban calls prepositions &quot;modals&quot;, but modals are actually conditionals. zo&apos;oi modal zo&apos;oi preposition valrmodla</notes>
 </valsi>
 <valsi word="valrtosmabru" type="fu'ivla">
   <user>
@@ -175126,18 +175255,12 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
 </valsi>
 <valsi word="velbancu" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_4=b_1$ exceeds/is beyond limit/boundary $x_2=b_2$ from $x_3=b_3$ in property/amount $x_1=b_4$ (ka/ni).</definition>
-      <definitionid>14664</definitionid>
-      <score>1</score>
-      <notes>{ve} {bancu}</notes>
-      <glossword word="beyondness property" />
-      <keyword word="beyondness property" place="1" />
-      <keyword word="boundary" place="2" sense="something is beyond it" />
-      <keyword word="reference for beyond" place="3" />
-      <keyword word="beyond" place="4" sense="past boundary or exceeding limit" />
+      <definition>$x_1$ (ka/ni) is the amount/property of beyondness of limit/boundary $x_2$ from $x_3$ that $x_4$ has exceeded/is beyond</definition>
+      <definitionid>74292</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="velbatci" type="lujvo">
   <user>
@@ -175242,15 +175365,12 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
 </valsi>
 <valsi word="velcanja" type="lujvo">
   <user>
-    <username>brtais</username>
-    <realname>Robert Heiss</realname>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
   </user>
-      <definition>$x_4=c_1$ exchanges/trades/barters commodity $x_2=c_2$ for $x_3=c_3$ with $x_1=c_4$.</definition>
-      <definitionid>15146</definitionid>
-      <score>1</score>
-      <notes>{ve} {canja}</notes>
-      <glossword word="exchanged with" />
-      <keyword word="exchanged with" place="1" />
+      <definition>$x_4$ is a client/exchangee of received commodity $x_2$ for $x_3$ by trader/exchanger $x_1$</definition>
+      <definitionid>74269</definitionid>
+      <score>2</score>
 </valsi>
 <valsi word="velcki" type="lujvo">
   <user>
@@ -176799,6 +176919,16 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
       <definitionid>32319</definitionid>
       <score>1</score>
       <glossword word="dash" sense="move violently" />
+</valsi>
+<valsi word="vilselte'azu'e" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$z_1$ is a terrorist/commits act of terrorism $z_2$ for purpose/goal $z_3$</definition>
+      <definitionid>74280</definitionid>
+      <score>2</score>
+      <notes>cf. {vlile} {selte&apos;a} {zukte}</notes>
 </valsi>
 <valsi word="vilsi'e" type="lujvo">
   <user>
@@ -180572,7 +180702,7 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
   </user>
       <definition>$x_1=c_1$ gestures / gesticulates / non-verbally expresses / says $x_2=c_2$ to audience $x_3=c_3$ through body $x_4=c_4=xa_1$ of $x_5=xa_2$.</definition>
       <definitionid>74012</definitionid>
-      <score>1</score>
+      <score>2</score>
       <glossword word="gesticulate" sense="gesture" />
       <glossword word="gesture" sense="non-verbal speech" />
 </valsi>
@@ -180690,7 +180820,7 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
   </user>
       <definition>$x_1$ is a bow-wow, doggie, a home kept barking animal of species $x_2$</definition>
       <definitionid>64899</definitionid>
-      <score>2</score>
+      <score>3</score>
       <notes>See also {gerku}, {dalpe&apos;o}, {dirba}</notes>
       <glossword word="barking home animal" />
       <glossword word="doggie" />
@@ -181653,6 +181783,16 @@ ni&apos;o See also: {vajli&apos;epoitau} (big-endian tanru), {co&apos;e&apos;i&a
       <score>3</score>
       <notes>from {xance} + {jdini}</notes>
       <glossword word="cash" />
+</valsi>
+<valsi word="xanfirfra" type="lujvo">
+  <user>
+    <username>Qimar</username>
+    <realname>Sean S</realname>
+  </user>
+      <definition>$x_1$ facepalms in reaction to $x_2$</definition>
+      <definitionid>74281</definitionid>
+      <score>2</score>
+      <notes>cf. {xance} {flira} {frati}</notes>
 </valsi>
 <valsi word="xangle" type="lujvo">
   <user>
@@ -193620,9 +193760,7 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
       <keyword word="voiced alveolar sibilant fricative sound" place="1" />
       <keyword word="speech-sound producer" place="2" />
 </valsi>
-</direction>
-<direction from="English" to="lojban">
-<nlword word="and/or" sense="inclusive or" valsi="a" />
+</direction><direction from="English" to="lojban"><nlword word="and/or" sense="inclusive or" valsi="a" />
 <nlword word="or" sense="inclusive or" valsi="a" />
 <nlword word="sumti or" valsi="a" />
 <nlword word="attentive" valsi="a&apos;a" />
@@ -194815,6 +194953,10 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="tack-and-drag ordered interval" valsi="bi&apos;oi" />
 <nlword word="interval-from-number determined by lesser endpoint" valsi="bi&apos;oi&apos;au" />
 <nlword word="birch" valsi="biorka" />
+<nlword word="clean shaven face" valsi="birco" />
+<nlword word="clean shaven face apart from moustache" valsi="birco" />
+<nlword word="clean shaven person" valsi="birco" />
+<nlword word="clean shaven person apart from moustache" valsi="birco" />
 <nlword word="brachiate" valsi="birdadykla" />
 <nlword word="bracelet" sense="jewelry" valsi="birja&apos;i" place="1" />
 <nlword word="hug, embrace" valsi="birjai" />
@@ -197695,6 +197837,8 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="bet" sense="wager" valsi="dejru&apos;a" />
 <nlword word="wager" sense="bet" valsi="dejru&apos;a" />
 <nlword word="interest" sense="charge on loan" valsi="dejyterze&apos;a" place="1" />
+<nlword word="teen" sense="young person" valsi="dekci&apos;o" />
+<nlword word="teenager" valsi="dekci&apos;o" place="1" />
 <nlword word="Decade" sense="Ten years" valsi="dekna&apos;a" />
 <nlword word="ångström" valsi="deknavytre" />
 <nlword word="to each their own" valsi="dekpredekpu&apos;a" />
@@ -198329,6 +198473,8 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="proposition" sense="statement with truth value" valsi="du&apos;umdu" />
 <nlword word="indirect question" sense="abstraction" valsi="du&apos;umrei" />
 <nlword word="d" valsi="dy" />
+<nlword word="ð" sense="Latin letter" valsi="dy.bu" />
+<nlword word="eth" sense="Latin letter" valsi="dy.bu" />
 <nlword word="Deleuze" sense="philosopher" valsi="dylez" />
 <nlword word="Gilles Deleuze" sense="philosopher" valsi="dylez" />
 <nlword word="counting quantification" valsi="dzadza" />
@@ -200053,7 +200199,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="make public" valsi="gubyternoi" />
 <nlword word="publicise" valsi="gubyternoi" />
 <nlword word="propaganda" valsi="gubyxluselsku" />
-<nlword word="Gujarati" sense="general" valsi="gudjrati" />
 <nlword word="fore tanru and" valsi="gu&apos;e" />
 <nlword word="Always True" sense="Logical Connective" valsi="gu&apos;e&apos;u&apos;a" />
 <nlword word="country defense" valsi="gugbandu" />
@@ -202219,6 +202364,7 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="profile picture" valsi="kibyka&apos;ixra" />
 <nlword word="blog" sense="internet term" valsi="kibykarni" place="1" />
 <nlword word="web page" valsi="kibypapri" />
+<nlword word="travel with internet friends" valsi="kibypedli&apos;u" />
 <nlword word="cyberpunk" sense="culture" valsi="kibypidyfi&apos;a" />
 <nlword word="theme" sense="fiction" valsi="kibypidyfi&apos;a" place="2" />
 <nlword word="client" sense="Internet" valsi="kibyse&apos;u" place="2" />
@@ -202518,6 +202664,7 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="cortex" sense="outermost layer" valsi="korsenta" />
 <nlword word="Kosova" valsi="korsova" />
 <nlword word="Kosovo" valsi="korsova" />
+<nlword word="wren" valsi="kortilo" place="1" />
 <nlword word="crow" valsi="korvo" />
 <nlword word="raven" valsi="korvo" />
 <nlword word="corzetti" valsi="korzeti" place="1" />
@@ -204110,6 +204257,8 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="sumti to selbri" valsi="me" />
 <nlword word="undercut by" valsi="me&apos;a" />
 <nlword word="weaker emotion" valsi="me&apos;ai" />
+<nlword word="meth" valsi="me&apos;amfetamina" />
+<nlword word="methamphetamine" valsi="me&apos;amfetamina" />
 <nlword word="henna" valsi="me&apos;andi" />
 <nlword word="temple" sense="side of forehead" valsi="mebmla" />
 <nlword word="brow" valsi="mebri" />
@@ -204416,6 +204565,8 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="ROC" valsi="minguuo" />
 <nlword word="The Republic of China" valsi="minguuo" />
 <nlword word="machine" valsi="minji" />
+<nlword word="accent mark" valsi="minle&apos;u" />
+<nlword word="diacritic" valsi="minle&apos;u" />
 <nlword word="mile" valsi="minli" />
 <nlword word="reflect" valsi="minra" />
 <nlword word="Mirad" valsi="minrado" place="1" />
@@ -208320,6 +208471,9 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="intellectual" sense="psychic" valsi="ro&apos;enje" />
 <nlword word="mental" sense="psychic" valsi="ro&apos;enje" />
 <nlword word="psychic" sense="mental" valsi="ro&apos;enje" />
+<nlword word="laughable cmavo" valsi="roflma&apos;o" />
+<nlword word="ridiculous cmavo" valsi="roflma&apos;o" />
+<nlword word="useless cmavo" valsi="roflma&apos;o" />
 <nlword word="emotional" valsi="ro&apos;i" />
 <nlword word="quantified tense" valsi="roi" />
 <nlword word="denying emotion" valsi="ro&apos;inai" />
@@ -209144,7 +209298,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="service" valsi="selbaise&apos;u" place="3" />
 <nlword word="bundled" valsi="selbakfu" />
 <nlword word="plant with bulb" valsi="selbalji" />
-<nlword word="bound beyond which" valsi="selbancu" />
 <nlword word="banking system" sense="conglomerate of banks" valsi="selbanxa" />
 <nlword word="slave" sense="forced servant" valsi="selbapselfu" />
 <nlword word="cellular phone" valsi="selbeifonxa" />
@@ -209172,7 +209325,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="shell-covered" valsi="selcalku" place="1" />
 <nlword word="disappearance location" valsi="selcanci" place="1" />
 <nlword word="farm site" valsi="selcange" place="1" />
-<nlword word="exchanged" valsi="selcanja" place="1" />
 <nlword word="sand source" valsi="selcanre" place="1" />
 <nlword word="occupant" sense="space region" valsi="selca&apos;u" place="1" />
 <nlword word="occupy" sense="space region" valsi="selca&apos;u" />
@@ -210103,8 +210255,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="lab" sense="workplace for the conduct of scientific research" valsi="skestu" />
 <nlword word="laboratory" sense="workplace for the conduct of scientific research" valsi="skestu" place="1" />
 <nlword word="engineer" sense="uses science to solve practical problems" valsi="skezu&apos;e" />
-<nlword word="Gen Alpha" valsi="skibo" />
-<nlword word="skibidi" valsi="skibo" />
 <nlword word="describe" valsi="skicu" />
 <nlword word="tooltip" sense="graphical user interface element" valsi="skicu zei uidje" place="1" />
 <nlword word="annotation" sense="describing data" valsi="skidatni" place="2" />
@@ -211305,7 +211455,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="lock" valsi="stela" />
 <nlword word="list" sense="nil" valsi="stenili" />
 <nlword word="power set" valsi="stepau" />
-<nlword word="stepmania" sense="the game" valsi="stepmania" place="1" />
 <nlword word="steradian" valsi="stero" />
 <nlword word="west" valsi="stici" />
 <nlword word="western" sense="pertaining to the west" valsi="stici" />
@@ -212178,7 +212327,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="disappearance sensor" valsi="tercanci" place="1" />
 <nlword word="farm location" valsi="tercange" place="2" />
 <nlword word="rancher" valsi="tercange" place="1" />
-<nlword word="exchanged for" valsi="tercanja" place="1" />
 <nlword word="sand composition" valsi="tercanre" place="1" />
 <nlword word="gun powder" valsi="tercelpu&apos;o" place="1" />
 <nlword word="ridiculous" valsi="terckasu" />
@@ -213313,6 +213461,7 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="Welsh onion" sense="Allium fistulosum" valsi="tu&apos;ursluni" />
 <nlword word="t" valsi="ty" />
 <nlword word="Tbilisi" sense="Georgian city" valsi="tyBIlisis" />
+<nlword word="thorn" sense="Icelandic/old Germanic letter" valsi="ty.bu" />
 <nlword word="Toledo" sense="city in Ohio, U.S.A." valsi="tylidos" />
 <nlword word="Toronto" valsi="tyrontos" />
 <nlword word="sumti whether" valsi="u" />
@@ -213557,6 +213706,7 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="least significant first" sense="endianness" valsi="vajyje&apos;ipoi" />
 <nlword word="little endian" sense="endianness" valsi="vajyje&apos;ipoi" />
 <nlword word="little-endian" sense="endianness" valsi="vajyje&apos;ipoi" />
+<nlword word="unnecessary Lojban jargon" valsi="valcrimtu" />
 <nlword word="tosmabru word" valsi="valrtosmabru" />
 <nlword word="word" valsi="valsi" />
 <nlword word="slinku&apos;i word" valsi="valslinku&apos;i" />
@@ -213702,7 +213852,6 @@ ni&apos;o If desired, the semantics can be specified in more detail, such as dec
 <nlword word="via route" valsi="veka&apos;a" />
 <nlword word="vector" sense="general" valsi="vektori" />
 <nlword word="farm produce" valsi="velcange" place="1" />
-<nlword word="exchanged with" valsi="velcanja" place="1" />
 <nlword word="definition" sense="explanation" valsi="velcki" />
 <nlword word="defnition" sense="explanation" valsi="velcki" />
 <nlword word="explanation" valsi="velcki" />
