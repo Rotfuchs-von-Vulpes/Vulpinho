@@ -174,7 +174,7 @@ func main() {
 	}
 
 	readBible()
-	readLojbanDict()
+	lojbanInit()
 
 	lastMsg := map[string]string{}
 	bannedPeople := map[string][]string{}

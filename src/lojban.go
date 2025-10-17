@@ -56,8 +56,9 @@ type Dictionary struct {
 }
 
 var lojbanDictionary Dictionary
+var ph_lu map[string]string
 
-func readLojbanDict() {
+func lojbanInit() {
 	filePath := "resources/lojban/dictionary/jbovlaste-en.xml"
 	f, err := os.ReadFile(filePath)
 	if err != nil {
@@ -67,12 +68,101 @@ func readLojbanDict() {
 	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
 		logger.Error("unable to parse xml file", "error", err)
 	}
+
+	ph_lu = make(map[string]string)
+
+	ph_lu["«"] = ""
+	ph_lu["-"] = "."
+	ph_lu["»"] = ""
+	ph_lu["?"] = ""
+	ph_lu[","] = ""
+	ph_lu["."] = "ʔ"
+	ph_lu[" "] = " "
+	ph_lu["ˈ"] = "ˈ"
+	ph_lu["a"] = "ɑ"
+	ph_lu["e"] = "ɛ"
+	ph_lu["i"] = "i"
+	ph_lu["o"] = "o"
+	ph_lu["u"] = "u"
+	ph_lu["y"] = "ə"
+	ph_lu["ai"] = "ɑj"
+	ph_lu["ei"] = "ɛj"
+	ph_lu["oi"] = "oj"
+	ph_lu["au"] = "aw"
+	ph_lu["ia"] = "jɑ"
+	ph_lu["ie"] = "jɛ"
+	ph_lu["ii"] = "ji"
+	ph_lu["io"] = "jo"
+	ph_lu["iu"] = "ju"
+	ph_lu["ua"] = "wa"
+	ph_lu["ue"] = "wɛ"
+	ph_lu["ui"] = "wi"
+	ph_lu["uo"] = "wo"
+	ph_lu["uu"] = "wu"
+	ph_lu["iy"] = "jə"
+	ph_lu["uy"] = "wə"
+	ph_lu["c"] = "ʃ"
+	ph_lu["j"] = "ʒ"
+	ph_lu["s"] = "s"
+	ph_lu["z"] = "z"
+	ph_lu["f"] = "f"
+	ph_lu["v"] = "v"
+	ph_lu["x"] = "x"
+	ph_lu["'"] = "h"
+	ph_lu["dj"] = "dʒ"
+	ph_lu["tc"] = "tʃ"
+	ph_lu["dz"] = "ʣ"
+	ph_lu["ts"] = "ʦ"
+	ph_lu["r"] = "r"
+	ph_lu["n"] = "n"
+	ph_lu["m"] = "m"
+	ph_lu["l"] = "l"
+	ph_lu["b"] = "b"
+	ph_lu["d"] = "d"
+	ph_lu["g"] = "g"
+	ph_lu["k"] = "k"
+	ph_lu["p"] = "p"
+	ph_lu["t"] = "t"
+}
+
+func toIPA(text string) string {
+	final := strings.Builder{}
+	ignoreNext := false
+	for i, r := range text {
+		if ignoreNext {
+			ignoreNext = false
+			continue
+		}
+
+		char := string(r)
+		pair := ""
+
+		if i < len(text)-1 {
+			rr := []rune(text)[i+1]
+			pair = string(r) + string(rr)
+		}
+
+		symbol, ok := ph_lu[pair]
+		if !ok {
+			symbol, ok = ph_lu[char]
+			if !ok {
+				logger.Error("Undefined character: ", "char", char)
+			}
+		} else {
+			ignoreNext = true
+		}
+
+		if symbol != "" {
+			final.WriteString(symbol)
+		}
+	}
+	return final.String()
 }
 
 func sisku(word string) string {
 	for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 		if valsi.Word == word {
-			response := "**" + valsi.Word + "** [" + valsi.Type + "]: " + parseDefinition(valsi.Definition) + " " + parseNotes(valsi.Notes)
+			response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/ " + valsi.Type + "\n" + parseDefinition(valsi.Definition) + "\n-# " + parseNotes(valsi.Notes)
 			return response
 		}
 	}
