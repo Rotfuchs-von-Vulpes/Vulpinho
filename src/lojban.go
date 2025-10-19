@@ -162,7 +162,7 @@ func toIPA(text string) string {
 func sisku(word string) string {
 	for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 		if valsi.Word == word {
-			response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/ " + valsi.Type + "\n" + parseDefinition(valsi.Definition) + "\n-# " + parseNotes(valsi.Notes)
+			response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + parseDefinition(valsi.Definition) + "\n-# " + parseNotes(valsi.Notes)
 			return response
 		}
 	}
