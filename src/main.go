@@ -125,9 +125,8 @@ func main() {
 			discord.ChannelMessageSend(message.ChannelID, text)
 		}
 		sayList := func(list []string) {
-			for _, text := range list {
-				discord.ChannelMessageSend(message.ChannelID, text)
-			}
+			final := strings.Join(list, "\n")
+			discord.ChannelMessageSend(message.ChannelID, final)
 		}
 
 		channelID := message.ChannelID
