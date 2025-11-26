@@ -159,6 +159,72 @@ func toIPA(text string) string {
 	return final.String()
 }
 
+func parseNotes(note string) string {
+	note = parseDefinition(note)
+	noteBuilder := strings.Builder{}
+	for _, r := range note {
+		if r != '{' && r != '}' {
+			noteBuilder.WriteRune(r)
+		}
+	}
+	return noteBuilder.String()
+}
+
+func parseDefinition(def string) string {
+	readingArgument := false
+	readingSubscript := false
+	defBuinder := strings.Builder{}
+	for _, r := range def {
+		if r == '$' {
+			if readingArgument {
+				readingArgument = false
+				readingSubscript = false
+				defBuinder.WriteRune('_')
+			} else {
+				readingArgument = true
+				defBuinder.WriteRune('_')
+			}
+		} else {
+			if readingArgument {
+				if r == '_' {
+					readingSubscript = true
+				}
+			}
+			if readingSubscript {
+				if r == '{' || r == '}' {
+					continue
+				}
+				switch r {
+				case '0':
+					defBuinder.WriteRune('₀')
+				case '1':
+					defBuinder.WriteRune('₁')
+				case '2':
+					defBuinder.WriteRune('₂')
+				case '3':
+					defBuinder.WriteRune('₃')
+				case '4':
+					defBuinder.WriteRune('₄')
+				case '5':
+					defBuinder.WriteRune('₅')
+				case '6':
+					defBuinder.WriteRune('₆')
+				case '7':
+					defBuinder.WriteRune('₇')
+				case '8':
+					defBuinder.WriteRune('₈')
+				case '9':
+					defBuinder.WriteRune('₉')
+				}
+			} else if r != '_' && r != '{' && r != '}' {
+				defBuinder.WriteRune(r)
+			}
+		}
+	}
+
+	return defBuinder.String()
+}
+
 func sisku(word string) string {
 	for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 		if valsi.Word == word {
@@ -223,7 +289,7 @@ func gerna(text string) string {
 		fmt.Println(err)
 	}
 	defer stdin.Close()
-	buf := new(bytes.Buffer) // THIS STORES THE NODEJS OUTPUT
+	buf := new(bytes.Buffer)
 	process.Stdout = buf
 	process.Stderr = os.Stderr
 
