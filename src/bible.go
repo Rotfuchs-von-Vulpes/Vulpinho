@@ -46,7 +46,7 @@ func readBible() {
 	f2.Close()
 }
 
-func versicle(say func(string), raw string) {
+func versicle(raw string) []string {
 	words := strings.Split(raw, " ")
 
 	var versicle_temp []string
@@ -78,8 +78,7 @@ func versicle(say func(string), raw string) {
 		if len(rang) == 1 {
 			for _, line := range bible {
 				if line[1] == words[0] && line[2] == words[1] && line[3] == words[2] {
-					say("**" + line[3] + "**. " + line[4])
-					break
+					return []string{"**" + line[3] + "**. " + line[4]}
 				}
 			}
 		} else if len(rang) == 2 {
@@ -88,22 +87,48 @@ func versicle(say func(string), raw string) {
 			if ok1 && ok2 {
 				reading := false
 				chapter := ""
-				text := ""
+				text := []string{}
 				for _, line := range bible {
 					if line[1] == words[0] && line[2] == words[1] && line[3] == rang[0] {
 						chapter = line[2]
 						reading = true
 					}
 					if reading {
-						text += "**" + line[3] + "**. " + line[4]
 						if line[3] == rang[1] || line[2] != chapter {
 							break
 						}
-						text += "\n"
+						text = append(text, "**"+line[3]+"**. "+line[4])
 					}
 				}
-				say(text)
+				return text
 			}
 		}
 	}
+	return []string{}
+}
+
+type ChapterCount struct {
+	chapter string
+	count   int
+}
+
+func search() string {
+	chapters := []ChapterCount{}
+	chapters = append(chapters, ChapterCount{bible[0][2], 0})
+	for _, line := range bible {
+		last := len(chapters) - 1
+		chapter := line[2]
+		if chapter != chapters[last].chapter {
+			chapters = append(chapters, ChapterCount{chapter, 0})
+		}
+		last = len(chapters) - 1
+		chapters[last].count += 1
+	}
+	biggest := chapters[0]
+	for _, chapter := range chapters {
+		if chapter.count > biggest.count {
+			biggest = chapter
+		}
+	}
+	return "O maior é o " + biggest.chapter + " com " + strconv.Itoa(biggest.count) + " versículos."
 }

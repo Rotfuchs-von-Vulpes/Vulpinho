@@ -19,16 +19,6 @@ import (
 
 var logger *slog.Logger
 
-func removeFirstTwo(wordList []string) []string {
-	final := []string{}
-	for i, word := range wordList {
-		if i >= 2 {
-			final = append(final, word)
-		}
-	}
-	return final
-}
-
 func removePonctuation(text string) string {
 	respondeBuilder := strings.Builder{}
 	for _, r := range text {
@@ -120,13 +110,66 @@ func main() {
 	waitingPong := false
 	last_time := int64(0)
 
+	reactReceiverMessages := []string{}
+
+	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
+
+	})
+
+	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+		say := func(text string) {
+			discord.ChannelMessageSend(reaction.ChannelID, text)
+		}
+		if slices.Contains(reactReceiverMessages, reaction.MessageID) {
+			if reaction.UserID != discord.State.User.ID {
+				if reaction.Emoji.ID == "" {
+					say(reaction.Member.DisplayName() + " reagiu com " + reaction.Emoji.Name)
+				} else {
+					if reaction.Emoji.Animated {
+						say(reaction.Member.DisplayName() + " reagiu com <a:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
+					} else {
+						say(reaction.Member.DisplayName() + " reagiu com <:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
+					}
+				}
+			}
+		}
+	})
+
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		say := func(text string) {
 			discord.ChannelMessageSend(message.ChannelID, text)
 		}
 		sayList := func(list []string) {
-			final := strings.Join(list, "\n")
-			discord.ChannelMessageSend(message.ChannelID, final)
+			if len(list) != 0 {
+				final := []string{""}
+				for _, text := range list {
+					last := len(final) - 1
+					if len(final[last])+len(text)+1 < 2000 {
+						final[last] += text + "\n"
+					} else {
+						final = append(final, text+"\n")
+					}
+				}
+				for _, msg := range final {
+					discord.ChannelMessageSend(message.ChannelID, msg)
+				}
+			}
+		}
+		sayEmbed := func() {
+			embed := discordgo.MessageEmbed{}
+			embed.Title = "Título do Teste"
+			embed.Description = "Descrição do teste"
+			embed.Type = discordgo.EmbedTypeArticle
+			embed.Color = 0xff6000
+			author := discordgo.MessageEmbedAuthor{}
+			author.IconURL = message.Author.AvatarURL("")
+			author.Name = message.Author.DisplayName()
+			embed.Author = &author
+			msg, err := discord.ChannelMessageSendEmbed(message.ChannelID, &embed)
+			if err == nil {
+				discord.MessageReactionAdd(message.ChannelID, msg.ID, "🍇")
+				reactReceiverMessages = append(reactReceiverMessages, msg.ID)
+			}
 		}
 
 		channelID := message.ChannelID
@@ -190,17 +233,37 @@ func main() {
 						waitingPong = true
 						say("Pong!")
 					}
+					if words[1] == "teste" {
+						sayEmbed()
+					}
+					if words[1] == "qual?" {
+						say(search())
+					}
 				} else if len(words) >= 3 {
 					switch words[1] {
 					case "gerna":
-						text := removeFirstTwo(strings.Split(message.Content, " "))
+						text := strings.Split(message.Content, " ")[2:]
 						say(gerna(strings.Join(text, " ")))
 					case "sisku":
 						word := strings.Split(message.Content, " ")[2]
 						say(sisku(word))
 					case "facki":
-						text := removeFirstTwo(strings.Split(message.Content, " "))
+						text := strings.Split(message.Content, " ")[2:]
 						sayList(facki(strings.Join(text, " ")))
+					case "wh40k":
+						switch words[2] {
+						case "keyword":
+							text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
+							if text != "" {
+								sayList(KeySearch(text))
+							}
+						default:
+							if len(words) > 3 {
+								data := words[2]
+								id := words[3]
+								sayList(getWh(data, id))
+							}
+						}
 					}
 				}
 			}
@@ -217,7 +280,14 @@ func main() {
 			}
 		}
 
-		versicle(say, message.Content)
+		text := versicle(message.Content)
+		if len(text) > 0 {
+			if len(text) == 1 {
+				say(text[0])
+			} else {
+				sayList(text)
+			}
+		}
 
 		if message.MentionEveryone {
 			say("<:memojo_really:1411209850213498890>")
@@ -274,11 +344,6 @@ func main() {
 		}
 	}()
 
-	// err = discord.Open()
-	// if err != nil {
-	// 	logger.Error("error opening discord session", "error", err.Error())
-	// 	return
-	// }
 	defer func() {
 		logger.Info("closing discord session...")
 		if err := discord.Close(); err != nil {

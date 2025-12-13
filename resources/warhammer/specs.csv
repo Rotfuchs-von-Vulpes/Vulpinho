@@ -1,0 +1,197 @@
+Factions.csv|
+File contains a table of factions and subfactions|
+Field|Type|Contents|
+id|string|Faction identifier. Used to link to other tables|
+name|string|Faction name|
+link|string|Link to the faction page on the Wahapedia website|
+
+Source.csv|
+The file contains a table of add-ons (supplements, rulebooks, promo datasheets, etc.)|
+Field|Type|Contents|
+id|string|Add-on identifier. Used to link to other tables|
+name|string|Add-on name|
+type|string|Add-on type ("Index", "Supplement", etc.)|
+edition|string|Edition number|
+version|string|Errata version number|
+errata_date|date|Date of the latest errata (if there is no erratas, then the date of announcement / release)|
+errata_link|string|Link to errata / source on GW website|
+
+Datasheets.csv|
+File contains a table of datasheets|
+Field|Type|Contents|
+id|string|Datasheet identifier. Used to link to other tables|
+name|string|Datasheet name|
+faction_id|string|Faction ID (link to Factions.csv table)|
+source_id|string|Add-on ID (link to Source.csv table)|
+legend|string|Datasheet’s background|
+role|string|Datasheet’s Battlefield Role|
+loadout|string|Datasheet loadout|
+transport|string|Transport capacity (if it is a TRANSPORT)|
+virtual|boolean|Virtual datasheets not present in army list but can be summoned in some cases (eg Chaos Spawn)|
+leader_head|string|Leader section header commentary|
+leader_footer|string|Leader section footer commentary|
+damaged_w|string|Remaining Wounds count|
+damaged_description|string|Remaining Wounds description|
+link|string|Link to datasheet on the Wahapedia website|
+
+Datasheets_abilities.csv|
+The file contains a table of the Abilities of the datasheets|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+ability_id|string|Ability ID (link to Abilities.csv table). If filled use Ability name, description, type and parameter from Abilities.csv|
+model|string|Belonging of this ability to a specific model of the datasheet|
+name|string|Ability name|
+description|string|Ability description|
+type|string|Ability type|
+parameter|string|Ability parameter|
+
+Datasheets_keywords.csv|
+The file contains a table of the Keywords of the datasheets|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+keyword|string|Datasheet keyword|
+model|string|Belonging of this keyword to a specific model of the datasheet|
+is_faction_keyword|boolean|This is a Faction Keyword|
+
+Datasheets_models.csv|
+The file contains a table of models included in datasheets|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+name|string|Model name|
+M|string|Move chatacteristic|
+T|string|Toughness chatacteristic|
+Sv|string|Save chatacteristic|
+inv_sv|string|Invulnerable Save chatacteristic|
+inv_sv_descr|string|Invulnerable Save commentary|
+W|string|Wounds chatacteristic|
+Ld|string|Leadership chatacteristic|
+OC|string|Objective Control chatacteristic|
+base_size|string|Model base size|
+base_size_descr|string|Model base size commentary|
+
+Datasheets_options.csv|
+The file contains a table of Wargear Options of datasheets|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+button|string|Decorative symbol at the beginning of an option|
+description|string|Wargear option description|
+
+Datasheets_wargear.csv|
+The file contains a table of datasheet’s Wargear|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+line_in_wargear|string|Line number in Wargear.csv table (use ORDER BY line, line_in_wargear to sort out wargear lines)|
+dice|string|Dice result required (see Bubblechukka)|
+name|string|Wargear name|
+description|string|Wargear rules|
+range|string|Range characteristic|
+type|string|Type characteristic ("Melee", "Range")|
+A|string|Attacks characteristic|
+BS_WS|string|Ballistic/Weapon Skill characteristic|
+S|string|Strength characteristic|
+AP|string|Armour Penetration characteristic|
+D|string|Damage characteristic|
+
+Datasheets_unit_composition.csv|
+The file contains a table of datasheet’s unit composition|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+description|string|Unit composition|
+
+Datasheets_models_cost.csv|
+The file contains a table of datasheet’s models cost|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+line|string|Line number in the table (starting from 1)|
+description|string|Model description|
+cost|string|Model cost|
+
+Datasheets_stratagems.csv|
+The file contains a table of datasheet’s Stratagems|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+stratagem_id|string|Stratagem identifier (link to the Stratagems.csv table)|
+
+Datasheets_enhancements.csv|
+The file contains a table of datasheet’s Enhancements|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+enhancement_id|string|Enhancement identifier (link to the Enhancements.csv table)|
+
+Datasheets_detachment_abilities.csv|
+The file contains a table of datasheet’s Detachment abilities|
+Field|Type|Contents|
+datasheet_id|string|Datasheet identifier (link to the Datasheets.csv table)|
+detachment_ability_id|string|Detachment ability identifier (link to the Detachment_abilities.csv table)|
+
+Datasheets_leader.csv|
+The file contains a table of datasheet’s Leaders|
+Field|Type|Contents|
+datasheet_id|string|Вatasheet identifier (link to the Datasheets.csv table)|
+attached_datasheet_id|string|Attached datasheet identifier (link to the Datasheets.csv table)|
+
+Stratagems.csv|
+File contains table of Stratagems|
+Field|Type|Contents|
+id|string|Stratagem identifier. Used to link to other tables|
+faction_id|string|Faction ID (link to Factions.csv table)|
+name|string|Stratagem name|
+type|string|Stratagem type (eg Shield Host – Strategic Ploy Stratagem)|
+cp_cost|string|Stratagem command point cost|
+legend|string|Stratagem background|
+turn|string|Stratagem turn|
+phase|string|Stratagem phase|
+description|string|Stratagem description|
+detachment|string|Detachment name|
+detachment_id|string|Detachment ID (link to Detachments.csv table)|
+
+Abilities.csv|
+The file contains the Abilities table|
+Field|Type|Contents|
+id|string|Abilities identifier. Used to link to other tables|
+name|string|Ability name|
+legend|string|Ability background|
+faction_id|string|Faction ID (link to Factions.csv table)|
+description|string|Ability description|
+
+Enhancements.csv|
+The file contains the Enhancements table|
+Field|Type|Contents|
+id|string|Enhancements identifier. Used to link to other tables|
+faction_id|string|Faction ID (link to Factions.csv table)|
+name|string|Enhancement name|
+legend|string|Enhancement legend|
+description|string|Enhancement description|
+cost|string|Enhancement points cost|
+detachment|string|Detachment name|
+detachment_id|string|Detachment ID (link to Detachments.csv table)|
+
+Detachment_abilities.csv|
+The file contains the Detachment abilities table|
+Field|Type|Contents|
+id|string|Detachment abilities identifier. Used to link to other tables|
+faction_id|string|Faction ID (link to Factions.csv table)|
+name|string|Detachment ability name|
+legend|string|Detachment ability legend|
+description|string|Detachment ability description|
+detachment|string|Detachment name|
+detachment_id|string|Detachment ID (link to Detachments.csv table)|
+
+Detachments.csv|
+The file contains the Detachments table|
+Field|Type|Contents|
+id|string|Detachment identifier. Used to link to other tables|
+faction_id|string|Faction ID (link to Factions.csv table)|
+name|string|Detachment name|
+legend|string|Detachment legend|
+type|string|Detachment type (e.g. "Boarding Action")|
+
+Last_update.csv|
+File contains single line with date-time of last export data update.|
+Field|Type|Contents|
+last_update|dateTime|Date-time of last export data update (GMT+3). Format: yyyy-MM-dd HH:mm:ss|
