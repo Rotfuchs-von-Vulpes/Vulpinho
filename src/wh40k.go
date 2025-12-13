@@ -25,6 +25,8 @@ func openWh(filePath string) [][]string {
 		return [][]string{}
 	}
 
+	records[0][0], _ = strings.CutPrefix(records[0][0], string(rune(65279)))
+
 	return records
 }
 
@@ -176,9 +178,46 @@ func parseTags(str string) string {
 	return final.String()
 }
 
+func decode(id string) string {
+	final := strings.Builder{}
+	prefix := true
+	for _, r := range id {
+		if prefix {
+			if r != '0' {
+				prefix = false
+			}
+		}
+		if !prefix {
+			final.WriteRune(r)
+		}
+	}
+	return final.String()
+}
+
+func encode(id string) string {
+	count := 9 - len(id)
+	if count < 0 {
+		return id
+	}
+	final := strings.Builder{}
+	for range count {
+		final.WriteRune('0')
+	}
+	final.WriteString(id)
+	return final.String()
+}
+
 func searchLineWh(data [][]string, id string) []string {
+	fmt.Println("\"" + id + "\"")
 	final := []string{}
+	first := true
 	for _, line := range data {
+		if first {
+			fmt.Println([]rune(line[0]))
+			fmt.Println([]rune(id))
+			fmt.Println(line[0] == id)
+			first = false
+		}
 		if line[0] == id {
 			list := []string{}
 			for _, str := range line {
@@ -187,7 +226,6 @@ func searchLineWh(data [][]string, id string) []string {
 			final = append(final, strings.Join(list[1:], "; "))
 		}
 	}
-
 	return final
 }
 
@@ -198,7 +236,6 @@ func getKeywords(id string) []string {
 			result = append(result, line[1])
 		}
 	}
-
 	return result
 }
 
@@ -219,10 +256,9 @@ func searchDatasheetByKeyword(key string) []string {
 func getUnitNameAndURL(id string) string {
 	for _, line := range datasheets {
 		if line[0] == id {
-			return fmt.Sprintf("[%s](<%s>) (id: %s)", line[1], line[13], id)
+			return fmt.Sprintf("[%s](<%s>) (id: %s)", line[1], line[13], decode(id))
 		}
 	}
-
 	return ""
 }
 
@@ -239,6 +275,7 @@ func KeySearch(key string) []string {
 }
 
 func getWh(data string, id string) []string {
+	id = encode(id)
 	switch data {
 	case "abilities":
 		return searchLineWh(abilities, id)
@@ -277,6 +314,5 @@ func getWh(data string, id string) []string {
 	case "enhancements":
 		return searchLineWh(enhancements, id)
 	}
-
 	return []string{}
 }

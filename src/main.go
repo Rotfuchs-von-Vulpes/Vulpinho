@@ -253,7 +253,7 @@ func main() {
 					case "wh40k":
 						switch words[2] {
 						case "keyword":
-							text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
+							text := strings.Join(strings.Split(message.Content, " ")[3:], " ")
 							if text != "" {
 								sayList(KeySearch(text))
 							}
