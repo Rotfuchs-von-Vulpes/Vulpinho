@@ -255,7 +255,11 @@ func main() {
 						case "keyword":
 							text := strings.Join(strings.Split(message.Content, " ")[3:], " ")
 							if text != "" {
-								sayList(KeySearch(text))
+								keys := strings.Split(text, ",")
+								for i, key := range keys {
+									keys[i] = strings.TrimSpace(key)
+								}
+								sayList(KeySearch(keys))
 							}
 						default:
 							if len(words) > 3 {

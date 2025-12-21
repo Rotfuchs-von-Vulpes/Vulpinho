@@ -6,6 +6,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"unicode"
 )
 
 func openWh(filePath string) [][]string {
@@ -68,38 +69,33 @@ func readWh() {
 	factions = openWh("Factions.csv")
 	stratagems = openWh("Stratagems.csv")
 	enhancements = openWh("Enhancements.csv")
-	// 	all_data := [][][]string{
-	// 		abilities,
-	// 		data_abilities,
-	// 		data_detachment_abilities,
-	// 		data_enhancements,
-	// 		keywords,
-	// 		leader,
-	// 		models_cost,
-	// 		models,
-	// 		options,
-	// 		data_stratagems,
-	// 		unit_composition,
-	// 		data_wargear,
-	// 		datasheets,
-	// 		detachments,
-	// 		detachment_abilities,
-	// 		factions,
-	// 		stratagems,
-	// 		enhancements,
-	// 	}
-	// main_loop:
-	// 	for i, data := range all_data {
-	// 		for j, line := range data {
-	// 			for _, str := range line {
-	// 				_, err := parseTag(str)
-	// 				if !err {
-	// 					fmt.Printf("%d° banco %d° linha tem tag inesperada\n", i, j)
-	// 					continue main_loop
-	// 				}
-	// 			}
+	// all_data := [][][]string{
+	// 	abilities,
+	// 	data_abilities,
+	// 	data_detachment_abilities,
+	// 	data_enhancements,
+	// 	keywords,
+	// 	leader,
+	// 	models_cost,
+	// 	models,
+	// 	options,
+	// 	data_stratagems,
+	// 	unit_composition,
+	// 	data_wargear,
+	// 	datasheets,
+	// 	detachments,
+	// 	detachment_abilities,
+	// 	factions,
+	// 	stratagems,
+	// 	enhancements,
+	// }
+	// for _, data := range all_data {
+	// 	for _, line := range data {
+	// 		for _, str := range line {
+	// 			parseTags(str)
 	// 		}
 	// 	}
+	// }
 }
 
 func expected(target string, idx int, r rune) bool {
@@ -110,72 +106,121 @@ func expected(target string, idx int, r rune) bool {
 	return runes[idx] == r
 }
 
-func parseTags(str string) string {
+var blacklist2 []string
+
+func push(s []string, e string) []string {
+	return append(s, e)
+}
+
+func pop(s []string) []string {
+	return s[:len(s)-1]
+}
+
+func parseTags(str string) (string, bool) {
+	debug := false
+	tagStack := []string{}
 	final := strings.Builder{}
 	link := strings.Builder{}
+	tag := strings.Builder{}
 	type State int
 	const (
 		Text State = iota
 		Tag
-		Between
 	)
 	type LinkState int
 	const (
 		None LinkState = iota
 		Reading
 	)
-	s := Text
-	ss := None
+	type TagType int
+	const (
+		Notag TagType = iota
+		Head
+		Tail
+		Both
+	)
+	mainState := Text
+	linkState := None
+	readingState := None
+	tagState := Notag
 
 	idx := 0
 	for _, r := range str {
-		switch s {
+		switch mainState {
 		case Text:
 			if r == '<' {
-				s = Tag
+				mainState = Tag
+				readingState = Reading
+				tagState = Notag
 			} else {
 				final.WriteRune(r)
 			}
 		case Tag:
+			if tagState == Notag {
+				if r == '/' {
+					tagState = Tail
+				} else if unicode.IsLetter(r) {
+					tagState = Head
+				}
+			}
+			if readingState == Reading {
+				if unicode.IsLetter(r) {
+					tag.WriteRune(r)
+				} else if tag.Len() > 0 {
+					switch tagState {
+					case Head:
+						tagStack = push(tagStack, tag.String())
+					case Tail:
+						if len(tagStack) > 1 {
+							last := tagStack[len(tagStack)-1]
+							if last != tag.String() {
+								if !slices.Contains(blacklist2, last) {
+									// fmt.Println(last)
+									blacklist2 = append(blacklist2, last)
+									debug = true
+								}
+								tagStack = pop(tagStack)
+							}
+							tagStack = pop(tagStack)
+						}
+					}
+					tag.Reset()
+					tagState = Notag
+					readingState = None
+				}
+			}
 			if r == '>' {
 				idx = 0
-				if link.Len() != 0 {
-					s = Between
+				mainState = Text
+				readingState = None
+				if link.Len() > 0 {
 					final.WriteRune('[')
-				} else {
-					s = Text
 				}
-			} else {
+				if tagState == Tail && link.Len() > 0 {
+					fmt.Fprintf(&final, "](<https://wahapedia.ru/%s>)", link.String())
+					link.Reset()
+				}
+			} else if tagState == Head {
 				if expected("href=\"", idx, r) {
 					idx += 1
 				} else {
 					idx = 0
 				}
-				if ss == Reading {
+				if linkState == Reading {
 					if r == '"' {
-						ss = None
+						linkState = None
 					} else {
 						link.WriteRune(r)
 					}
 				}
 				if idx == len("href=\"") {
 					idx = 0
-					ss = Reading
+					linkState = Reading
 				}
-			}
-		case Between:
-			if r == '<' {
-				s = Tag
-				if link.Len() != 0 {
-					fmt.Fprintf(&final, "](<https://wahapedia.ru/%s>)", link.String())
-					link.Reset()
-				}
-			} else {
-				final.WriteRune(r)
 			}
 		}
 	}
-	return final.String()
+	return final.String(), debug
 }
 
 func decode(id string) string {
@@ -208,20 +253,13 @@ func encode(id string) string {
 }
 
 func searchLineWh(data [][]string, id string) []string {
-	fmt.Println("\"" + id + "\"")
 	final := []string{}
-	first := true
 	for _, line := range data {
-		if first {
-			fmt.Println([]rune(line[0]))
-			fmt.Println([]rune(id))
-			fmt.Println(line[0] == id)
-			first = false
-		}
 		if line[0] == id {
 			list := []string{}
 			for _, str := range line {
-				list = append(list, parseTags(str))
+				text, _ := parseTags(str)
+				list = append(list, text)
 			}
 			final = append(final, strings.Join(list[1:], "; "))
 		}
@@ -253,6 +291,20 @@ func searchDatasheetByKeyword(key string) []string {
 	return id_list
 }
 
+func filterByKeyword(idList []string, keyword string) []string {
+	final := []string{}
+loop:
+	for _, id := range idList {
+		for _, line := range keywords {
+			if line[0] == id && line[1] == keyword {
+				final = append(final, id)
+				continue loop
+			}
+		}
+	}
+	return final
+}
+
 func getUnitNameAndURL(id string) string {
 	for _, line := range datasheets {
 		if line[0] == id {
@@ -262,8 +314,14 @@ func getUnitNameAndURL(id string) string {
 	return ""
 }
 
-func KeySearch(key string) []string {
-	unitsIDs := searchDatasheetByKeyword(strings.ToLower(key))
+func KeySearch(keys []string) []string {
+	unitsIDs := searchDatasheetByKeyword(strings.ToLower(keys[0]))
+	for i, key := range keys {
+		if i == 0 {
+			continue
+		}
+		unitsIDs = filterByKeyword(unitsIDs, key)
+	}
 	final := []string{}
 	for _, unit := range unitsIDs {
 		final = append(final, getUnitNameAndURL(unit))
