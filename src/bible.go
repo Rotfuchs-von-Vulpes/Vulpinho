@@ -94,10 +94,13 @@ func versicle(raw string) []string {
 						reading = true
 					}
 					if reading {
-						if line[3] == rang[1] || line[2] != chapter {
+						if line[2] != chapter {
 							break
 						}
 						text = append(text, "**"+line[3]+"**. "+line[4])
+						if line[3] == rang[1] {
+							break
+						}
 					}
 				}
 				return text
