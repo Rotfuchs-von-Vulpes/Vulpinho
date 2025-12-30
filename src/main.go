@@ -70,6 +70,29 @@ func removeAndCreate(path string) (*os.File, bool) {
 	return f, false
 }
 
+type Author struct {
+	ID          string
+	AvatarURL   string
+	DisplayName string
+}
+
+type Message struct {
+	ID        string
+	Author    *discordgo.User
+	ChannelID string
+	GuildID   string
+	Content   string
+	Time      int64
+}
+
+func wrapMessageCreate(message *discordgo.MessageCreate) Message {
+	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
+}
+
+func wrapMessageUpdate(message *discordgo.MessageUpdate) Message {
+	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
+}
+
 func main() {
 	folderLog, fatal := fileExist("log/")
 	if fatal {
@@ -112,34 +135,14 @@ func main() {
 
 	reactReceiverMessages := []string{}
 
-	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
-
-	})
-
-	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+	runCommands := func(message Message) bool {
+		final := false
 		say := func(text string) {
-			discord.ChannelMessageSend(reaction.ChannelID, text)
-		}
-		if slices.Contains(reactReceiverMessages, reaction.MessageID) {
-			if reaction.UserID != discord.State.User.ID {
-				if reaction.Emoji.ID == "" {
-					say(reaction.Member.DisplayName() + " reagiu com " + reaction.Emoji.Name)
-				} else {
-					if reaction.Emoji.Animated {
-						say(reaction.Member.DisplayName() + " reagiu com <a:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
-					} else {
-						say(reaction.Member.DisplayName() + " reagiu com <:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
-					}
-				}
-			}
-		}
-	})
-
-	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
-		say := func(text string) {
+			final = true
 			discord.ChannelMessageSend(message.ChannelID, text)
 		}
 		sayList := func(list []string) {
+			final = true
 			if len(list) != 0 {
 				final := []string{""}
 				for _, text := range list {
@@ -156,6 +159,7 @@ func main() {
 			}
 		}
 		sayEmbed := func() {
+			final = true
 			embed := discordgo.MessageEmbed{}
 			embed.Title = "Título do Teste"
 			embed.Description = "Descrição do teste"
@@ -178,15 +182,15 @@ func main() {
 		if message.Author.ID == discord.State.User.ID {
 			if waitingPong {
 				if message.Content == "Pong!" {
-					latency := message.Timestamp.UnixMilli() - last_time
+					latency := message.Time - last_time
 					discord.ChannelMessageEdit(channelID, message.ID, fmt.Sprintf("Pong! Latência é %dms", latency))
 					waitingPong = false
 				}
 			}
-			return
+			return true
 		}
 		if len(message.Content) <= 0 {
-			return
+			return false
 		}
 
 		_, ok := minimum[serverID]
@@ -229,7 +233,7 @@ func main() {
 					say("<a:fox_wave:1426439130253885440>")
 				} else if len(words) == 2 {
 					if words[1] == "ping" {
-						last_time = message.Timestamp.UnixMilli()
+						last_time = message.Time
 						waitingPong = true
 						say("Pong!")
 					}
@@ -252,7 +256,7 @@ func main() {
 						sayList(facki(strings.Join(text, " ")))
 					case "wh40k":
 						switch words[2] {
-						case "keyword":
+						case "keyword", "keywords":
 							text := strings.Join(strings.Split(message.Content, " ")[3:], " ")
 							if text != "" {
 								keys := strings.Split(text, ",")
@@ -293,8 +297,39 @@ func main() {
 			}
 		}
 
+		return final
+	}
+
+	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionRemove) {
+
+	})
+
+	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionAdd) {
+		say := func(text string) {
+			discord.ChannelMessageSend(reaction.ChannelID, text)
+		}
+		if slices.Contains(reactReceiverMessages, reaction.MessageID) {
+			if reaction.UserID != discord.State.User.ID {
+				if reaction.Emoji.ID == "" {
+					say(reaction.Member.DisplayName() + " reagiu com " + reaction.Emoji.Name)
+				} else {
+					if reaction.Emoji.Animated {
+						say(reaction.Member.DisplayName() + " reagiu com <a:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
+					} else {
+						say(reaction.Member.DisplayName() + " reagiu com <:" + reaction.Emoji.Name + ":" + reaction.Emoji.ID + ">")
+					}
+				}
+			}
+		}
+	})
+
+	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageUpdate) {
+		runCommands(wrapMessageUpdate(message))
+	})
+
+	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.MentionEveryone {
-			say("<:memojo_really:1411209850213498890>")
+			discord.ChannelMessageSend(message.ChannelID, "<:memojo_really:1411209850213498890>")
 		} else {
 			msgRef := message.ReferencedMessage
 			to_emote := true
@@ -305,17 +340,19 @@ func main() {
 			}
 			if to_emote {
 				if len(message.Mentions) == 1 && message.Mentions[0].ID == discord.State.User.ID {
-					say("<a:foxexcite:1421359331361816678>")
+					discord.ChannelMessageSend(message.ChannelID, "<a:foxexcite:1421359331361816678>")
 				} else if len(message.Mentions) > 1 {
 					for _, user := range message.Mentions {
 						if user.ID == discord.State.User.ID {
-							say("<:pepe_think:1421357826051407962>")
+							discord.ChannelMessageSend(message.ChannelID, "<:pepe_think:1421357826051407962>")
 							break
 						}
 					}
 				}
 			}
 		}
+
+		runCommands(wrapMessageCreate(message))
 	})
 
 	signalChannel := make(chan os.Signal, 1)
