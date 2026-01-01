@@ -1,15 +1,20 @@
-package main
+package wh40k
 
 import (
 	"encoding/csv"
 	"fmt"
+	"log/slog"
 	"os"
 	"slices"
 	"strings"
 	"unicode"
+	"vulpinho/log"
 )
 
+var logger *slog.Logger
+
 func openWh(filePath string) [][]string {
+	logger = log.Logger
 	f1, err := os.Open("resources/warhammer/" + filePath)
 	if err != nil {
 		logger.Error("Unable to read input file "+filePath, "error", err.Error())
@@ -50,7 +55,7 @@ var data_wargear [][]string
 var datasheets [][]string
 var factions [][]string
 
-func readWh() {
+func ReadWh() {
 	abilities = openWh("Abilities.csv")
 	data_abilities = openWh("Datasheets_abilities.csv")
 	data_detachment_abilities = openWh("Datasheets_detachment_abilities.csv")
@@ -332,7 +337,7 @@ func KeySearch(keys []string) []string {
 	return final
 }
 
-func getWh(data string, id string) []string {
+func GetWh(data string, id string) []string {
 	id = encode(id)
 	switch data {
 	case "abilities":

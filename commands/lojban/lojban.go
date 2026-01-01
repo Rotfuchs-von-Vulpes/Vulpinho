@@ -1,12 +1,14 @@
-package main
+package lojban
 
 import (
 	"bytes"
 	"encoding/xml"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/exec"
 	"strings"
+	"vulpinho/log"
 )
 
 type Dictionary struct {
@@ -54,10 +56,12 @@ type Dictionary struct {
 	} `xml:"direction"`
 }
 
+var logger *slog.Logger
 var lojbanDictionary Dictionary
 var ph_lu map[string]string
 
-func lojbanInit() {
+func LojbanInit() {
+	logger := log.Logger
 	filePath := "resources/lojban/dictionary/jbovlaste-en.xml"
 	f, err := os.ReadFile(filePath)
 	if err != nil {
@@ -224,7 +228,7 @@ func parseDefinition(def string) string {
 	return defBuilder.String()
 }
 
-func sisku(word string) string {
+func Sisku(word string) string {
 	for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 		if valsi.Word == word {
 			response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + parseDefinition(valsi.Definition)
@@ -237,7 +241,7 @@ func sisku(word string) string {
 	return "Such lojban word does not occur in my database."
 }
 
-func facki(text string) []string {
+func Facki(text string) []string {
 	final := []string{}
 	for _, nlword := range lojbanDictionary.Direction[1].Nlword {
 		if nlword.Word == text {
@@ -262,7 +266,7 @@ func facki(text string) []string {
 	return final
 }
 
-func gerna(text string) string {
+func Gerna(text string) string {
 	words := strings.Split(text, " ")
 	hasArgs := false
 	if words[0] == "-m" {

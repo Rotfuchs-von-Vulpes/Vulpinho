@@ -1,19 +1,24 @@
-package main
+package bible
 
 import (
 	"encoding/csv"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
+	"vulpinho/log"
 )
+
+var logger *slog.Logger
 
 var bible [][]string
 
-func readBible() {
+func ReadBible() {
+	logger = log.Logger
 	filePath := "resources/bible/bible.csv"
 	f1, err := os.Open(filePath)
 	if err != nil {
-		logger.Error("Unable to read input file "+filePath, "error", err.Error())
+		log.Logger.Error("Unable to read input file "+filePath, "error", err.Error())
 	}
 	defer f1.Close()
 
@@ -46,7 +51,7 @@ func readBible() {
 	f2.Close()
 }
 
-func versicle(raw string) []string {
+func Versicle(raw string) []string {
 	words := strings.Split(raw, " ")
 
 	var versicle_temp []string
@@ -82,9 +87,9 @@ func versicle(raw string) []string {
 				}
 			}
 		} else if len(rang) == 2 {
-			_, ok1 := SnowflakeToUint64(rang[0])
-			_, ok2 := SnowflakeToUint64(rang[1])
-			if ok1 && ok2 {
+			_, err2 := strconv.ParseUint(rang[0], 10, 32)
+			_, err1 := strconv.ParseUint(rang[1], 10, 32)
+			if err1 == nil && err2 == nil {
 				reading := false
 				chapter := ""
 				text := []string{}
@@ -113,25 +118,4 @@ func versicle(raw string) []string {
 type ChapterCount struct {
 	chapter string
 	count   int
-}
-
-func search() string {
-	chapters := []ChapterCount{}
-	chapters = append(chapters, ChapterCount{bible[0][2], 0})
-	for _, line := range bible {
-		last := len(chapters) - 1
-		chapter := line[2]
-		if chapter != chapters[last].chapter {
-			chapters = append(chapters, ChapterCount{chapter, 0})
-		}
-		last = len(chapters) - 1
-		chapters[last].count += 1
-	}
-	biggest := chapters[0]
-	for _, chapter := range chapters {
-		if chapter.count > biggest.count {
-			biggest = chapter
-		}
-	}
-	return "O maior é o " + biggest.chapter + " com " + strconv.Itoa(biggest.count) + " versículos."
 }

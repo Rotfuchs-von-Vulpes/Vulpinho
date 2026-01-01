@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,12 +11,14 @@ import (
 	"syscall"
 	"time"
 	"unicode"
+	"vulpinho/commands/bible"
+	"vulpinho/commands/lojban"
+	"vulpinho/commands/wh40k"
+	"vulpinho/log"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
-
-var logger *slog.Logger
 
 func removePonctuation(text string) string {
 	respondeBuilder := strings.Builder{}
@@ -37,37 +38,6 @@ func SnowflakeToUint64(snowflake string) (uint64, bool) {
 		return 0, false
 	}
 	return result, true
-}
-
-func fileExist(path string) (bool, bool) {
-	_, err := os.Stat(path)
-	if errors.Is(err, os.ErrNotExist) {
-		return false, false
-	} else if err == nil {
-		return true, false
-	} else {
-		slog.Error("error viewing stat", "err", err)
-		return false, true
-	}
-}
-
-func removeAndCreate(path string) (*os.File, bool) {
-	exist, fatal := fileExist(path)
-	if fatal {
-		return nil, true
-	}
-	if exist {
-		if err := os.Remove(path); err != nil {
-			slog.Error("error removing file", "err", err.Error())
-			return nil, true
-		}
-	}
-	f, err := os.OpenFile(path, os.O_CREATE, os.ModeDevice)
-	if err != nil {
-		slog.Error("error opening file", "err", err.Error())
-		return nil, true
-	}
-	return f, false
 }
 
 type Author struct {
@@ -93,21 +63,12 @@ func wrapMessageUpdate(message *discordgo.MessageUpdate) Message {
 	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
 }
 
+var logger *slog.Logger
+
 func main() {
-	folderLog, fatal := fileExist("log/")
-	if fatal {
-		return
-	}
-	if !folderLog {
-		os.Mkdir("log", 0)
-	}
-	var f *os.File
-	f, fatal = removeAndCreate("log/log.txt")
-	if fatal {
-		return
-	}
-	defer f.Close()
-	logger = slog.New(NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(f, nil)))
+	log.Init()
+	logger = log.Logger
+	// logger = slog.New(log.NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(f, nil)))
 
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -120,9 +81,9 @@ func main() {
 		return
 	}
 
-	readBible()
-	lojbanInit()
-	readWh()
+	bible.ReadBible()
+	lojban.LojbanInit()
+	wh40k.ReadWh()
 
 	lastMsg := map[string]string{}
 	bannedPeople := map[string][]string{}
@@ -240,20 +201,17 @@ func main() {
 					if words[1] == "teste" {
 						sayEmbed()
 					}
-					if words[1] == "qual?" {
-						say(search())
-					}
 				} else if len(words) >= 3 {
 					switch words[1] {
 					case "gerna":
 						text := strings.Split(message.Content, " ")[2:]
-						say(gerna(strings.Join(text, " ")))
+						say(lojban.Gerna(strings.Join(text, " ")))
 					case "sisku":
 						word := strings.Split(message.Content, " ")[2]
-						say(sisku(word))
+						say(lojban.Sisku(word))
 					case "facki":
 						text := strings.Split(message.Content, " ")[2:]
-						sayList(facki(strings.Join(text, " ")))
+						sayList(lojban.Facki(strings.Join(text, " ")))
 					case "wh40k":
 						switch words[2] {
 						case "keyword", "keywords":
@@ -263,13 +221,13 @@ func main() {
 								for i, key := range keys {
 									keys[i] = strings.TrimSpace(key)
 								}
-								sayList(KeySearch(keys))
+								sayList(wh40k.KeySearch(keys))
 							}
 						default:
 							if len(words) > 3 {
 								data := words[2]
 								id := words[3]
-								sayList(getWh(data, id))
+								sayList(wh40k.GetWh(data, id))
 							}
 						}
 					}
@@ -288,7 +246,7 @@ func main() {
 			}
 		}
 
-		text := versicle(message.Content)
+		text := bible.Versicle(message.Content)
 		if len(text) > 0 {
 			if len(text) == 1 {
 				say(text[0])
@@ -397,4 +355,5 @@ func main() {
 	<-signalChannel
 
 	logger.Info("Shutting down")
+	log.End()
 }
