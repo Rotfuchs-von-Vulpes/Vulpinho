@@ -234,7 +234,7 @@ func sisku(word string) string {
 			return response
 		}
 	}
-	return "Such lojban word does not occurr in my database."
+	return "Such lojban word does not occur in my database."
 }
 
 func facki(text string) []string {
