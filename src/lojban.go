@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"slices"
 	"strings"
 )
 
@@ -173,16 +172,16 @@ func parseNotes(note string) string {
 func parseDefinition(def string) string {
 	readingArgument := false
 	readingSubscript := false
-	defBuinder := strings.Builder{}
+	defBuilder := strings.Builder{}
 	for _, r := range def {
 		if r == '$' {
 			if readingArgument {
 				readingArgument = false
 				readingSubscript = false
-				defBuinder.WriteRune('_')
+				defBuilder.WriteRune('_')
 			} else {
 				readingArgument = true
-				defBuinder.WriteRune('_')
+				defBuilder.WriteRune('_')
 			}
 		} else {
 			if readingArgument {
@@ -196,33 +195,33 @@ func parseDefinition(def string) string {
 				}
 				switch r {
 				case '0':
-					defBuinder.WriteRune('₀')
+					defBuilder.WriteRune('₀')
 				case '1':
-					defBuinder.WriteRune('₁')
+					defBuilder.WriteRune('₁')
 				case '2':
-					defBuinder.WriteRune('₂')
+					defBuilder.WriteRune('₂')
 				case '3':
-					defBuinder.WriteRune('₃')
+					defBuilder.WriteRune('₃')
 				case '4':
-					defBuinder.WriteRune('₄')
+					defBuilder.WriteRune('₄')
 				case '5':
-					defBuinder.WriteRune('₅')
+					defBuilder.WriteRune('₅')
 				case '6':
-					defBuinder.WriteRune('₆')
+					defBuilder.WriteRune('₆')
 				case '7':
-					defBuinder.WriteRune('₇')
+					defBuilder.WriteRune('₇')
 				case '8':
-					defBuinder.WriteRune('₈')
+					defBuilder.WriteRune('₈')
 				case '9':
-					defBuinder.WriteRune('₉')
+					defBuilder.WriteRune('₉')
 				}
 			} else if r != '_' && r != '{' && r != '}' {
-				defBuinder.WriteRune(r)
+				defBuilder.WriteRune(r)
 			}
 		}
 	}
 
-	return defBuinder.String()
+	return defBuilder.String()
 }
 
 func sisku(word string) string {
@@ -258,30 +257,25 @@ func facki(text string) []string {
 		}
 	}
 	if len(final) == 0 {
-		return []string{"No literal lojban translation word has founded in the database."}
+		return []string{"No literal lojban translation word has been found in the database."}
 	}
 	return final
 }
 
 func gerna(text string) string {
-	commands := []rune{'J', 'I', 'M', 'S', 'T', 'C', 'R', 'N', 'G'}
 	words := strings.Split(text, " ")
-	invalid := false
-	for _, r := range words[0] {
-		found := slices.Contains(commands, r)
-		if !found {
-			invalid = true
-			break
-		}
+	hasArgs := false
+	if words[0] == "-m" {
+		hasArgs = true
 	}
 
 	var args []string
-	if invalid {
-		args = []string{"resources/lojban/ilmentufa/run_camxes", text}
-	} else {
-		command := words[0]
-		text, _ = strings.CutPrefix(text, command)
+	if hasArgs {
+		command := words[1]
+		text := strings.Join(words[2:], " ")
 		args = []string{"resources/lojban/ilmentufa/run_camxes", "-m", command, text}
+	} else {
+		args = []string{"resources/lojban/ilmentufa/run_camxes", text}
 	}
 	process := exec.Command("node", args...)
 	stdin, err := process.StdinPipe()
