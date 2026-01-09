@@ -52,17 +52,100 @@ func ReadBible() {
 }
 
 func Versicle(raw string) []string {
+	var abbrTab = map[string]string{
+		"gn":   "genesis",
+		"ex":   "exodo",
+		"lv":   "levitico",
+		"nr":   "numeros",
+		"dr":   "deuteronomio",
+		"js":   "josue",
+		"jz":   "juizes",
+		"rt":   "rute",
+		"1sm":  "i-samuel",
+		"2sm":  "ii-samuel",
+		"1rs":  "i-reis",
+		"2rs":  "ii-reis",
+		"1cr":  "i-cronicas",
+		"2cr":  "ii-cronicas",
+		"esd":  "esdras",
+		"ne":   "neemias",
+		"tb":   "tobias",
+		"jdt":  "judite",
+		"est":  "ester",
+		"jó":   "jo",
+		"sl":   "salmos",
+		"pr":   "proverbios",
+		"ecl":  "eclesiastes",
+		"ct":   "cantico-dos-canticos",
+		"sb":   "sabedoria",
+		"eclo": "eclesiastico",
+		"is":   "isaias",
+		"jr":   "jeremias",
+		"lm":   "lamentacoes",
+		"br":   "baruc",
+		"ez":   "ezequiel",
+		"dn":   "daniel",
+		"os":   "oseias",
+		"jl":   "joel",
+		"am":   "amos",
+		"ab":   "abdias",
+		"jn":   "jonas",
+		"mq":   "miqueias",
+		"na":   "naum",
+		"hab":  "habacuc",
+		"sf":   "sofonias",
+		"ag":   "ageu",
+		"zc":   "zacarias",
+		"ml":   "malaquias",
+		"1mac": "i-macabeus",
+		"2mac": "ii-macabeus",
+		"mt":   "sao-mateus",
+		"mc":   "sao-marcos",
+		"kc":   "sao-lucas",
+		"jo":   "sao-joao",
+		"at":   "atos-dos-apostolos",
+		"rm":   "romanos",
+		"1cor": "i-corintios",
+		"2cor": "ii-corintios",
+		"gl":   "galatas",
+		"ef":   "efesios",
+		"fl":   "filipenses",
+		"cl":   "colossenses",
+		"1ts":  "i-tessalonicenses",
+		"2ts":  "ii-tessalonicenses",
+		"1tm":  "i-timoteo",
+		"2tm":  "ii-timoteo",
+		"tt":   "tito",
+		"fm":   "filemon",
+		"hb":   "hebreus",
+		"tg":   "sao-tiago",
+		"1pd":  "i-sao-pedro",
+		"2pd":  "ii-sao-pedro",
+		"1jo":  "i-sao-joao",
+		"2jo":  "ii-sao-joao",
+		"3jo":  "iii-sao-joao",
+		"jd":   "sao-judas",
+		"ap":   "apocalipse",
+	}
+
 	p := versicleParser.GetVersicleParser(raw)
 	text := []string{}
 	if ok, ref := p.Parse(); ok {
 		for _, BookRef := range ref.Refs {
+			if v, ok := abbrTab[BookRef.Book]; ok {
+				BookRef.Book = v
+			}
 			for _, ref := range BookRef.Refs {
-				text = append(text, "**"+BookRef.Book+" "+ref.Chapter+"**")
+				first := true
 				for _, span := range ref.Spans {
 					reading := false
 					for _, line := range bible {
 						if line[1] == BookRef.Book && line[2] == ref.Chapter && line[3] == span.Init {
 							reading = true
+							if first {
+								text = append(text, "**"+BookRef.Book+" "+ref.Chapter+"**")
+								first = false
+							}
 						}
 						if reading {
 							if line[2] != ref.Chapter {

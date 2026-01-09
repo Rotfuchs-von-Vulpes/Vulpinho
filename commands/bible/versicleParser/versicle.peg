@@ -1,8 +1,0 @@
-ref: bookRef (";" __ bookRef __)* ENDMARKER
-bookRef: book __ chapterRef (";" __ chapterRef __)*
-chapterRef: chapter ("," span ("." span)*)?
-span: verse ("-" verse)?
-book: [(-|\w)+]
-chapter: [(0)!\a\a*]
-verse: [(0)!\a\a*]
-__: [( |\t|\n|\r)*]

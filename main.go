@@ -96,14 +96,11 @@ func main() {
 
 	reactReceiverMessages := []string{}
 
-	runCommands := func(message Message) bool {
-		final := false
+	runCommands := func(message Message) {
 		say := func(text string) {
-			final = true
 			discord.ChannelMessageSend(message.ChannelID, text)
 		}
 		sayList := func(list []string) {
-			final = true
 			if len(list) != 0 {
 				final := []string{""}
 				for _, text := range list {
@@ -120,7 +117,6 @@ func main() {
 			}
 		}
 		sayEmbed := func() {
-			final = true
 			embed := discordgo.MessageEmbed{}
 			embed.Title = "Título do Teste"
 			embed.Description = "Descrição do teste"
@@ -148,10 +144,10 @@ func main() {
 					waitingPong = false
 				}
 			}
-			return true
+			return
 		}
 		if len(message.Content) <= 0 {
-			return false
+			return
 		}
 
 		_, ok := minimum[serverID]
@@ -254,8 +250,6 @@ func main() {
 				sayList(text)
 			}
 		}
-
-		return final
 	}
 
 	discord.AddHandler(func(_ *discordgo.Session, reaction *discordgo.MessageReactionRemove) {

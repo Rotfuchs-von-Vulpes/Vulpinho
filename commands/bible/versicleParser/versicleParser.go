@@ -1,7 +1,7 @@
 package versicleParser
 
 import (
-	"github.com/Rotfuchs-von-Vulpes/langKit"
+	"vulpinho/commands/bible/versicleParser/langKit"
 )
 
 type Node struct {
@@ -179,7 +179,7 @@ func (s *Versicle) span() (bool, Span) {
 }
 
 func (s *Versicle) book() (bool, string) {
-	if ok, str := langKit.RunRegex(&s.scanner, "(-|\\w)+"); ok {
+	if ok, str := langKit.RunRegex(&s.scanner, "\\a?(-|\\w)+"); ok {
 		return true, str
 	}
 	return false, ""
