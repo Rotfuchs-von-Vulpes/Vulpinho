@@ -134,10 +134,10 @@ func ReadBible() {
 }
 
 func Versicle(raw string) []string {
-	if bibleIsReady {
-		p := versicleParser.GetVersicleParser(raw)
-		text := []string{}
-		if ok, ref := p.Parse(); ok {
+	p := versicleParser.GetVersicleParser(raw)
+	text := []string{}
+	if ok, ref := p.Parse(); ok {
+		if bibleIsReady {
 			for _, BookRef := range ref.Refs {
 				if v, ok := abbrTab[BookRef.Book]; ok {
 					BookRef.Book = v
@@ -167,8 +167,10 @@ func Versicle(raw string) []string {
 					}
 				}
 			}
+			return text
+		} else {
+			return []string{"Estou sem a biblia hoje!"}
 		}
-		return text
 	}
-	return []string{"Estou sem a Biblia hoje!"}
+	return []string{}
 }
