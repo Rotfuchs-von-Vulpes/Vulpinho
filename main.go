@@ -68,16 +68,15 @@ var logger *slog.Logger
 func main() {
 	log.Init()
 	logger = log.Logger
-	// logger = slog.New(log.NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(f, nil)))
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		logger.Error("Error loading .env file")
+		logger.Error("Erro ao ler arquivo .env.", "error", err.Error())
 		return
 	}
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
-		logger.Error("Error when connecting to discord", "error", err.Error())
+		logger.Error("Erro ao se conectar com o discord.", "error", err.Error())
 		return
 	}
 
@@ -323,9 +322,9 @@ func main() {
 				if err != nil {
 					if err.Error() != lastErr {
 						lastErr = err.Error()
-						logger.Error("error opening discord session", "error", err.Error())
+						logger.Error("Erro ao abrir uma sessão no Discord.", "error", err.Error())
 					}
-					logger.Info("reconnect...")
+					logger.Info("Reconectando...")
 					time.Sleep(time.Duration(seconds) * time.Second)
 					if seconds < limit {
 						seconds *= seconds
@@ -338,16 +337,16 @@ func main() {
 	}()
 
 	defer func() {
-		logger.Info("closing discord session...")
+		logger.Info("Fechando a sessão...")
 		if err := discord.Close(); err != nil {
-			logger.Error("error closing discord session", "error", err.Error())
+			logger.Error("Erro ao fechar a sessão.", "error", err.Error())
 		}
 	}()
 
-	logger.Info("Online")
+	logger.Info("Online.")
 
 	<-signalChannel
 
-	logger.Info("Shutting down")
+	logger.Info("Desligando...")
 	log.End()
 }

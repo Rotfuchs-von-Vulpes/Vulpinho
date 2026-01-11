@@ -3,7 +3,6 @@ package lojban
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"log/slog"
 	"os"
 	"os/exec"
@@ -56,20 +55,26 @@ type Dictionary struct {
 	} `xml:"direction"`
 }
 
-var logger *slog.Logger
 var lojbanDictionary Dictionary
 var ph_lu map[string]string
 
+var logger *slog.Logger
+var dictReadyToRead bool
+
 func LojbanInit() {
-	logger := log.Logger
+	logger = log.Logger
 	filePath := "resources/lojban/dictionary/jbovlaste-en.xml"
 	f, err := os.ReadFile(filePath)
 	if err != nil {
-		logger.Error("unable to read input file "+filePath, "error", err)
+		logger.Error("Incapaz de ler o arquivo "+filePath, "error", err)
+		dictReadyToRead = false
+		return
 	}
 
 	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
-		logger.Error("unable to parse xml file", "error", err)
+		logger.Error("Incapaz de parsear XML", "error", err)
+		dictReadyToRead = false
+		return
 	}
 
 	ph_lu = make(map[string]string)
@@ -126,6 +131,8 @@ func LojbanInit() {
 	ph_lu["k"] = "k"
 	ph_lu["p"] = "p"
 	ph_lu["t"] = "t"
+	dictReadyToRead = true
+	logger.Info("Todos os dados sobre Lojban foram carregados com sucesso.")
 }
 
 func toIPA(text string) string {
@@ -149,7 +156,7 @@ func toIPA(text string) string {
 		if !ok {
 			symbol, ok = ph_lu[char]
 			if !ok {
-				logger.Error("Undefined character: ", "char", char)
+				logger.Error("Character indefinido", "char", char)
 			}
 		} else {
 			ignoreNext = true
@@ -229,41 +236,47 @@ func parseDefinition(def string) string {
 }
 
 func Sisku(word string) string {
-	for _, valsi := range lojbanDictionary.Direction[0].Valsi {
-		if valsi.Word == word {
-			response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + parseDefinition(valsi.Definition)
-			if valsi.Notes != "" {
-				response += "\n-# " + parseNotes(valsi.Notes)
+	if dictReadyToRead {
+		for _, valsi := range lojbanDictionary.Direction[0].Valsi {
+			if valsi.Word == word {
+				response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + parseDefinition(valsi.Definition)
+				if valsi.Notes != "" {
+					response += "\n-# " + parseNotes(valsi.Notes)
+				}
+				return response
 			}
-			return response
 		}
+		return "Such lojban word does not occur in my database."
 	}
-	return "Such lojban word does not occur in my database."
+	return "Estou sem o dicionário hoje!"
 }
 
 func Facki(text string) []string {
-	final := []string{}
-	for _, nlword := range lojbanDictionary.Direction[1].Nlword {
-		if nlword.Word == text {
-			var response string
-			var valsi string
-			if nlword.Place == "" {
-				valsi = nlword.Valsi
-			} else {
-				valsi = nlword.Valsi + " (" + nlword.Place + ")"
+	if dictReadyToRead {
+		final := []string{}
+		for _, nlword := range lojbanDictionary.Direction[1].Nlword {
+			if nlword.Word == text {
+				var response string
+				var valsi string
+				if nlword.Place == "" {
+					valsi = nlword.Valsi
+				} else {
+					valsi = nlword.Valsi + " (" + nlword.Place + ")"
+				}
+				if nlword.Sense == "" {
+					response = "**" + valsi + "**"
+				} else {
+					response = "**" + valsi + "** [" + nlword.Sense + "]"
+				}
+				final = append(final, response)
 			}
-			if nlword.Sense == "" {
-				response = "**" + valsi + "**"
-			} else {
-				response = "**" + valsi + "** [" + nlword.Sense + "]"
-			}
-			final = append(final, response)
 		}
+		if len(final) == 0 {
+			return []string{"No literal lojban translation word has been found in the database."}
+		}
+		return final
 	}
-	if len(final) == 0 {
-		return []string{"No literal lojban translation word has been found in the database."}
-	}
-	return final
+	return []string{"Estou sem o dicionário hoje!"}
 }
 
 func Gerna(text string) string {
@@ -284,7 +297,7 @@ func Gerna(text string) string {
 	process := exec.Command("node", args...)
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		fmt.Println(err)
+		logger.Error("Erro ao preparar programa", "error", err.Error())
 	}
 	defer stdin.Close()
 	buf := new(bytes.Buffer)
@@ -292,7 +305,7 @@ func Gerna(text string) string {
 	process.Stderr = os.Stderr
 
 	if err = process.Start(); err != nil {
-		fmt.Println("An error occured: ", err)
+		logger.Error("Erro ao executar programa", "error", err.Error())
 	}
 	process.Wait()
 

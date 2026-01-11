@@ -14,10 +14,9 @@ import (
 var logger *slog.Logger
 
 func openWh(filePath string) [][]string {
-	logger = log.Logger
 	f1, err := os.Open("resources/warhammer/" + filePath)
 	if err != nil {
-		logger.Error("Unable to read input file "+filePath, "error", err.Error())
+		logger.Error("Incapaz de ler o arquivo.", "error", err.Error())
 		return [][]string{}
 	}
 	defer f1.Close()
@@ -27,7 +26,7 @@ func openWh(filePath string) [][]string {
 	csvReader.LazyQuotes = true
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		logger.Error("Unable to parse file as CSV for "+filePath, "error", err.Error())
+		logger.Error("Incapaz de parsear CSV.", "error", err.Error())
 		return [][]string{}
 	}
 
@@ -37,63 +36,75 @@ func openWh(filePath string) [][]string {
 }
 
 var abilities [][]string
-var data_abilities [][]string
-var detachment_abilities [][]string
-var data_detachment_abilities [][]string
+var datasheetsAbilities [][]string
+var detachmentAbilities [][]string
+var datasheetsDetachmentAbilities [][]string
 var detachments [][]string
-var data_enhancements [][]string
+var datasheetsEnhancements [][]string
 var enhancements [][]string
-var keywords [][]string
-var leader [][]string
-var models_cost [][]string
-var models [][]string
-var options [][]string
-var data_stratagems [][]string
+var datasheetsKeywords [][]string
+var datasheetsLeader [][]string
+var datasheetsModelsCost [][]string
+var datasheetsModels [][]string
+var datasheetsOptions [][]string
+var datasheetsStratagems [][]string
 var stratagems [][]string
-var unit_composition [][]string
-var data_wargear [][]string
+var datasheetsUnitComposition [][]string
+var datasheetsWargear [][]string
 var datasheets [][]string
 var factions [][]string
 
 func ReadWh() {
+	logger = log.Logger
+
 	abilities = openWh("Abilities.csv")
-	data_abilities = openWh("Datasheets_abilities.csv")
-	data_detachment_abilities = openWh("Datasheets_detachment_abilities.csv")
-	data_enhancements = openWh("Datasheets_enhancements.csv")
-	keywords = openWh("Datasheets_keywords.csv")
-	leader = openWh("Datasheets_leader.csv")
-	models_cost = openWh("Datasheets_models_cost.csv")
-	models = openWh("Datasheets_models.csv")
-	options = openWh("Datasheets_options.csv")
-	data_stratagems = openWh("Datasheets_stratagems.csv")
-	unit_composition = openWh("Datasheets_unit_composition.csv")
-	data_wargear = openWh("Datasheets_wargear.csv")
+	datasheetsAbilities = openWh("Datasheets_abilities.csv")
+	datasheetsDetachmentAbilities = openWh("Datasheets_detachment_abilities.csv")
+	datasheetsEnhancements = openWh("Datasheets_enhancements.csv")
+	datasheetsKeywords = openWh("Datasheets_keywords.csv")
+	datasheetsLeader = openWh("Datasheets_leader.csv")
+	datasheetsModelsCost = openWh("Datasheets_models_cost.csv")
+	datasheetsModels = openWh("Datasheets_models.csv")
+	datasheetsOptions = openWh("Datasheets_options.csv")
+	datasheetsStratagems = openWh("Datasheets_stratagems.csv")
+	datasheetsUnitComposition = openWh("Datasheets_unit_composition.csv")
+	datasheetsWargear = openWh("Datasheets_wargear.csv")
 	datasheets = openWh("Datasheets.csv")
 	detachments = openWh("Detachments.csv")
-	detachment_abilities = openWh("Detachment_abilities.csv")
+	detachmentAbilities = openWh("Detachment_abilities.csv")
 	factions = openWh("Factions.csv")
 	stratagems = openWh("Stratagems.csv")
 	enhancements = openWh("Enhancements.csv")
-	// all_data := [][][]string{
-	// 	abilities,
-	// 	data_abilities,
-	// 	data_detachment_abilities,
-	// 	data_enhancements,
-	// 	keywords,
-	// 	leader,
-	// 	models_cost,
-	// 	models,
-	// 	options,
-	// 	data_stratagems,
-	// 	unit_composition,
-	// 	data_wargear,
-	// 	datasheets,
-	// 	detachments,
-	// 	detachment_abilities,
-	// 	factions,
-	// 	stratagems,
-	// 	enhancements,
-	// }
+	allData := [][][]string{
+		abilities,
+		datasheetsAbilities,
+		datasheetsDetachmentAbilities,
+		datasheetsEnhancements,
+		datasheetsKeywords,
+		datasheetsLeader,
+		datasheetsModelsCost,
+		datasheetsModels,
+		datasheetsOptions,
+		datasheetsStratagems,
+		datasheetsUnitComposition,
+		datasheetsWargear,
+		datasheets,
+		detachments,
+		detachmentAbilities,
+		factions,
+		stratagems,
+		enhancements,
+	}
+	allRight := true
+	for _, data := range allData {
+		if len(data) == 0 {
+			allRight = false
+			break
+		}
+	}
+	if allRight {
+		logger.Info("Todos os dados sobre Warhammer 40k foram carregados com sucesso.")
+	}
 	// for _, data := range all_data {
 	// 	for _, line := range data {
 	// 		for _, str := range line {
@@ -274,7 +285,7 @@ func searchLineWh(data [][]string, id string) []string {
 
 func getKeywords(id string) []string {
 	result := []string{}
-	for _, line := range keywords {
+	for _, line := range datasheetsKeywords {
 		if line[0] == id {
 			result = append(result, line[1])
 		}
@@ -285,7 +296,7 @@ func getKeywords(id string) []string {
 func searchDatasheetByKeyword(key string) []string {
 	id_list := []string{}
 	unitBlackList := []string{}
-	for _, line := range keywords {
+	for _, line := range datasheetsKeywords {
 		if strings.ToLower(line[1]) == key {
 			if !slices.Contains(unitBlackList, line[0]) {
 				unitBlackList = append(unitBlackList, line[0])
@@ -300,7 +311,7 @@ func filterByKeyword(idList []string, keyword string) []string {
 	final := []string{}
 loop:
 	for _, id := range idList {
-		for _, line := range keywords {
+		for _, line := range datasheetsKeywords {
 			if line[0] == id && line[1] == keyword {
 				final = append(final, id)
 				continue loop
@@ -332,7 +343,7 @@ func KeySearch(keys []string) []string {
 		final = append(final, getUnitNameAndURL(unit))
 	}
 	if len(final) == 0 {
-		return []string{"unit with that keyword dont exist"}
+		return []string{"Unit with that keyword doesn't exist."}
 	}
 	return final
 }
@@ -343,33 +354,33 @@ func GetWh(data string, id string) []string {
 	case "abilities":
 		return searchLineWh(abilities, id)
 	case "datasheets_abilities":
-		return searchLineWh(data_abilities, id)
+		return searchLineWh(datasheetsAbilities, id)
 	case "datasheets_detachment_abilities":
-		return searchLineWh(data_detachment_abilities, id)
+		return searchLineWh(datasheetsDetachmentAbilities, id)
 	case "datasheets_enhancements":
-		return searchLineWh(data_enhancements, id)
+		return searchLineWh(datasheetsEnhancements, id)
 	case "datasheets_keywords":
-		return getKeywords(id)
+		return searchLineWh(datasheetsKeywords, id)
 	case "datasheets_leader":
-		return searchLineWh(leader, id)
+		return searchLineWh(datasheetsLeader, id)
 	case "datasheets_models_cost":
-		return searchLineWh(models_cost, id)
+		return searchLineWh(datasheetsModelsCost, id)
 	case "datasheets_models":
-		return searchLineWh(models, id)
+		return searchLineWh(datasheetsModels, id)
 	case "datasheets_options":
-		return searchLineWh(options, id)
+		return searchLineWh(datasheetsOptions, id)
 	case "datasheets_stratagems":
-		return searchLineWh(data_stratagems, id)
+		return searchLineWh(datasheetsStratagems, id)
 	case "datasheets_unit_composition":
-		return searchLineWh(unit_composition, id)
+		return searchLineWh(datasheetsUnitComposition, id)
 	case "datasheets_wargear":
-		return searchLineWh(data_wargear, id)
+		return searchLineWh(datasheetsWargear, id)
 	case "datasheets":
 		return searchLineWh(datasheets, id)
 	case "detachments":
 		return searchLineWh(detachments, id)
 	case "detachment_abilities":
-		return searchLineWh(detachment_abilities, id)
+		return searchLineWh(detachmentAbilities, id)
 	case "factions":
 		return searchLineWh(factions, id)
 	case "stratagems":
