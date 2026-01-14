@@ -290,9 +290,9 @@ func Gerna(text string) string {
 	if hasArgs {
 		command := words[1]
 		text := strings.Join(words[2:], " ")
-		args = []string{"resources/lojban/ilmentufa/run_camxes", "-m", command, text}
+		args = []string{"resources/lojban/ilmentufa/run_camxes", "-ckt", "-m", command, text}
 	} else {
-		args = []string{"resources/lojban/ilmentufa/run_camxes", text}
+		args = []string{"resources/lojban/ilmentufa/run_camxes", "-ckt", text}
 	}
 	process := exec.Command("node", args...)
 	stdin, err := process.StdinPipe()
