@@ -66,7 +66,7 @@ func ReadBible() {
 		"2mac": "ii-macabeus",
 		"mt":   "sao-mateus",
 		"mc":   "sao-marcos",
-		"kc":   "sao-lucas",
+		"lc":   "sao-lucas",
 		"jo":   "sao-joao",
 		"at":   "atos-dos-apostolos",
 		"rm":   "romanos",
