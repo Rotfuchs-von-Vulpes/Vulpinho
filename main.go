@@ -34,7 +34,6 @@ func removePonctuation(text string) string {
 func SnowflakeToUint64(snowflake string) (uint64, bool) {
 	result, err := strconv.ParseUint(snowflake, 10, 64)
 	if err != nil {
-		// logger.Error("error: %s", err.Error())
 		return 0, false
 	}
 	return result, true
@@ -84,6 +83,8 @@ func main() {
 	lojban.LojbanInit()
 	wh40k.ReadWh()
 
+	history := make(map[string][]string)
+
 	lastMsg := map[string]string{}
 	bannedPeople := map[string][]string{}
 	bannedMsg := map[string]string{}
@@ -97,10 +98,13 @@ func main() {
 
 	runCommands := func(message Message) {
 		say := func(text string) {
-			discord.ChannelMessageSend(message.ChannelID, text)
+			if m, err := discord.ChannelMessageSend(message.ChannelID, text); err == nil {
+				history[message.ID] = []string{m.ID}
+			}
 		}
 		sayList := func(list []string) {
 			if len(list) != 0 {
+				allMsgs := []string{}
 				final := []string{""}
 				for _, text := range list {
 					last := len(final) - 1
@@ -111,8 +115,11 @@ func main() {
 					}
 				}
 				for _, msg := range final {
-					discord.ChannelMessageSend(message.ChannelID, msg)
+					if m, err := discord.ChannelMessageSend(message.ChannelID, msg); err == nil {
+						allMsgs = append(allMsgs, m.ID)
+					}
 				}
+				history[message.ID] = allMsgs
 			}
 		}
 		sayEmbed := func() {
@@ -125,8 +132,8 @@ func main() {
 			author.IconURL = message.Author.AvatarURL("")
 			author.Name = message.Author.DisplayName()
 			embed.Author = &author
-			msg, err := discord.ChannelMessageSendEmbed(message.ChannelID, &embed)
-			if err == nil {
+			if msg, err := discord.ChannelMessageSendEmbed(message.ChannelID, &embed); err == nil {
+				history[message.ID] = []string{msg.ID}
 				discord.MessageReactionAdd(message.ChannelID, msg.ID, "🍇")
 				reactReceiverMessages = append(reactReceiverMessages, msg.ID)
 			}
@@ -275,6 +282,10 @@ func main() {
 	})
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageUpdate) {
+		if list, ok := history[message.ID]; ok {
+			history[message.ID] = nil
+			discord.ChannelMessagesBulkDelete(message.ChannelID, list)
+		}
 		runCommands(wrapMessageUpdate(message))
 	})
 
