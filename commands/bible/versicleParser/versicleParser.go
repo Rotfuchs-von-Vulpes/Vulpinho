@@ -140,14 +140,28 @@ func (s *Versicle) chapterRef_1() (bool, []Span) {
 
 func (s *Versicle) chapterRef() (bool, ChapterRef) {
 	node := ChapterRef{}
+	pos := s.scanner.Mark()
 	if ok, chapter := s.chapter(); ok {
 		node.Chapter = chapter
-		pos := s.scanner.Mark()
 		if ok, chapterRef_1 := s.chapterRef_1(); ok {
 			node.Spans = chapterRef_1
-		} else {
-			s.scanner.Reset(pos)
+			return true, node
 		}
+	}
+	s.scanner.Reset(pos)
+	node.Chapter = "1"
+	if ok, span := s.span(); ok {
+		node.Spans = append(node.Spans, span)
+		pos := s.scanner.Mark()
+		for {
+			if ok, chapterRef_1_1 := s.chapterRef_1_1(); ok {
+				node.Spans = append(node.Spans, chapterRef_1_1)
+				pos = s.scanner.Mark()
+			} else {
+				break
+			}
+		}
+		s.scanner.Reset(pos)
 		return true, node
 	}
 	return false, ChapterRef{}

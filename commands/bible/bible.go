@@ -2,6 +2,7 @@ package bible
 
 import (
 	"encoding/csv"
+	"fmt"
 	"log/slog"
 	"os"
 	"strconv"
@@ -11,12 +12,13 @@ import (
 
 var abbrTab map[string]string
 var bible [][]string
+var ccc [][]string
 var logger *slog.Logger
 var bibleIsReady bool
+var cccIsReady bool
 
 func ReadBible() {
 	logger = log.Logger
-	filePath := "resources/bible/bible.csv"
 	abbrTab = map[string]string{
 		"gn":   "genesis",
 		"ex":   "exodo",
@@ -92,7 +94,7 @@ func ReadBible() {
 		"jd":   "sao-judas",
 		"ap":   "apocalipse",
 	}
-	f1, err := os.Open(filePath)
+	f1, err := os.Open("resources/bible/bible.csv")
 	if err != nil {
 		logger.Error("Incapaz de ler o arquivo.", "error", err.Error())
 		bibleIsReady = false
@@ -101,14 +103,14 @@ func ReadBible() {
 	defer f1.Close()
 
 	csvReader := csv.NewReader(f1)
-	records, err := csvReader.ReadAll()
+	records1, err := csvReader.ReadAll()
 	if err != nil {
 		logger.Error("Incapaz de parsear CSV no arquivo.", "error", err.Error())
 		bibleIsReady = false
 		return
 	}
 
-	bible = records
+	bible = records1
 	bibleIsReady = true
 	logger.Info("A biblia foi carregada com sucesso.")
 
@@ -131,46 +133,91 @@ func ReadBible() {
 		}
 		f2.Close()
 	}
+
+	f3, err := os.Open("resources/bible/ccc.csv")
+	if err != nil {
+		logger.Error("Incapaz de ler o arquivo.", "error", err.Error())
+		cccIsReady = false
+		return
+	}
+	defer f1.Close()
+
+	csvReader = csv.NewReader(f3)
+	records2, err := csvReader.ReadAll()
+	if err != nil {
+		logger.Error("Incapaz de parsear CSV no arquivo.", "error", err.Error())
+		cccIsReady = false
+		return
+	}
+
+	ccc = records2
+	cccIsReady = true
+	logger.Info("O catecismo foi carregada com sucesso.")
 }
+
+type bookToRead int
+
+const (
+	t_bible bookToRead = iota
+	t_ccc
+)
 
 func Versicle(raw string) []string {
 	p := versicleParser.GetVersicleParser(raw)
 	text := []string{}
 	if ok, ref := p.Parse(); ok {
-		if bibleIsReady {
-			for _, BookRef := range ref.Refs {
-				if v, ok := abbrTab[BookRef.Book]; ok {
-					BookRef.Book = v
+		for _, BookRef := range ref.Refs {
+			var wich bookToRead
+			var book [][]string
+			if v, ok := abbrTab[BookRef.Book]; ok {
+				BookRef.Book = v
+			}
+			if BookRef.Book == "ccc" || BookRef.Book == "catechism" {
+				if !cccIsReady {
+					return []string{"Estou sem o catecismo hoje!"}
 				}
-				for _, ref := range BookRef.Refs {
-					first := true
-					for _, span := range ref.Spans {
-						reading := false
-						for _, line := range bible {
-							if line[1] == BookRef.Book && line[2] == ref.Chapter && line[3] == span.Init {
-								reading = true
-								if first {
-									text = append(text, "**"+BookRef.Book+" "+ref.Chapter+"**")
-									first = false
+				BookRef.Book = "catechism"
+				wich = t_ccc
+				book = ccc
+			} else {
+				if !bibleIsReady {
+					return []string{"Estou sem a biblia hoje!"}
+				}
+				wich = t_bible
+				book = bible
+			}
+			for _, ref := range BookRef.Refs {
+				first := true
+				for _, span := range ref.Spans {
+					reading := false
+					for _, line := range book {
+						if line[1] == BookRef.Book && line[2] == ref.Chapter && line[3] == span.Init {
+							reading = true
+							if first {
+								var title string
+								if wich == t_bible {
+									title = fmt.Sprint("**" + BookRef.Book + " " + ref.Chapter + "**")
+								} else {
+									title = "**" + BookRef.Book + "**"
 								}
+								text = append(text, title)
+								first = false
 							}
-							if reading {
-								if line[2] != ref.Chapter {
-									break
-								}
-								text = append(text, "**"+line[3]+"**. "+line[4])
-								if line[3] == span.End {
-									break
-								}
+						}
+						if reading {
+							if line[2] != ref.Chapter {
+								break
+							}
+							text = append(text, "**"+line[3]+"**. "+line[4])
+							if line[3] == span.End {
+								break
 							}
 						}
 					}
 				}
 			}
-			return text
-		} else {
-			return []string{"Estou sem a biblia hoje!"}
 		}
+		return text
 	}
 	return []string{}
 }

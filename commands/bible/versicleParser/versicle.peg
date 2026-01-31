@@ -1,0 +1,10 @@
+ref: .bookRef (";" __ .bookRef __)* ENDMARKER
+bookRef: .book __ .textRef (";" __ .textRef __)*
+textRef: .chapterRef | .versicleRef
+versicleRef: .span ("." .span)*
+chapterRef: .chapter "," .versicleRef
+span: .verse ("-" .verse)?
+book: ./\d?(-|[[:alpha:]])+/
+chapter: ./\d+/
+verse: ./\d+/
+__: /\s*/
