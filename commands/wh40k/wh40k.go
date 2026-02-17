@@ -1,10 +1,10 @@
 package wh40k
 
 import (
+	_ "embed"
 	"encoding/csv"
 	"fmt"
 	"log/slog"
-	"os"
 	"slices"
 	"strings"
 	"unicode"
@@ -13,15 +13,9 @@ import (
 
 var logger *slog.Logger
 
-func openWh(filePath string) [][]string {
-	f1, err := os.Open("resources/warhammer/" + filePath)
-	if err != nil {
-		logger.Error("Incapaz de ler o arquivo.", "error", err.Error())
-		return [][]string{}
-	}
-	defer f1.Close()
-
-	csvReader := csv.NewReader(f1)
+func openWh(data string) [][]string {
+	dataReader := strings.NewReader(data)
+	csvReader := csv.NewReader(dataReader)
 	csvReader.Comma = '|'
 	csvReader.LazyQuotes = true
 	records, err := csvReader.ReadAll()
@@ -54,27 +48,81 @@ var datasheetsWargear [][]string
 var datasheets [][]string
 var factions [][]string
 
+//go:embed data/Abilities.csv
+var Abilities string
+
+//go:embed data/Datasheets_abilities.csv
+var Datasheets_abilities string
+
+//go:embed data/Datasheets_detachment_abilities.csv
+var Datasheets_detachment_abilities string
+
+//go:embed data/Datasheets_enhancements.csv
+var Datasheets_enhancements string
+
+//go:embed data/Datasheets_keywords.csv
+var Datasheets_keywords string
+
+//go:embed data/Datasheets_leader.csv
+var Datasheets_leader string
+
+//go:embed data/Datasheets_models_cost.csv
+var Datasheets_models_cost string
+
+//go:embed data/Datasheets_models.csv
+var Datasheets_models string
+
+//go:embed data/Datasheets_options.csv
+var Datasheets_options string
+
+//go:embed data/Datasheets_stratagems.csv
+var Datasheets_stratagems string
+
+//go:embed data/Datasheets_unit_composition.csv
+var Datasheets_unit_composition string
+
+//go:embed data/Datasheets_wargear.csv
+var Datasheets_wargear string
+
+//go:embed data/Datasheets.csv
+var Datasheets string
+
+//go:embed data/Detachments.csv
+var Detachments string
+
+//go:embed data/Detachment_abilities.csv
+var Detachment_abilities string
+
+//go:embed data/Factions.csv
+var Factions string
+
+//go:embed data/Stratagems.csv
+var Stratagems string
+
+//go:embed data/Enhancements.csv
+var Enhancements string
+
 func ReadWh() {
 	logger = log.Logger
 
-	abilities = openWh("Abilities.csv")
-	datasheetsAbilities = openWh("Datasheets_abilities.csv")
-	datasheetsDetachmentAbilities = openWh("Datasheets_detachment_abilities.csv")
-	datasheetsEnhancements = openWh("Datasheets_enhancements.csv")
-	datasheetsKeywords = openWh("Datasheets_keywords.csv")
-	datasheetsLeader = openWh("Datasheets_leader.csv")
-	datasheetsModelsCost = openWh("Datasheets_models_cost.csv")
-	datasheetsModels = openWh("Datasheets_models.csv")
-	datasheetsOptions = openWh("Datasheets_options.csv")
-	datasheetsStratagems = openWh("Datasheets_stratagems.csv")
-	datasheetsUnitComposition = openWh("Datasheets_unit_composition.csv")
-	datasheetsWargear = openWh("Datasheets_wargear.csv")
-	datasheets = openWh("Datasheets.csv")
-	detachments = openWh("Detachments.csv")
-	detachmentAbilities = openWh("Detachment_abilities.csv")
-	factions = openWh("Factions.csv")
-	stratagems = openWh("Stratagems.csv")
-	enhancements = openWh("Enhancements.csv")
+	abilities = openWh(Abilities)
+	datasheetsAbilities = openWh(Datasheets_abilities)
+	datasheetsDetachmentAbilities = openWh(Datasheets_detachment_abilities)
+	datasheetsEnhancements = openWh(Datasheets_enhancements)
+	datasheetsKeywords = openWh(Datasheets_keywords)
+	datasheetsLeader = openWh(Datasheets_leader)
+	datasheetsModelsCost = openWh(Datasheets_models_cost)
+	datasheetsModels = openWh(Datasheets_models)
+	datasheetsOptions = openWh(Datasheets_options)
+	datasheetsStratagems = openWh(Datasheets_stratagems)
+	datasheetsUnitComposition = openWh(Datasheets_unit_composition)
+	datasheetsWargear = openWh(Datasheets_wargear)
+	datasheets = openWh(Datasheets)
+	detachments = openWh(Detachments)
+	detachmentAbilities = openWh(Detachment_abilities)
+	factions = openWh(Factions)
+	stratagems = openWh(Stratagems)
+	enhancements = openWh(Enhancements)
 	allData := [][][]string{
 		abilities,
 		datasheetsAbilities,

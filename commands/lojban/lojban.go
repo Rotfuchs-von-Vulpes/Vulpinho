@@ -2,6 +2,7 @@ package lojban
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/xml"
 	"log/slog"
 	"os"
@@ -55,6 +56,9 @@ type Dictionary struct {
 	} `xml:"direction"`
 }
 
+//go:embed jbovlaste-en.xml
+var lojbanDictionaryRaw []byte
+
 var lojbanDictionary Dictionary
 var ph_lu map[string]string
 
@@ -63,15 +67,8 @@ var dictReadyToRead bool
 
 func LojbanInit() {
 	logger = log.Logger
-	filePath := "resources/lojban/dictionary/jbovlaste-en.xml"
-	f, err := os.ReadFile(filePath)
-	if err != nil {
-		logger.Error("Incapaz de ler o arquivo "+filePath, "error", err)
-		dictReadyToRead = false
-		return
-	}
 
-	if err := xml.Unmarshal(f, &lojbanDictionary); err != nil {
+	if err := xml.Unmarshal(lojbanDictionaryRaw, &lojbanDictionary); err != nil {
 		logger.Error("Incapaz de parsear XML", "error", err)
 		dictReadyToRead = false
 		return
