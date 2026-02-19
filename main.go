@@ -15,6 +15,7 @@ import (
 	"vulpinho/commands/lojban"
 	"vulpinho/commands/wh40k"
 	"vulpinho/log"
+	"vulpinho/update"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -68,6 +69,20 @@ func main() {
 	log.Init()
 	logger = log.Logger
 
+	args := os.Args[1:]
+	isTest := false
+
+	if len(args) > 0 {
+		switch args[0] {
+		case "update":
+			logger.Info("Atualizando dados sobre Warhammer 40k")
+			update.UpdateWarhammer()
+			return
+		case "test":
+			isTest = true
+		}
+	}
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		logger.Error("Erro ao ler arquivo .env.", "error", err.Error())
@@ -82,6 +97,10 @@ func main() {
 	bible.ReadBible()
 	lojban.LojbanInit()
 	wh40k.ReadWh()
+
+	if isTest {
+		return
+	}
 
 	history := make(map[string][]string)
 
