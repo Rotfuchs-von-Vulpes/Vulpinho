@@ -1,9 +1,8 @@
 module vulpinho
 
-go 1.25.0
+go 1.26.0
 
 require (
-	github.com/Rotfuchs-von-Vulpes/langKit v0.0.0-20260104011023-0fe287b38609
 	github.com/bwmarrin/discordgo v0.29.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/joho/godotenv v1.5.1

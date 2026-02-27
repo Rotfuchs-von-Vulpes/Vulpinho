@@ -7,10 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"vulpinho/log"
 )
-
-var logger *slog.Logger
 
 func DownloadFile(source string) error {
 	resp, err := http.Get(source)
@@ -34,7 +31,6 @@ func DownloadFile(source string) error {
 }
 
 func UpdateWarhammer() {
-	logger = log.Logger
 	sources := []string{
 		"http://wahapedia.ru/wh40k10ed/Abilities.csv",
 		"http://wahapedia.ru/wh40k10ed/Datasheets_abilities.csv",
@@ -58,11 +54,11 @@ func UpdateWarhammer() {
 
 	for _, source := range sources {
 		if err := DownloadFile(source); err != nil {
-			logger.Error("Erro ao atualizar dados de Warhammer 40k", "error", err)
+			slog.Error("Erro ao atualizar dados de Warhammer 40k", "error", err)
 			break
 		}
-		logger.Info("Arquivo carregado com sucesso", "file", filepath.Base(source))
+		slog.Info("Arquivo carregado com sucesso", "file", filepath.Base(source))
 	}
 
-	logger.Info("Dados sobre Warhammer atualizado com sucesso")
+	slog.Info("Dados sobre Warhammer atualizado com sucesso")
 }

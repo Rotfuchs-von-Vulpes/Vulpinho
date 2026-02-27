@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"vulpinho/commands/bible/versicleParser"
-	"vulpinho/log"
 )
 
 //go:embed catholicism/bible.csv
@@ -21,12 +20,10 @@ var cccRaw string
 var abbrTab map[string]string
 var bible [][]string
 var ccc [][]string
-var logger *slog.Logger
 var bibleIsReady bool
 var cccIsReady bool
 
 func ReadBible() {
-	logger = log.Logger
 	abbrTab = map[string]string{
 		"gn":   "genesis",
 		"ex":   "exodo",
@@ -108,18 +105,18 @@ func ReadBible() {
 
 	records1, err := bibleCsvReader.ReadAll()
 	if err != nil {
-		logger.Error("Incapaz de parsear CSV no arquivo da biblia.", "error", err.Error())
+		slog.Error("Incapaz de parsear CSV no arquivo da biblia.", "error", err.Error())
 		bibleIsReady = false
 		return
 	}
 
 	bible = records1
 	bibleIsReady = true
-	logger.Info("A biblia foi carregada com sucesso.")
+	slog.Info("A biblia foi carregada com sucesso.")
 
 	f2, missingError := os.Create("resources/bible/missing.txt")
 	if missingError != nil {
-		logger.Error("Incapaz de criar arquivo com a lista de versiculos faltantes.", "error", missingError.Error())
+		slog.Error("Incapaz de criar arquivo com a lista de versiculos faltantes.", "error", missingError.Error())
 	} else {
 		var previous int64 = 0
 		for _, line := range bible {
@@ -141,14 +138,14 @@ func ReadBible() {
 	cccCsvReader := csv.NewReader(cccReader)
 	records2, err := cccCsvReader.ReadAll()
 	if err != nil {
-		logger.Error("Incapaz de parsear CSV no arquivo do catecismo.", "error", err.Error())
+		slog.Error("Incapaz de parsear CSV no arquivo do catecismo.", "error", err.Error())
 		cccIsReady = false
 		return
 	}
 
 	ccc = records2
 	cccIsReady = true
-	logger.Info("O catecismo foi carregado com sucesso.")
+	slog.Info("O catecismo foi carregado com sucesso.")
 }
 
 type bookToRead int

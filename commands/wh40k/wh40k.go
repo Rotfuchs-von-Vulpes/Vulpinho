@@ -8,10 +8,7 @@ import (
 	"slices"
 	"strings"
 	"unicode"
-	"vulpinho/log"
 )
-
-var logger *slog.Logger
 
 func openWh(data string) [][]string {
 	dataReader := strings.NewReader(data)
@@ -20,7 +17,7 @@ func openWh(data string) [][]string {
 	csvReader.LazyQuotes = true
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		logger.Error("Incapaz de parsear CSV.", "error", err.Error())
+		slog.Error("Incapaz de parsear CSV.", "error", err.Error())
 		return [][]string{}
 	}
 
@@ -103,8 +100,6 @@ var Stratagems string
 var Enhancements string
 
 func ReadWh() {
-	logger = log.Logger
-
 	abilities = openWh(Abilities)
 	datasheetsAbilities = openWh(Datasheets_abilities)
 	datasheetsDetachmentAbilities = openWh(Datasheets_detachment_abilities)
@@ -151,7 +146,7 @@ func ReadWh() {
 		}
 	}
 	if allRight {
-		logger.Info("Todos os dados sobre Warhammer 40k foram carregados com sucesso.")
+		slog.Info("Todos os dados sobre Warhammer 40k foram carregados com sucesso.")
 	}
 	// for _, data := range all_data {
 	// 	for _, line := range data {

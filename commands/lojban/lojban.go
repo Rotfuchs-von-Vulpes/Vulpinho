@@ -8,7 +8,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"vulpinho/log"
 )
 
 type Dictionary struct {
@@ -62,14 +61,11 @@ var lojbanDictionaryRaw []byte
 var lojbanDictionary Dictionary
 var ph_lu map[string]string
 
-var logger *slog.Logger
 var dictReadyToRead bool
 
 func LojbanInit() {
-	logger = log.Logger
-
 	if err := xml.Unmarshal(lojbanDictionaryRaw, &lojbanDictionary); err != nil {
-		logger.Error("Incapaz de parsear XML", "error", err)
+		slog.Error("Incapaz de parsear XML", "error", err)
 		dictReadyToRead = false
 		return
 	}
@@ -129,7 +125,7 @@ func LojbanInit() {
 	ph_lu["p"] = "p"
 	ph_lu["t"] = "t"
 	dictReadyToRead = true
-	logger.Info("Todos os dados sobre Lojban foram carregados com sucesso.")
+	slog.Info("Todos os dados sobre Lojban foram carregados com sucesso.")
 }
 
 func toIPA(text string) string {
@@ -153,7 +149,7 @@ func toIPA(text string) string {
 		if !ok {
 			symbol, ok = ph_lu[char]
 			if !ok {
-				logger.Error("Character indefinido", "char", char)
+				slog.Error("Character indefinido", "char", char)
 			}
 		} else {
 			ignoreNext = true
@@ -294,7 +290,7 @@ func Gerna(text string) string {
 	process := exec.Command("node", args...)
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		logger.Error("Erro ao preparar programa", "error", err.Error())
+		slog.Error("Erro ao preparar programa", "error", err.Error())
 	}
 	defer stdin.Close()
 	buf := new(bytes.Buffer)
@@ -302,7 +298,7 @@ func Gerna(text string) string {
 	process.Stderr = os.Stderr
 
 	if err = process.Start(); err != nil {
-		logger.Error("Erro ao executar programa", "error", err.Error())
+		slog.Error("Erro ao executar programa", "error", err.Error())
 	}
 	process.Wait()
 

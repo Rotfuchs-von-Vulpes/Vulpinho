@@ -8,8 +8,6 @@ import (
 	"sync"
 )
 
-var Logger *slog.Logger
-
 type CopyHandler struct {
 	mu  *sync.Mutex
 	out []slog.Handler // all the destinations
@@ -98,13 +96,15 @@ func removeAndCreate(path string) (*os.File, bool) {
 
 var logFile *os.File
 
-func Init() {
+func Init() bool {
 	fatal := false
 	logFile, fatal = removeAndCreate("log/log.txt")
 	if fatal {
-		return
+		return true
 	}
-	Logger = slog.New(NewCopyHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewTextHandler(logFile, nil)))
+	logger := slog.New(slog.NewMultiHandler(slog.NewTextHandler(os.Stdout, nil), slog.NewJSONHandler(logFile, nil)))
+	slog.SetDefault(logger)
+	return false
 }
 
 func End() {

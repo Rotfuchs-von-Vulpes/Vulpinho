@@ -63,11 +63,10 @@ func wrapMessageUpdate(message *discordgo.MessageUpdate) Message {
 	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
 }
 
-var logger *slog.Logger
-
 func main() {
-	log.Init()
-	logger = log.Logger
+	if log.Init() {
+		return
+	}
 
 	args := os.Args[1:]
 	isTest := false
@@ -75,7 +74,7 @@ func main() {
 	if len(args) > 0 {
 		switch args[0] {
 		case "update":
-			logger.Info("Atualizando dados sobre Warhammer 40k")
+			slog.Info("Atualizando dados sobre Warhammer 40k")
 			update.UpdateWarhammer()
 			return
 		case "test":
@@ -85,12 +84,12 @@ func main() {
 
 	err := godotenv.Load(".env")
 	if err != nil {
-		logger.Error("Erro ao ler arquivo .env.", "error", err.Error())
+		slog.Error("Erro ao ler arquivo .env.", "error", err.Error())
 		return
 	}
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
-		logger.Error("Erro ao se conectar com o discord.", "error", err.Error())
+		slog.Error("Erro ao se conectar com o discord.", "error", err.Error())
 		return
 	}
 
@@ -352,9 +351,9 @@ func main() {
 				if err != nil {
 					if err.Error() != lastErr {
 						lastErr = err.Error()
-						logger.Error("Erro ao abrir uma sessão no Discord.", "error", err.Error())
+						slog.Error("Erro ao abrir uma sessão no Discord.", "error", err.Error())
 					}
-					logger.Info("Reconectando...")
+					slog.Info("Reconectando...")
 					time.Sleep(time.Duration(seconds) * time.Second)
 					if seconds < limit {
 						seconds *= seconds
@@ -367,16 +366,16 @@ func main() {
 	}()
 
 	defer func() {
-		logger.Info("Fechando a sessão...")
+		slog.Info("Fechando a sessão...")
 		if err := discord.Close(); err != nil {
-			logger.Error("Erro ao fechar a sessão.", "error", err.Error())
+			slog.Error("Erro ao fechar a sessão.", "error", err.Error())
 		}
 	}()
 
-	logger.Info("Online.")
+	slog.Info("Online.")
 
 	<-signalChannel
 
-	logger.Info("Desligando...")
+	slog.Info("Desligando...")
 	log.End()
 }
