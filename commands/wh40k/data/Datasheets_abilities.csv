@@ -7030,3 +7030,21 @@
 000004196|2|000008344||||Core|7"|
 000004196|3|000009894||||||
 000004196|4|||Raid and Run|At the end of the Fight phase, if this unit was eligible to fight this phase, and is not within Engagement Range of one or more enemy units, it can make a Normal move of up to D3+3". Otherwise, if this unit was eligible to fight this phase, this unit can make a Fall Back move of up to D3+3".|Datasheet||
+000004197|1|000008346||||Core||
+000004197|2|000008344||||Core|7"|
+000004197|3|000009894||||Faction||
+000004197|4|||Aethersense (Psychic)|Enemy units that are set up on the battlefield from Reserves cannot be set up within 12" of this model.|Datasheet||
+000004197|5|||Fury of the Void (Psychic)|In your Shooting phase, after this model’s unit has shot, select one enemy unit hit by one or more attacks made with this model’s Dread of the Deep Void. Until the end of the turn, that unit is riven. Each time an <span class="kwb">AELDARI</span> model from your army makes an attack that targets a riven unit, add 1 to the Strength characteristic of that attack.|Datasheet||
+000004198|1|000008346||||Core||
+000004198|2|000008344||||Core|7"|
+000004198|3|000009894||||Faction||
+000004198|4|||Piratical Hero|While this model is leading a unit, each time a model in that unit makes an attack, that attack has the [SUSTAINED HITS 1] ability and add 1 to the Hit roll.|Datasheet||
+000004198|5|||Prince of Corsairs|After both players have deployed their armies, if this unit is on the battlefield (or any Transport it is embarked within is on the battlefield), select up to three <span class="kwb">AELDARI</span> units from your army and redeploy them. When doing so, you can set those units up in Strategic Reserves, regardless of how many units are already in Strategic Reserves. |Datasheet||
+000004199|1|000008343||||Core||
+000004199|2|000008344||||Core|7"|
+000004199|3|000009894||||||
+000004199|4|||Raid and Run|At the end of the Fight phase, if this unit was eligible to fight this phase, and is not within Engagement Range of one or more enemy units, it can make a Normal move of up to D3+3". Otherwise, if this unit was eligible to fight this phase, this unit can make a Fall Back move of up to D3+3".|Datasheet||
+000004200|1|000008339||||Core|1|
+000004200|2|000008344||||Core|7"|
+000004200|3|000009894||||Faction||
+000004200|4|||Hallucinogen Grenades|At the start of your opponent’s Shooting phase, this unit can use this ability. If it does, select one Aeldari Infantry unit from your army visible to and within 36" of this unit: until the end of the phase, that unit has the Stealth ability.|Datasheet||
