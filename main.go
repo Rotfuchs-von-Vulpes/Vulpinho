@@ -82,6 +82,14 @@ func main() {
 		}
 	}
 
+	bible.ReadBible()
+	lojban.LojbanInit()
+	wh40k.ReadWh()
+
+	if isTest {
+		return
+	}
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		slog.Error("Erro ao ler arquivo .env.", "error", err.Error())
@@ -90,14 +98,6 @@ func main() {
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
 		slog.Error("Erro ao se conectar com o discord.", "error", err.Error())
-		return
-	}
-
-	bible.ReadBible()
-	lojban.LojbanInit()
-	wh40k.ReadWh()
-
-	if isTest {
 		return
 	}
 
