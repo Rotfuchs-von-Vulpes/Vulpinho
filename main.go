@@ -82,6 +82,7 @@ func main() {
 		}
 	}
 
+	update.GetLastEdit()
 	bible.ReadBible()
 	lojban.LojbanInit()
 	wh40k.ReadWh()

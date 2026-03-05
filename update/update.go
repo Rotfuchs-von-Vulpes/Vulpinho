@@ -1,16 +1,19 @@
 package update
 
 import (
+	"encoding/csv"
 	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func DownloadFile(source string) error {
-	resp, err := http.Get(source)
+func downloadFile(url string) error {
+	fileName := filepath.Base(url)
+	resp, err := http.Get(url)
 	if err != nil {
 		return err
 	}
@@ -20,13 +23,19 @@ func DownloadFile(source string) error {
 		return fmt.Errorf("Bad status code: %s", resp.Status)
 	}
 
-	out, err := os.Create("commands/wh40k/data/" + filepath.Base(source))
+	out, err := os.Create("resources/wh40k/" + fileName)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
 
 	_, err = io.Copy(out, resp.Body)
+
+	if err == nil {
+		slog.Info("Arquivo carregado com sucesso", "file", fileName)
+		return nil
+	}
+
 	return err
 }
 
@@ -52,13 +61,64 @@ func UpdateWarhammer() {
 		"http://wahapedia.ru/wh40k10ed/Enhancements.csv",
 	}
 
+	errOcurr := false
 	for _, source := range sources {
-		if err := DownloadFile(source); err != nil {
+		if err := downloadFile(source); err != nil {
 			slog.Error("Erro ao atualizar dados de Warhammer 40k", "error", err)
-			break
+			errOcurr = true
+			continue
 		}
-		slog.Info("Arquivo carregado com sucesso", "file", filepath.Base(source))
 	}
 
-	slog.Info("Dados sobre Warhammer atualizado com sucesso")
+	if !errOcurr {
+		slog.Info("Dados sobre Warhammer atualizado com sucesso")
+	}
+}
+
+func GetLastEdit() {
+	if err := downloadFile("http://wahapedia.ru/wh40k10ed/Last_update.csv"); err != nil {
+		slog.Error("Erro ao fazer o download da data da ultima edição.", "error", err)
+		return
+	}
+
+	file, err := os.Open("resources/wh40k/Last_update.csv")
+	if err != nil {
+		slog.Error("Erro ao abrir arquivo de ultima edição.", "err", err)
+		return
+	}
+	defer file.Close()
+
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = '|'
+	csvReader.LazyQuotes = true
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		slog.Error("Incapaz de parsear CSV.", "error", err.Error())
+		return
+	}
+
+	records[0][0], _ = strings.CutPrefix(records[0][0], string(rune(65279)))
+	lastUpEdit := records[1][0]
+
+	dummyFile, err := os.Open("resources/wh40k/dummy.txt")
+	if err != nil {
+		slog.Error("Incapaz de abrir arquivo da data do ultimo download.", "err", err)
+		return
+	}
+	defer dummyFile.Close()
+
+	var dummyDate string
+	if content, err := io.ReadAll(dummyFile); err == nil {
+		dummyDate = string(content)
+	} else {
+		slog.Error("Incapaz de ler arquivo.", "err", err)
+		return
+	}
+
+	if dummyDate != lastUpEdit {
+		slog.Info("Atualizando dados sobre Warhammer")
+		UpdateWarhammer()
+		dummyFile.Truncate(0)
+		dummyFile.WriteString(lastUpEdit)
+	}
 }
