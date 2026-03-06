@@ -100,7 +100,7 @@ func GetLastEdit() {
 	records[0][0], _ = strings.CutPrefix(records[0][0], string(rune(65279)))
 	lastUpEdit := records[1][0]
 
-	dummyFile, err := os.Open("resources/wh40k/dummy.txt")
+	dummyFile, err := os.OpenFile("resources/wh40k/dummy.txt", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		slog.Error("Incapaz de abrir arquivo da data do ultimo download.", "err", err)
 		return
@@ -119,6 +119,7 @@ func GetLastEdit() {
 		slog.Info("Atualizando dados sobre Warhammer")
 		UpdateWarhammer()
 		dummyFile.Truncate(0)
+		dummyFile.Seek(0, 0)
 		dummyFile.WriteString(lastUpEdit)
 	}
 }
