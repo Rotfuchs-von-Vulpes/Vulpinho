@@ -4033,9 +4033,9 @@
 000002360|4|||The Silent King|While a friendly <span class="kwb">NECRONS</span> unit is within 6" of this unit’s Szarekh model, improve that unit’s Leadership characteristic by 1.|Datasheet||
 000002360|5|||SUPREME COMMANDER|If this unit is in your army, it must be your Warlord.|Special (правая колонка)||
 000002360|6|||TRIARCHAL MENHIRS|If this unit’s Szarekh model is destroyed, all of this unit’s remaining Triarchal Menhir models are also destroyed.|Special (правая колонка)||
-000002360|7|||Phaeron of the Stars (Aura)|While a friendly <span class="kwb">NECRONS</span> unit is within 6" of this unit’s Szarekh model, each time a model in that unit makes an attack, re-roll a Hit roll of 1 and re-roll a Wound roll of 1.|Primarch||
-000002360|8|||Phaeron of the Blades (Aura)|While a friendly <span class="kwb">NECRONS</span> unit is within 6" of this unit’s Szarekh model, you can re-roll Charge rolls made for that unit and each time a model in that unit makes a melee attack, add 1 to the Strength characteristic of that attack.|Primarch||
-000002360|9|||Relentless March (Aura)|While a friendly <span class="kwb">NECRONS</span> unit is within 6" of this unit’s Szarekh model, add 2" to the Move characteristic of models in that unit.|Primarch||
+000002360|7|||Phaeron of the Stars (Aura)|While a friendly <span class="kwb">NECRONS</span> unit (excluding Monster units) is within 6" of this unit’s Szarekh model, each time a model in that unit makes an attack, re-roll a Hit roll of 1 and re-roll a Wound roll of 1.|Primarch||
+000002360|8|||Phaeron of the Blades (Aura)|While a friendly <span class="kwb">NECRONS</span> unit (excluding Monster units) is within 6" of this unit’s Szarekh model, you can re-roll Charge rolls made for that unit and each time a model in that unit makes a melee attack, add 1 to the Strength characteristic of that attack.|Primarch||
+000002360|9|||Relentless March (Aura)|While a friendly <span class="kwb">NECRONS</span> unit (excluding Monster units) is within 6" of this unit’s Szarekh model, add 2" to the Move characteristic of models in that unit.|Primarch||
 000002361|1|000008369||||Faction||
 000002361|2|||Reanimation Nodes (Aura)|While a friendly Necrons Infantry unit is within 6" of this Fortification, models in that unit have Feel No Pain 6+ ability.|Datasheet||
 000002361|3|||Ancient Cover|Each time a ranged attack is allocated to a model, if that model is not fully visible to every model in the attacking unit because of this <span class="kwb">FORTIFICATION</span>, that model has the Benefit of Cover against that attack.|Datasheet||
@@ -7048,3 +7048,20 @@
 000004200|2|000008344||||Core|7"|
 000004200|3|000009894||||Faction||
 000004200|4|||Hallucinogen Grenades|At the start of your opponent’s Shooting phase, this unit can use this ability. If it does, select one Aeldari Infantry unit from your army visible to and within 36" of this unit: until the end of the phase, that unit has the Stealth ability.|Datasheet||
+000004201|1|000008338||||Core|4+|
+000004201|2|000008346||||Core||
+000004201|3|000010432||||Faction||
+000004201|4|||Break the Foe|Melee weapons equipped by models in this model’s unit have the [SUSTAINED HITS 1] ability.|Datasheet||
+000004201|5|||Relentless Avalanche|You can target this model’s unit with the Heroic Intervention Stratagem for 0CP, and can do so even if you have already targeted a different unit with that Stratagem this phase.|Datasheet||
+000004202|1|000008346||||Core||
+000004202|2|000000707||||Faction||
+000004202|3|000000705||||Faction||
+000004202|4|||Alpha Warrior|Weapons equipped by models in this model’s unit have the [SUSTAINED HITS 1] ability.|Datasheet||
+000004202|5|||Aggressive Leader-beast|In your opponent’s Shooting phase, each time an enemy unit has shot, if any models from this unit were destroyed as a result of those attacks, this unit can make a Surge move. To do so, roll one D6: models in this unit move a number of inches up to this result, but this unit must end that move as close as possible to the closest enemy unit (excluding <span class="kwb">AIRCRAFT</span>). When doing so, those models can be moved within Engagement Range of that enemy unit. This unit cannot make a Surge move while it is Battle-shocked or within Engagement Range of one or more enemy units, and can only make one Surge move per phase.|Datasheet||
+000004203|1|000008343||||Core||
+000004203|2|000008344||||Core|8"|
+000004203|3|000008439||||Faction||
+000004203|4|||Exemplars of Mont’ka|Each time a model in this unit makes a ranged attack that targets the closest eligible target, that attack has the [SUSTAINED HITS 1] and [IGNORES COVER] abilities.|Datasheet||
+000004203|5|||Neocapacitor Shields|At the start of your opponent’s Charge phase, you can select one enemy unit (excluding <span class="kwb">MONSTER</span> and <span class="kwb">VEHICLE</span> units) within 12" of this unit. That unit must take a Battle-shock test and, until the end of the turn, subtract 1 from Charge rolls made for that unit.|Datasheet||
+000004203|6|||Retro-thrusters|At the end of the Fight phase, this unit can either make a Normal move of up to 6" or a Fall Back move.|Datasheet||
+000004203|7|||MV15 Gun Drone|The bearer is equipped with 1 twin pulse blaster.|Wargear||
