@@ -1,5 +1,7 @@
 .env
 .vscode/
 log/log.txt
+resources/wh40k/*.csv
+resources/wh40k/dummy.txt
 
 *.exe
