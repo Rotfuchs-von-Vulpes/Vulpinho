@@ -225,14 +225,14 @@ func main() {
 				} else if len(words) >= 3 {
 					switch words[1] {
 					case "gerna":
-						text := strings.Split(message.Content, " ")[2:]
-						say(lojban.Gerna(strings.Join(text, " ")))
+						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
+						say(lojban.Gerna(text))
 					case "sisku":
 						word := strings.Split(message.Content, " ")[2]
 						say(lojban.Sisku(word))
 					case "facki":
-						text := strings.Split(message.Content, " ")[2:]
-						sayList(lojban.Facki(strings.Join(text, " ")))
+						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
+						sayList(lojban.Facki(text))
 					case "wh40k":
 						switch words[2] {
 						case "keyword", "keywords":
