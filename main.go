@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -12,6 +13,7 @@ import (
 	"time"
 	"unicode"
 	"vulpinho/commands/bible"
+	"vulpinho/commands/chemistry"
 	"vulpinho/commands/lojban"
 	"vulpinho/commands/wh40k"
 	"vulpinho/log"
@@ -86,6 +88,7 @@ func main() {
 	bible.ReadBible()
 	lojban.LojbanInit()
 	wh40k.ReadWh()
+	chemistry.Init()
 
 	if isTest {
 		return
@@ -156,6 +159,9 @@ func main() {
 				discord.MessageReactionAdd(message.ChannelID, msg.ID, "🍇")
 				reactReceiverMessages = append(reactReceiverMessages, msg.ID)
 			}
+		}
+		sayImage := func(imageBuffer io.Reader) {
+			discord.ChannelFileSend(message.ChannelID, "smilesImage.png", imageBuffer)
 		}
 
 		channelID := message.ChannelID
@@ -250,6 +256,11 @@ func main() {
 								id := words[3]
 								sayList(wh40k.GetWh(data, id))
 							}
+						}
+					case "smiles":
+						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
+						if buff, ok := chemistry.Smiles(text); ok {
+							sayImage(buff)
 						}
 					}
 				}
