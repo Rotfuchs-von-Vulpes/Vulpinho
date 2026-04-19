@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path"
 	"slices"
 	"strings"
 	"unicode"
@@ -13,7 +14,7 @@ import (
 func openWh(filePath string) [][]string {
 	f1, err := os.Open("resources/wh40k/" + filePath)
 	if err != nil {
-		slog.Error("Incapaz de ler o arquivo.", "error", err.Error())
+		slog.Error("Incapaz de ler o arquivo.", "error", err.Error(), "arquivo", path.Base(filePath))
 		return [][]string{}
 	}
 	defer f1.Close()
@@ -23,7 +24,7 @@ func openWh(filePath string) [][]string {
 	csvReader.LazyQuotes = true
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		slog.Error("Incapaz de parsear CSV.", "error", err.Error())
+		slog.Error("Incapaz de parsear CSV.", "error", err.Error(), "arquivo", path.Base(filePath))
 		return [][]string{}
 	}
 
