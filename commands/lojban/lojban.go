@@ -290,7 +290,7 @@ func Gerna(text string) string {
 	process := exec.Command("node", args...)
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		slog.Error("Erro ao preparar programa", "error", err.Error())
+		slog.Error("Erro ao preparar o programa NodeJS", "error", err.Error())
 	}
 	defer stdin.Close()
 	buf := new(bytes.Buffer)
@@ -298,7 +298,7 @@ func Gerna(text string) string {
 	process.Stderr = os.Stderr
 
 	if err = process.Start(); err != nil {
-		slog.Error("Erro ao executar programa", "error", err.Error())
+		slog.Error("Erro ao executar o programa NodeJS", "error", err.Error())
 	}
 	process.Wait()
 

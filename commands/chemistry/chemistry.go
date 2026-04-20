@@ -20,7 +20,7 @@ func convertSvgToPng(in *bytes.Buffer) (out bytes.Buffer, ok bool) {
 	cmd.Stderr = &stderr
 
 	if err := cmd.Run(); err != nil {
-		slog.Error("Não foi possivel executar o programa", "error", err.Error())
+		slog.Error("Não foi possivel executar o programa Inkscape", "error", err.Error())
 		return
 	}
 
@@ -40,7 +40,7 @@ func Smiles(code string) (out io.Reader, ok bool) {
 	process := exec.Command("obabel", args...)
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		slog.Error("Erro ao preparar programa", "error", err.Error())
+		slog.Error("Erro ao preparar programa Open Babel", "error", err.Error())
 		return
 	}
 	defer stdin.Close()
@@ -48,7 +48,7 @@ func Smiles(code string) (out io.Reader, ok bool) {
 	process.Stdout = svg
 
 	if err = process.Run(); err != nil {
-		slog.Error("Erro ao executar programa", "error", err.Error())
+		slog.Error("Erro ao executar programa Open Babel", "error", err.Error())
 		return
 	}
 

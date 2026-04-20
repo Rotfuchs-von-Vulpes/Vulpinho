@@ -122,6 +122,8 @@ func main() {
 		say := func(text string) {
 			if m, err := discord.ChannelMessageSend(message.ChannelID, text); err == nil {
 				history[message.ID] = []string{m.ID}
+			} else {
+				slog.Error("Não foi possivel enviar mensagem", "error", err.Error())
 			}
 		}
 		sayList := func(list []string) {
@@ -139,6 +141,8 @@ func main() {
 				for _, msg := range final {
 					if m, err := discord.ChannelMessageSend(message.ChannelID, msg); err == nil {
 						allMsgs = append(allMsgs, m.ID)
+					} else {
+						slog.Error("Não foi possivel enviar mensagem", "error", err.Error())
 					}
 				}
 				history[message.ID] = allMsgs
@@ -158,10 +162,16 @@ func main() {
 				history[message.ID] = []string{msg.ID}
 				discord.MessageReactionAdd(message.ChannelID, msg.ID, "🍇")
 				reactReceiverMessages = append(reactReceiverMessages, msg.ID)
+			} else {
+				slog.Error("Não foi possivel enviar embed", "error", err.Error())
 			}
 		}
 		sayImage := func(imageBuffer io.Reader) {
-			discord.ChannelFileSend(message.ChannelID, "smilesImage.png", imageBuffer)
+			if msg, err := discord.ChannelFileSend(message.ChannelID, "smilesImage.png", imageBuffer); err == nil {
+				history[message.ID] = []string{msg.ID}
+			} else {
+				slog.Error("Não foi possivel enviar imagem", "error", err.Error())
+			}
 		}
 
 		channelID := message.ChannelID
