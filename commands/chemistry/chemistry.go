@@ -36,27 +36,28 @@ func convertSvgToPng(in *bytes.Buffer) (out bytes.Buffer, ok bool) {
 }
 
 func Smiles(code string) (out io.Reader, ok bool) {
-	args := []string{"-:" + code, "-osvg", "-xb", "none", "-xB", "white"}
-	process := exec.Command("obabel", args...)
+	process := exec.Command("smiles2img", code, "-f", "PNG", "-s", "512", "512", "--stdout")
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		slog.Error("Erro ao preparar programa Open Babel", "error", err.Error())
+		slog.Error("Não foi possivel preparar comando ao programa Open Babel", "error", err.Error())
 		return
 	}
 	defer stdin.Close()
-	svg := new(bytes.Buffer)
-	process.Stdout = svg
+	png := new(bytes.Buffer)
+	errBuff := new(bytes.Buffer)
+	process.Stdout = png
+	process.Stderr = errBuff
 
 	if err = process.Run(); err != nil {
 		slog.Error("Erro ao executar programa Open Babel", "error", err.Error())
+		if errBuff.Len() > 0 {
+			slog.Error("Erro interno do Open Babel", "error", errBuff.String())
+		}
 		return
 	}
 
-	png, converted := convertSvgToPng(svg)
-	if !converted {
-		return
-	}
 	ok = true
 	out = bytes.NewReader(png.Bytes())
+
 	return
 }
