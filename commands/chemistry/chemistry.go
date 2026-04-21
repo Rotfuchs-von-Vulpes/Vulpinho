@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"os/exec"
+	"strings"
 )
 
 func Init() {
@@ -35,11 +36,40 @@ func convertSvgToPng(in *bytes.Buffer) (out bytes.Buffer, ok bool) {
 	return
 }
 
-func Smiles(code string) (out io.Reader, ok bool) {
-	process := exec.Command("smiles2img", code, "-f", "PNG", "-s", "512", "512", "--stdout")
+func errFilter(input string) string {
+	reading := false
+	space := false
+	newLine := true
+	b := strings.Builder{}
+	for _, r := range input {
+		if r == '[' && newLine {
+			reading = false
+			newLine = false
+		}
+		if r == '\n' || r == '\r' {
+			newLine = true
+		}
+		if reading {
+			if space {
+				space = false
+			} else {
+				b.WriteRune(r)
+			}
+		}
+		if r == ']' {
+			reading = true
+			space = true
+		}
+	}
+	return b.String()
+}
+
+func Smiles(code string) (out io.Reader, ok bool, errStr string) {
+	process := exec.Command("python", ".\\smiles2img.py", code)
+	process.Dir = "resources/chemistry"
 	stdin, err := process.StdinPipe()
 	if err != nil {
-		slog.Error("Não foi possivel preparar comando ao programa Open Babel", "error", err.Error())
+		slog.Error("Não foi possivel preparar comando ao script Python", "error", err.Error())
 		return
 	}
 	defer stdin.Close()
@@ -49,15 +79,18 @@ func Smiles(code string) (out io.Reader, ok bool) {
 	process.Stderr = errBuff
 
 	if err = process.Run(); err != nil {
-		slog.Error("Erro ao executar programa Open Babel", "error", err.Error())
-		if errBuff.Len() > 0 {
-			slog.Error("Erro interno do Open Babel", "error", errBuff.String())
+		if err.Error() == "exit status 2" {
+			final := "```\n" + errFilter(errBuff.String()) + "```"
+			return nil, true, final
 		}
-		return
+		slog.Error("Erro ao executar script Python", "error", err.Error())
+		if errBuff.Len() > 0 {
+			slog.Error("Erro interno do script Python", "error", errBuff.String())
+		}
+		return nil, false, ""
 	}
 
-	ok = true
 	out = bytes.NewReader(png.Bytes())
-
+	ok = true
 	return
 }

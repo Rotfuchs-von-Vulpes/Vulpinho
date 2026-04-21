@@ -269,8 +269,12 @@ func main() {
 						}
 					case "smiles":
 						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
-						if buff, ok := chemistry.Smiles(text); ok {
-							sayImage(buff)
+						if buff, ok, errStr := chemistry.Smiles(text); ok {
+							if errStr == "" {
+								sayImage(buff)
+							} else {
+								say(errStr)
+							}
 						}
 					}
 				}
