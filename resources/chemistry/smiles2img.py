@@ -2,26 +2,12 @@ import sys
 import io
 import re
 import cairosvg
+from PIL import Image
 from io import BytesIO
 from io import StringIO
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem.Draw import rdMolDraw2D
-
-def parseSmiles(smiles):
-    sio = StringIO()
-    save_stderr = sys.stderr
-    sys.stderr = sio
-    
-    try:
-        mol = Chem.MolFromSmiles(smiles)
-        
-        if mol is None:
-            return None, sio.getvalue().strip()
-        return mol, None
-        
-    finally:
-        sys.stderr = save_stderr
 
 def main():
     if len(sys.argv) < 2:
@@ -35,13 +21,11 @@ def main():
         sys.exit(2)
         return
     
-    # Generate the molecule image
     drawer = rdMolDraw2D.MolDraw2DSVG(256, 256)
     opts = drawer.drawOptions()
     opts.clearBackground = False
     opts.scaleBondWidth = True
     opts.bondLineWidth = 5
-    # opts.baseFontSize = 10
     drawer.DrawMolecule(mol)
     drawer.FinishDrawing()
 
@@ -49,8 +33,24 @@ def main():
     svg = re.sub(r"#000000", "#FFFFFF", svg, flags=re.IGNORECASE)
     svg = re.sub(r"black", "white", svg, flags=re.IGNORECASE)
     png_data = cairosvg.svg2png(bytestring=svg.encode("utf-8"), scale=2)
-    sys.stdout.buffer.write(io.BytesIO(png_data).getvalue())
-    sys.exit(0)
+    img = Image.open(io.BytesIO(png_data))
+    bbox = img.getbbox()
+    if bbox:
+        margin = 50
+        width, height = img.size
+        left = max(0, bbox[0] - margin)
+        upper = max(0, bbox[1] - margin)
+        right = min(width, bbox[2] + margin)
+        lower = min(height, bbox[3] + margin)
+        cropped_image = img.crop((left, upper, right, lower))
+
+        buf = io.BytesIO()
+        cropped_image.save(buf, format='PNG')
+        sys.stdout.buffer.write(buf.getvalue())
+        sys.exit(0)
+    else:
+        sys.stdout.buffer.write(io.BytesIO(png_data).getvalue())
+        sys.exit(0)
     return
 
 if __name__ == "__main__":
