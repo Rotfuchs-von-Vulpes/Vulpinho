@@ -222,7 +222,42 @@ func main() {
 		}
 
 		words := strings.Split(strings.ToLower(message.Content), " ")
-		fops_list := []string{"vulpinho", "🦊", "raposa", "raposo", "raposinha", "raposinhas", "raposinho", "raposinhos", "raposas", "raposos", "fop", "fops", "fopse", "fopses", "fox", "poposa", "poposas", "poposo", "poposos", "foxes", "fxoe", "fxoes", "semimi", "lorxu", "fuchs", "foex"}
+		
+		fops_list := []string{
+			// Special words and symbols
+			"vulpinho", "vulpinha", "vulpinhos", "vulpinhas", "🦊", "Vulpes", "Rotfuchs von Vulpes", "rotfuchs_von_vulpes",
+
+			// Fox species (without "chama" and "cana", common words in portuguese)
+			"vulpini", "lagopus", "velox", "macrotis", "corsac", "pallida", "bengalensis", "ferrilata", "rueppellii", "zerda",
+
+			// Conlang
+			"semimi", "lorxu", "vulpino", "vulpo", "vulpinoj", "vulpoj",
+	
+			// Portuguese
+			"raposa", "raposo", "raposas", "raposos", "raposinha", "raposinho", "raposinhas", "raposinhos", "poposa", "poposo", "poposas", "poposos", "posa", "poso", "poposinha", "poposinho", "poposinhas", "poposinhos",
+
+			// German
+			"fuchs", "füchse", "fuchse", "füchses", "fuchses",
+
+			// Spanish
+			"zorro", "zorra", "zorros", "zorras", "zorrita", "zorrito", "zorritas", "zorritos",
+
+			// English
+			"fox", "foxe", "foxes", "foxy", "foxys", "foxis", "fxoe", "fxoes", "foex", "foexes", "fux", "fuxes", "fop", "fops", "fopse", "fopses", "vix", "vixes", "vixen", "vixens",
+
+			// French
+			"renard", "renards", "renarde", "renardes", "renardeau", "renardeaux",
+
+			// Italian
+			"volpe", "volpi", "volpes", "volpeses",
+
+			// Russian
+			"лиса", "лисица", "лис", "лисы", "лисички", "лисичка", "лисичкина",
+			"lisa", "lisitsa", "lis", "lisy", "lisichki", "lisichka", "lisichkina",
+
+			// Other languages
+			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus"
+		}
 
 		if len(words) >= 1 {
 			word_minus, found := strings.CutSuffix(words[0], "!")
