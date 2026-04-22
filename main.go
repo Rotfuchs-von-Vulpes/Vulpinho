@@ -26,7 +26,7 @@ import (
 func removePonctuation(text string) string {
 	respondeBuilder := strings.Builder{}
 	for _, r := range text {
-		if unicode.IsLetter(r) {
+		if unicode.IsLetter(r) || r == '🦊' {
 			respondeBuilder.WriteRune(r)
 		}
 	}
@@ -225,7 +225,7 @@ func main() {
 
 		fops_list := []string{
 			// Special words and symbols
-			"vulpinho", "vulpinha", "vulpinhos", "vulpinhas", "🦊", "Vulpes", "Rotfuchs von Vulpes", "rotfuchs_von_vulpes",
+			"vulpinho", "vulpinha", "vulpinhos", "vulpinhas", "🦊",
 
 			// Fox species (without "chama" and "cana", common words in portuguese)
 			"vulpini", "lagopus", "velox", "macrotis", "corsac", "pallida", "bengalensis", "ferrilata", "rueppellii", "zerda",
