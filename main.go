@@ -222,7 +222,7 @@ func main() {
 		}
 
 		words := strings.Split(strings.ToLower(message.Content), " ")
-		
+
 		fops_list := []string{
 			// Special words and symbols
 			"vulpinho", "vulpinha", "vulpinhos", "vulpinhas", "🦊", "Vulpes", "Rotfuchs von Vulpes", "rotfuchs_von_vulpes",
@@ -232,7 +232,7 @@ func main() {
 
 			// Conlang
 			"semimi", "lorxu", "vulpino", "vulpo", "vulpinoj", "vulpoj",
-	
+
 			// Portuguese
 			"raposa", "raposo", "raposas", "raposos", "raposinha", "raposinho", "raposinhas", "raposinhos", "poposa", "poposo", "poposas", "poposos", "posa", "poso", "poposinha", "poposinho", "poposinhas", "poposinhos",
 
@@ -256,7 +256,7 @@ func main() {
 			"lisa", "lisitsa", "lis", "lisy", "lisichki", "lisichka", "lisichkina",
 
 			// Other languages
-			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus"
+			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus",
 		}
 
 		if len(words) >= 1 {
