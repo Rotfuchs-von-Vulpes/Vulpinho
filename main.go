@@ -231,7 +231,7 @@ func main() {
 			"vulpini", "lagopus", "velox", "macrotis", "corsac", "pallida", "bengalensis", "ferrilata", "rueppellii", "zerda",
 
 			// Conlang
-			"semimi", "lorxu", "vulpino", "vulpo", "vulpinoj", "vulpoj",
+			"semimi", "semi", "lorxu", "vulpino", "vulpo", "vulpinoj", "vulpoj",
 
 			// Portuguese
 			"raposa", "raposo", "raposas", "raposos", "raposinha", "raposinho", "raposinhas", "raposinhos", "poposa", "poposo", "poposas", "poposos", "posa", "poso", "poposinha", "poposinho", "poposinhas", "poposinhos",

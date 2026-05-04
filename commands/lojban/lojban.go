@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 )
 
@@ -80,17 +81,17 @@ func LojbanInit() {
 	ph_lu["."] = "ʔ"
 	ph_lu[" "] = " "
 	ph_lu["ˈ"] = "ˈ"
-	ph_lu["a"] = "ɑ"
+	ph_lu["a"] = "a"
 	ph_lu["e"] = "ɛ"
 	ph_lu["i"] = "i"
 	ph_lu["o"] = "o"
 	ph_lu["u"] = "u"
 	ph_lu["y"] = "ə"
-	ph_lu["ai"] = "ɑj"
+	ph_lu["ai"] = "aj"
 	ph_lu["ei"] = "ɛj"
 	ph_lu["oi"] = "oj"
 	ph_lu["au"] = "aw"
-	ph_lu["ia"] = "jɑ"
+	ph_lu["ia"] = "ja"
 	ph_lu["ie"] = "jɛ"
 	ph_lu["ii"] = "ji"
 	ph_lu["io"] = "jo"
@@ -128,42 +129,218 @@ func LojbanInit() {
 	slog.Info("Todos os dados sobre Lojban foram carregados com sucesso.")
 }
 
+func runProcess(args []string) string {
+	constantArgs := []string{"resources/lojban/ilmentufa/run_camxes", "-ckt"}
+	args = append(constantArgs, args...)
+	process := exec.Command("node", args...)
+	stdin, err := process.StdinPipe()
+	if err != nil {
+		slog.Error("Erro ao preparar o programa NodeJS", "error", err.Error())
+	}
+	defer stdin.Close()
+	buf := new(bytes.Buffer)
+	process.Stdout = buf
+	process.Stderr = os.Stderr
+
+	if err = process.Start(); err != nil {
+		slog.Error("Erro ao executar o programa NodeJS", "error", err.Error())
+	}
+	process.Wait()
+
+	return buf.String()
+}
+
+type word struct {
+	idx int
+	buf string
+}
+
+func newWord(text string) (w *word) {
+	w = new(word)
+	w.idx = 0
+	w.buf = text
+	return
+}
+
+func (s *word) get(count int) (r string) {
+	idx := s.idx + count
+	if idx > len(s.buf)-1 {
+		return
+	}
+	return string(s.buf[idx])
+}
+
+func (s *word) add(count int) {
+	s.idx += count
+}
+
+func (s *word) remain(count int) *word {
+	b := strings.Builder{}
+	i := count
+	for {
+		r := s.get(i)
+		if r == "" {
+			break
+		}
+		b.WriteString(r)
+		i += 1
+	}
+	return newWord(b.String())
+}
+
+var vowels = []string{"a", "e", "i", "o", "u", "y", "ai", "ei", "au", "oi", "ia", "ie", "ii", "io", "iu", "ua", "ue", "ui", "uo", "uu", "iy", "uy"}
+var consonant = []string{"l", "m", "n", "r", "c", "j", "s", "z", "b", "d", "g", "v", "j", "z", "p", "t", "k", "f", "c", "s", "x", "'"}
+var sylConsonant = []string{"l", "m", "n", "r"}
+var forbidden = []string{"c", "j", "s", "z"}
+var forbiddenPair = []string{"cx", "kx", "xc", "xk"}
+var voiced = []string{"b", "d", "g", "v", "j", "z"}
+var unvoiced = []string{"p", "t", "k", "f", "c", "s", "x"}
+
+func identifyOnset(text *word) string {
+	first := func() string {
+		r1 := text.get(0)
+		r2 := text.get(1)
+		if slices.Contains(vowels, r1) {
+			return ""
+		} else {
+			if slices.Contains(vowels, r2) {
+				text.add(1)
+				return r1
+			}
+			if slices.Contains(forbiddenPair, r1+r2) {
+				text.add(1)
+				return r1
+			} else if slices.Contains(voiced, r1) && slices.Contains(unvoiced, r2) {
+				text.add(1)
+				return r1
+			} else if slices.Contains(unvoiced, r1) && slices.Contains(voiced, r2) {
+				text.add(1)
+				return r1
+			} else if slices.Contains(sylConsonant, r1) {
+				text.add(1)
+				return r1
+			} else if r1 == r2 {
+				text.add(1)
+				return r1
+			} else if slices.Contains(forbidden, r1) && slices.Contains(forbidden, r2) {
+				text.add(1)
+				return r1
+			}
+			text.add(2)
+			return r1 + r2
+		}
+	}
+	m := text.idx
+	ro := first()
+	if ro != "" {
+		w := text.remain(0)
+		rn := identifyNucleus(w)
+		if rn == "" {
+			text.idx = m
+			return ""
+		}
+	}
+	return ro
+}
+
+func identifyNucleus(text *word) string {
+	r1 := text.get(0)
+	r2 := text.get(1)
+
+	if slices.Contains(vowels, r1+r2) {
+		text.add(2)
+		return r1 + r2
+	} else if slices.Contains(vowels, r1) {
+		text.add(1)
+		return r1
+	} else if slices.Contains(sylConsonant, r1) && !slices.Contains(vowels, r2) {
+		text.add(1)
+		return r1
+	}
+	return ""
+}
+
+func identifyCoda(text *word) string {
+	if slices.Contains(vowels, text.get(0)) {
+		return ""
+	} else {
+		r1 := text.get(0)
+		r2 := text.get(1)
+		if slices.Contains(vowels, r2) {
+			return ""
+		}
+		w := text.remain(0)
+		r := identifyOnset(w)
+		if r != "" {
+			rr := identifyNucleus(w)
+			if rr != "r" {
+				return ""
+			}
+		}
+		text.add(1)
+		return r1
+	}
+}
+
+func toSyllables(text string) (final []string) {
+	w := newWord(text)
+	for {
+		onset := identifyOnset(w)
+		nucleus := identifyNucleus(w)
+		coda := identifyCoda(w)
+		if onset+nucleus+coda == "" {
+			break
+		}
+		final = append(final, onset+nucleus+coda)
+	}
+	return
+}
+
 func toIPA(text string) string {
 	final := strings.Builder{}
-	ignoreNext := false
-	for i, r := range text {
-		if ignoreNext {
-			ignoreNext = false
-			continue
+	syllables := toSyllables(text)
+	for i, syllable := range syllables {
+		ignoreNext := false
+		if i == len(syllables)-2 {
+			final.WriteRune('ˈ')
 		}
-
-		char := string(r)
-		pair := ""
-
-		if i < len(text)-1 {
-			rr := []rune(text)[i+1]
-			pair = string(r) + string(rr)
-		}
-
-		symbol, ok := ph_lu[pair]
-		if !ok {
-			symbol, ok = ph_lu[char]
-			if !ok {
-				slog.Error("Character indefinido", "char", char)
+		for i, r := range syllable {
+			if ignoreNext {
+				ignoreNext = false
+				continue
 			}
-		} else {
-			ignoreNext = true
-		}
 
-		if symbol != "" {
-			final.WriteString(symbol)
+			char := string(r)
+			pair := ""
+
+			if i < len(syllable)-1 {
+				rr := []rune(syllable)[i+1]
+				pair = string(r) + string(rr)
+			}
+
+			symbol, ok := ph_lu[pair]
+			if !ok {
+				symbol, ok = ph_lu[char]
+				if !ok {
+					slog.Error("Character indefinido", "char", char)
+				}
+			} else {
+				ignoreNext = true
+			}
+
+			if symbol != "" {
+				final.WriteString(symbol)
+			}
+		}
+		if i < len(syllables)-1 && i != len(syllables)-3 {
+			final.WriteRune('.')
 		}
 	}
 	return final.String()
 }
 
-func parseNotes(note string) string {
-	note = parseDefinition(note)
+func formatNotes(note string) string {
+	note = formatDefinition(note)
 	noteBuilder := strings.Builder{}
 	for _, r := range note {
 		if r != '{' && r != '}' {
@@ -173,7 +350,7 @@ func parseNotes(note string) string {
 	return noteBuilder.String()
 }
 
-func parseDefinition(def string) string {
+func formatDefinition(def string) string {
 	readingArgument := false
 	readingSubscript := false
 	defBuilder := strings.Builder{}
@@ -232,9 +409,9 @@ func Sisku(word string) string {
 	if dictReadyToRead {
 		for _, valsi := range lojbanDictionary.Direction[0].Valsi {
 			if valsi.Word == word {
-				response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + parseDefinition(valsi.Definition)
+				response := "**" + valsi.Word + "** /" + toIPA(valsi.Word) + "/\n-# " + valsi.Type + "\n" + formatDefinition(valsi.Definition)
 				if valsi.Notes != "" {
-					response += "\n-# " + parseNotes(valsi.Notes)
+					response += "\n-# " + formatNotes(valsi.Notes)
 				}
 				return response
 			}
@@ -273,34 +450,5 @@ func Facki(text string) []string {
 }
 
 func Gerna(text string) string {
-	words := strings.Split(text, " ")
-	hasArgs := false
-	if words[0] == "-m" {
-		hasArgs = true
-	}
-
-	var args []string
-	if hasArgs {
-		command := words[1]
-		text := strings.Join(words[2:], " ")
-		args = []string{"resources/lojban/ilmentufa/run_camxes", "-ckt", "-m", command, text}
-	} else {
-		args = []string{"resources/lojban/ilmentufa/run_camxes", "-ckt", text}
-	}
-	process := exec.Command("node", args...)
-	stdin, err := process.StdinPipe()
-	if err != nil {
-		slog.Error("Erro ao preparar o programa NodeJS", "error", err.Error())
-	}
-	defer stdin.Close()
-	buf := new(bytes.Buffer)
-	process.Stdout = buf
-	process.Stderr = os.Stderr
-
-	if err = process.Start(); err != nil {
-		slog.Error("Erro ao executar o programa NodeJS", "error", err.Error())
-	}
-	process.Wait()
-
-	return buf.String()
+	return runProcess([]string{text})
 }
