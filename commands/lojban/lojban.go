@@ -192,6 +192,7 @@ var vowels = []string{"a", "e", "i", "o", "u", "y", "ai", "ei", "au", "oi", "ia"
 var consonant = []string{"l", "m", "n", "r", "c", "j", "s", "z", "b", "d", "g", "v", "j", "z", "p", "t", "k", "f", "c", "s", "x", "'"}
 var sylConsonant = []string{"l", "m", "n", "r"}
 var forbidden = []string{"c", "j", "s", "z"}
+var preferCoda = []string{"l", "m", "n", "r", "c", "j", "s", "z"}
 var forbiddenPair = []string{"cx", "kx", "xc", "xk"}
 var voiced = []string{"b", "d", "g", "v", "j", "z"}
 var unvoiced = []string{"p", "t", "k", "f", "c", "s", "x"}
@@ -266,6 +267,10 @@ func identifyCoda(text *word) string {
 	} else {
 		r1 := text.get(0)
 		r2 := text.get(1)
+		if slices.Contains(preferCoda, r1) {
+			text.add(1)
+			return r1
+		}
 		if slices.Contains(vowels, r2) {
 			return ""
 		}
@@ -273,7 +278,7 @@ func identifyCoda(text *word) string {
 		r := identifyOnset(w)
 		if r != "" {
 			rr := identifyNucleus(w)
-			if rr != "r" {
+			if !slices.Contains(sylConsonant, rr) {
 				return ""
 			}
 		}
