@@ -396,6 +396,13 @@ func main() {
 		runCommands(wrapMessageCreate(message))
 	})
 
+	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageDelete) {
+		if list, ok := history[message.ID]; ok {
+			history[message.ID] = nil
+			discord.ChannelMessagesBulkDelete(message.ChannelID, list)
+		}
+	})
+
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
