@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net/http"
 	"os"
 	"os/signal"
 	"slices"
@@ -26,15 +27,17 @@ import (
 )
 
 type promptProc struct {
-	buff    []rune
-	attachs []bytes.Buffer
-	idx     int
+	buff           []rune
+	attachs        []bytes.Buffer
+	idx            int
+	attachmentsURL []string
 }
 
-func newCommand(msg string) (c *promptProc) {
+func newCommand(msg string, files []string) (c *promptProc) {
 	c = new(promptProc)
 	c.buff = []rune(msg)
 	c.idx = 0
+	c.attachmentsURL = files
 	return
 }
 
@@ -99,17 +102,42 @@ func (s *promptProc) testVarious(list []string) bool {
 	return false
 }
 
+func getFileData(url string) (string, error) {
+	// Perform the GET request to Discord's CDN
+	resp, err := http.Get(url)
+	if err != nil {
+		slog.Error("Cant request data", "error", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	// Read the body into a byte slice
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		slog.Error("Cant read data", "error", err)
+		return "", err
+	}
+
+	return string(data), nil
+}
+
 func (s *promptProc) getRemains() string {
 	s.consumeAllSpace()
 	b := strings.Builder{}
 	for {
 		pos := s.mark()
 		if pos > len(s.buff)-1 {
-			return b.String()
+			break
 		}
 		s.idx += 1
 		b.WriteRune(s.buff[pos])
 	}
+	for _, url := range s.attachmentsURL {
+		if fileText, err := getFileData(url); err == nil {
+			b.WriteString(fileText)
+		}
+	}
+	return b.String()
 }
 
 func removePonctuation(text string) string {
@@ -138,20 +166,21 @@ type Author struct {
 }
 
 type Message struct {
-	ID        string
-	Author    *discordgo.User
-	ChannelID string
-	GuildID   string
-	Content   string
-	Time      int64
+	ID          string
+	Author      *discordgo.User
+	ChannelID   string
+	GuildID     string
+	Content     string
+	Time        int64
+	Attachments []*discordgo.MessageAttachment
 }
 
 func wrapMessageCreate(message *discordgo.MessageCreate) Message {
-	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
+	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli(), message.Attachments}
 }
 
 func wrapMessageUpdate(message *discordgo.MessageUpdate) Message {
-	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli()}
+	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli(), message.Attachments}
 }
 
 func main() {
@@ -348,7 +377,11 @@ func main() {
 			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus",
 		}
 
-		proc := newCommand(message.Content)
+		attachmentURLs := []string{}
+		for _, a := range message.Attachments {
+			attachmentURLs = append(attachmentURLs, a.URL)
+		}
+		proc := newCommand(message.Content, attachmentURLs)
 
 		if proc.testVarious(fops_list) && proc.testRune('!') {
 			if proc.testString("ping") {

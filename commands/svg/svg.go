@@ -101,6 +101,7 @@ func newGrabber(buff string) (g *grabber) {
 
 func ExtractSvgCodeFromMsg(msg string) string {
 	g := newGrabber(msg)
+	pos := g.mark()
 	g.consumeUntil("```")
 	if g.testString("```svg") || g.testString("```") {
 		if text := g.consumeUntil("```"); len(text) > 0 {
@@ -109,5 +110,6 @@ func ExtractSvgCodeFromMsg(msg string) string {
 			}
 		}
 	}
-	return ""
+	g.reset(pos)
+	return msg
 }
