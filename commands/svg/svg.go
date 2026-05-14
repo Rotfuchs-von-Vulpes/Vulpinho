@@ -5,7 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"os/exec"
-	"strings"
+	"vulpinho/util"
 )
 
 func SvgToPng(code string) (out io.Reader, ok bool, errStr string) {
@@ -43,73 +43,17 @@ func SvgToPng(code string) (out io.Reader, ok bool, errStr string) {
 	return
 }
 
-type grabber struct {
-	buff []rune
-	idx  int
-}
-
-func (s *grabber) mark() int {
-	return s.idx
-}
-
-func (s *grabber) reset(pos int) {
-	s.idx = pos
-}
-
-func (s *grabber) testRune(r rune) bool {
-	if s.idx > len(s.buff)-1 {
-		return false
-	}
-	rr := s.buff[s.idx]
-	if rr == r {
-		s.idx += 1
-		return true
-	}
-	return false
-}
-
-func (s *grabber) testString(str string) bool {
-	pos := s.mark()
-	for _, r := range str {
-		if !s.testRune(r) {
-			s.reset(pos)
-			return false
-		}
-	}
-	return true
-}
-
-func (s *grabber) consumeUntil(str string) string {
-	b := strings.Builder{}
-	for {
-		pos := s.mark()
-		if pos > len(s.buff)-1 || s.testString(str) {
-			s.reset(pos)
-			return b.String()
-		}
-		b.WriteRune(s.buff[pos])
-		s.idx += 1
-	}
-}
-
-func newGrabber(buff string) (g *grabber) {
-	g = new(grabber)
-	g.idx = 0
-	g.buff = []rune(buff)
-	return
-}
-
 func ExtractSvgCodeFromMsg(msg string) string {
-	g := newGrabber(msg)
-	pos := g.mark()
-	g.consumeUntil("```")
-	if g.testString("```svg") || g.testString("```") {
-		if text := g.consumeUntil("```"); len(text) > 0 {
-			if g.testString("```") {
+	g := util.NewStrProc(msg)
+	pos := g.Mark()
+	g.ConsumeUntil("```")
+	if g.TestString("```svg") || g.TestString("```") {
+		if text := g.ConsumeUntil("```"); len(text) > 0 {
+			if g.TestString("```") {
 				return text
 			}
 		}
 	}
-	g.reset(pos)
+	g.Reset(pos)
 	return msg
 }
