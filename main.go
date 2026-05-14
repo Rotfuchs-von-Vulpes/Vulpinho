@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"log/slog"
@@ -15,6 +16,7 @@ import (
 	"vulpinho/commands/bible"
 	"vulpinho/commands/chemistry"
 	"vulpinho/commands/lojban"
+	"vulpinho/commands/svg"
 	"vulpinho/commands/wh40k"
 	"vulpinho/log"
 	"vulpinho/update"
@@ -22,6 +24,93 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
+
+type promptProc struct {
+	buff    []rune
+	attachs []bytes.Buffer
+	idx     int
+}
+
+func newCommand(msg string) (c *promptProc) {
+	c = new(promptProc)
+	c.buff = []rune(msg)
+	c.idx = 0
+	return
+}
+
+func (s *promptProc) mark() int {
+	return s.idx
+}
+
+func (s *promptProc) reset(pos int) {
+	s.idx = pos
+}
+
+func (s *promptProc) space() bool {
+	if s.idx > len(s.buff)-1 {
+		return false
+	}
+	r := s.buff[s.idx]
+	if unicode.IsSpace(r) {
+		s.idx += 1
+		return true
+	}
+	return false
+}
+
+func (s *promptProc) consumeAllSpace() {
+	for {
+		if !s.space() {
+			return
+		}
+	}
+}
+
+func (s *promptProc) testRune(r rune) bool {
+	if s.idx > len(s.buff)-1 {
+		return false
+	}
+	rr := s.buff[s.idx]
+	if rr == r {
+		s.idx += 1
+		return true
+	}
+	return false
+}
+
+func (s *promptProc) testString(str string) bool {
+	s.consumeAllSpace()
+	pos := s.mark()
+	for _, r := range str {
+		if !s.testRune(r) {
+			s.reset(pos)
+			return false
+		}
+	}
+	return true
+}
+
+func (s *promptProc) testVarious(list []string) bool {
+	for _, str := range list {
+		if s.testString(str) {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *promptProc) getRemains() string {
+	s.consumeAllSpace()
+	b := strings.Builder{}
+	for {
+		pos := s.mark()
+		if pos > len(s.buff)-1 {
+			return b.String()
+		}
+		s.idx += 1
+		b.WriteRune(s.buff[pos])
+	}
+}
 
 func removePonctuation(text string) string {
 	respondeBuilder := strings.Builder{}
@@ -166,8 +255,8 @@ func main() {
 				slog.Error("Não foi possivel enviar embed", "error", err.Error())
 			}
 		}
-		sayImage := func(imageBuffer io.Reader) {
-			if msg, err := discord.ChannelFileSend(message.ChannelID, "smilesImage.png", imageBuffer); err == nil {
+		sayImage := func(imageName string, imageBuffer io.Reader) {
+			if msg, err := discord.ChannelFileSend(message.ChannelID, imageName+".png", imageBuffer); err == nil {
 				history[message.ID] = []string{msg.ID}
 			} else {
 				slog.Error("Não foi possivel enviar imagem", "error", err.Error())
@@ -259,60 +348,60 @@ func main() {
 			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus",
 		}
 
-		if len(words) >= 1 {
-			word_minus, found := strings.CutSuffix(words[0], "!")
-			if found && slices.Contains(fops_list, word_minus) {
-				if len(words) == 1 {
-					say("<a:fox_wave:1426439130253885440>")
-				} else if len(words) == 2 {
-					if words[1] == "ping" {
-						last_time = message.Time
-						waitingPong = true
-						say("Pong!")
-					}
-					if words[1] == "teste" {
-						sayEmbed()
-					}
-				} else if len(words) >= 3 {
-					switch words[1] {
-					case "gerna":
-						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
-						say(lojban.Gerna(text))
-					case "sisku":
-						word := strings.Split(message.Content, " ")[2]
-						say(lojban.Sisku(word))
-					case "facki":
-						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
-						sayList(lojban.Facki(text))
-					case "wh40k":
-						switch words[2] {
-						case "keyword", "keywords":
-							text := strings.Join(strings.Split(message.Content, " ")[3:], " ")
-							if text != "" {
-								keys := strings.Split(text, ",")
-								for i, key := range keys {
-									keys[i] = strings.TrimSpace(key)
-								}
-								sayList(wh40k.KeySearch(keys))
-							}
-						default:
-							if len(words) > 3 {
-								data := words[2]
-								id := words[3]
-								sayList(wh40k.GetWh(data, id))
-							}
+		proc := newCommand(message.Content)
+
+		if proc.testVarious(fops_list) && proc.testRune('!') {
+			if proc.testString("ping") {
+				last_time = message.Time
+				waitingPong = true
+				say("Pong!")
+			} else if proc.testString("teste") {
+				sayEmbed()
+			} else if proc.testString("gerna") {
+				say(lojban.Gerna(proc.getRemains()))
+			} else if proc.testString("sisku") {
+				say(lojban.Sisku(proc.getRemains()))
+			} else if proc.testString("facki") {
+				sayList(lojban.Facki(proc.getRemains()))
+			} else if proc.testString("wh40k") {
+				if proc.testString("keyword") || proc.testString("keywords") {
+					text := proc.getRemains()
+					if text != "" {
+						keys := strings.Split(text, ",")
+						for i, key := range keys {
+							keys[i] = strings.TrimSpace(key)
 						}
-					case "smiles":
-						text := strings.Join(strings.Split(message.Content, " ")[2:], " ")
-						if buff, ok, errStr := chemistry.Smiles(text); ok {
-							if errStr == "" {
-								sayImage(buff)
-							} else {
-								say(errStr)
-							}
+						sayList(wh40k.KeySearch(keys))
+					}
+				} else {
+					text := proc.getRemains()
+					words := strings.Split(text, " ")
+					if len(words) >= 1 {
+						data := words[0]
+						id := words[1]
+						sayList(wh40k.GetWh(data, id))
+					}
+				}
+			} else if proc.testString("smiles") {
+				if buff, ok, errStr := chemistry.Smiles(proc.getRemains()); ok {
+					if errStr == "" {
+						sayImage("smilesImg", buff)
+					} else {
+						say(errStr)
+					}
+				}
+			} else if proc.testString("svg") {
+				if code := svg.ExtractSvgCodeFromMsg(proc.getRemains()); len(code) > 0 {
+					if buff, ok, errStr := svg.SvgToPng(code); ok {
+						if errStr == "" {
+							sayImage("svgImg", buff)
+						} else {
+							say(errStr)
 						}
 					}
 				}
+			} else {
+				say("<a:fox_wave:1426439130253885440>")
 			}
 		}
 
