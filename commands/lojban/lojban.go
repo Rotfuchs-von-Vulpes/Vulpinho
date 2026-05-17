@@ -267,12 +267,12 @@ func identifyCoda(text *word) string {
 	} else {
 		r1 := text.get(0)
 		r2 := text.get(1)
+		if slices.Contains(vowels, r2) {
+			return ""
+		}
 		if slices.Contains(preferCoda, r1) {
 			text.add(1)
 			return r1
-		}
-		if slices.Contains(vowels, r2) {
-			return ""
 		}
 		w := text.remain(0)
 		r := identifyOnset(w)
