@@ -455,5 +455,14 @@ func Facki(text string) []string {
 }
 
 func Gerna(text string) string {
-	return runProcess([]string{text})
+	var args []string
+	parts := strings.Split(text, " ")
+	if parts[0] == "-m" {
+		args = append(args, "-m")
+		args = append(args, parts[1])
+		args = append(args, strings.Join(parts[2:], " "))
+	} else {
+		args = append(args, text)
+	}
+	return runProcess(args)
 }
