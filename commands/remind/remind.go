@@ -98,7 +98,9 @@ func (s *remind) push() {
 		t := s.next()
 		if now.After(t) {
 			s.lastTime = t
-			s.repeatAmmount += 1
+			if s.repeatMax > 0 {
+				s.repeatAmmount += 1
+			}
 		} else {
 			s.nextTime = t
 			break
