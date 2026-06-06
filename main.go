@@ -262,7 +262,12 @@ func main() {
 			if m, err := discord.ChannelMessageSend(message.ChannelID, text); err == nil {
 				history[message.ID] = []string{m.ID}
 			} else {
-				slog.Error("Não foi possivel enviar mensagem", "error", err.Error())
+				r := strings.NewReader(text)
+				if m, err2 := discord.ChannelFileSend(message.ChannelID, "response.txt", r); err2 == nil {
+					history[message.ID] = []string{m.ID}
+				} else {
+					slog.Error("Não foi possivel enviar mensagem", "error", err.Error())
+				}
 			}
 		}
 		sayList := func(list []string) {
