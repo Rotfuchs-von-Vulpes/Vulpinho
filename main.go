@@ -17,6 +17,7 @@ import (
 	"vulpinho/commands/bible"
 	"vulpinho/commands/chemistry"
 	"vulpinho/commands/lojban"
+	"vulpinho/commands/remind"
 	"vulpinho/commands/svg"
 	"vulpinho/commands/wh40k"
 	"vulpinho/log"
@@ -208,7 +209,18 @@ func main() {
 	wh40k.ReadWh()
 	chemistry.Init()
 
+	isRemberOk := remind.Init()
+
 	if isTest {
+
+		signalChannel := make(chan os.Signal, 1)
+		signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
+
+		<-signalChannel
+
+		slog.Info("Desligando...")
+		log.End()
+
 		return
 	}
 
@@ -221,6 +233,15 @@ func main() {
 	if err != nil {
 		slog.Error("Erro ao se conectar com o discord.", "error", err.Error())
 		return
+	}
+
+	if isRemberOk {
+		go func() {
+			msg := <-remind.RemberChan
+			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
+				slog.Error("Lembrete falhou", "error", err.Error())
+			}
+		}()
 	}
 
 	history := make(map[string][]string)
@@ -525,8 +546,8 @@ func main() {
 		}
 	})
 
-	signalChannel := make(chan os.Signal, 1)
-	signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
 	go func() {
 		seconds := 2
@@ -534,7 +555,7 @@ func main() {
 		var lastErr string
 		for {
 			select {
-			case <-signalChannel:
+			case <-signalChan:
 				return
 			default:
 				err = discord.Open()
@@ -564,7 +585,7 @@ func main() {
 
 	slog.Info("Online.")
 
-	<-signalChannel
+	<-signalChan
 
 	slog.Info("Desligando...")
 	log.End()
