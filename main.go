@@ -210,7 +210,6 @@ func main() {
 	chemistry.Init()
 
 	isRemberOk, missedReminds := remind.Init()
-	fmt.Println("iniciando...")
 
 	if isTest {
 		signalChannel := make(chan os.Signal, 1)
