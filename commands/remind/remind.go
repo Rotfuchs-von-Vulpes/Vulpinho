@@ -51,13 +51,6 @@ type remind struct {
 	repeatMax     uint
 }
 
-/*
-	22:30
-	3/22:30
-	1522:30
-	08/15
-*/
-
 func (s *remind) next() time.Time {
 	switch s.when {
 	case specific:
@@ -93,6 +86,21 @@ func (s *remind) next() time.Time {
 	return time.Time{}
 }
 
+func (s *remind) miss() bool {
+	switch s.when {
+	case everyDay:
+		t := time.Date(now.Year(), now.Month(), now.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t.Before(s.lastTime)
+	case everyMonth:
+		t := time.Date(now.Year(), now.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t.Before(s.lastTime)
+	case everyYear:
+		t := time.Date(now.Year(), s.data.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t.Before(s.lastTime)
+	}
+	return false
+}
+
 func (s *remind) push() {
 	for {
 		t := s.next()
@@ -118,7 +126,7 @@ type Message struct {
 	Message   string
 }
 
-func Init() (ok bool) {
+func Init() (ok bool, missed []Message) {
 	now = time.Now()
 	loc = now.Location()
 	f, err := os.Open("commands/remind/remind.csv")
@@ -194,10 +202,10 @@ func Init() (ok bool) {
 		}
 		remindAdd(line[1], r, data, uint(ammount), uint(max), miss, line[5])
 	}
-	go loop()
 	ok = true
 	RemberChan = make(chan Message)
-	remindIsLost()
+	missed = remindIsLost()
+	go loop()
 	return
 }
 
@@ -221,15 +229,16 @@ func rember(r *remind) {
 	r.push()
 }
 
-func remindIsLost() {
-	for idx, remind := range allReminds {
+func remindIsLost() (final []Message) {
+	for _, remind := range allReminds {
 		if !remind.remindIfMiss {
 			continue
 		}
-		if now.After(remind.nextTime) {
-			rember(&allReminds[idx])
+		if remind.miss() {
+			final = append(final, Message{remind.whereId, remind.message})
 		}
 	}
+	return
 }
 
 func remindAll() {

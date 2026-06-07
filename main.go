@@ -209,10 +209,10 @@ func main() {
 	wh40k.ReadWh()
 	chemistry.Init()
 
-	isRemberOk := remind.Init()
+	isRemberOk, missedReminds := remind.Init()
+	fmt.Println("iniciando...")
 
 	if isTest {
-
 		signalChannel := make(chan os.Signal, 1)
 		signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
@@ -236,6 +236,11 @@ func main() {
 	}
 
 	if isRemberOk {
+		for _, msg := range missedReminds {
+			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
+				slog.Error("Lembrete falhou", "error", err.Error())
+			}
+		}
 		go func() {
 			msg := <-remind.RemberChan
 			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
