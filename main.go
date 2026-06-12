@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"fmt"
 	"io"
@@ -103,12 +104,12 @@ func (s *promptProc) testVarious(list []string) bool {
 	return false
 }
 
-func getFileData(url string) (string, error) {
+func getFileData(url string) ([]byte, error) {
 	// Perform the GET request to Discord's CDN
 	resp, err := http.Get(url)
 	if err != nil {
 		slog.Error("Cant request data", "error", err)
-		return "", err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -116,10 +117,10 @@ func getFileData(url string) (string, error) {
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		slog.Error("Cant read data", "error", err)
-		return "", err
+		return nil, err
 	}
 
-	return string(data), nil
+	return data, nil
 }
 
 func (s *promptProc) getRemains() string {
@@ -135,7 +136,7 @@ func (s *promptProc) getRemains() string {
 	}
 	for _, url := range s.attachmentsURL {
 		if fileText, err := getFileData(url); err == nil {
-			b.WriteString(fileText)
+			b.WriteString(string(fileText))
 		}
 	}
 	return b.String()
@@ -261,15 +262,23 @@ func main() {
 
 	reactReceiverMessages := []string{}
 
-	runCommands := func(message Message) {
+	runCommands := func(s *discordgo.Session, message Message) {
+		sayFile := func(name string, r io.Reader) (ok bool) {
+			if m, err2 := discord.ChannelFileSend(message.ChannelID, name, r); err2 == nil {
+				history[message.ID] = []string{m.ID}
+				ok = true
+			} else {
+				slog.Error("Não foi possivel enviar anexo", "error", err.Error())
+				ok = false
+			}
+			return
+		}
 		say := func(text string) {
 			if m, err := discord.ChannelMessageSend(message.ChannelID, text); err == nil {
 				history[message.ID] = []string{m.ID}
 			} else {
 				r := strings.NewReader(text)
-				if m, err2 := discord.ChannelFileSend(message.ChannelID, "response.txt", r); err2 == nil {
-					history[message.ID] = []string{m.ID}
-				} else {
+				if ok := sayFile("response.txt", r); !ok {
 					slog.Error("Não foi possivel enviar mensagem", "error", err.Error())
 				}
 			}
@@ -420,6 +429,49 @@ func main() {
 				say("Pong!")
 			} else if proc.testString("teste") {
 				sayEmbed()
+			} else if proc.testString("emojis") {
+				guild, guildErr := s.Guild(serverID)
+				if guildErr != nil {
+					return
+				}
+				if len(guild.Emojis) == 0 {
+					say("Este server não tem emojis.")
+				} else {
+					count := 0
+					buf := []byte{}
+					file := bytes.NewBuffer(buf)
+					w := zip.NewWriter(file)
+					for _, emoji := range guild.Emojis {
+						ext := "png"
+						if emoji.Animated {
+							ext = "gif"
+						}
+						cdnURL := fmt.Sprintf("https://cdn.discordapp.com/emojis/%s.%s", emoji.ID, ext)
+						emojiBin, err := getFileData(cdnURL)
+						if err != nil {
+							slog.Error("Não foi possivel fazer download do emoji", "cdnURL", cdnURL, "error", err)
+							continue
+						}
+						f, err := w.Create(emoji.Name + "." + ext)
+						if err != nil {
+							slog.Error("Não foi possivel criar arquivo dentro do zip", "error", err.Error())
+							break
+						}
+						if _, err = f.Write(emojiBin); err != nil {
+							slog.Error("Não foi possivel escrever emoji no arquivo", "error", err.Error())
+							break
+						}
+						if err := w.Flush(); err != nil {
+							slog.Error("Não foi possivel terminar com exito", "error", err.Error())
+							break
+						}
+						count++
+					}
+					w.Close()
+					if count > 0 {
+						sayFile("emojis.zip", file)
+					}
+				}
 			} else if proc.testString("gerna") {
 				say(lojban.Gerna(proc.getRemains()))
 			} else if proc.testString("sisku") {
@@ -512,15 +564,15 @@ func main() {
 		}
 	})
 
-	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageUpdate) {
+	discord.AddHandler(func(s *discordgo.Session, message *discordgo.MessageUpdate) {
 		if list, ok := history[message.ID]; ok {
 			history[message.ID] = nil
 			discord.ChannelMessagesBulkDelete(message.ChannelID, list)
 		}
-		runCommands(wrapMessageUpdate(message))
+		runCommands(s, wrapMessageUpdate(message))
 	})
 
-	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageCreate) {
+	discord.AddHandler(func(s *discordgo.Session, message *discordgo.MessageCreate) {
 		if message.MentionEveryone {
 			discord.ChannelMessageSend(message.ChannelID, "<:memojo_really:1411209850213498890>")
 		} else {
@@ -545,7 +597,7 @@ func main() {
 			}
 		}
 
-		runCommands(wrapMessageCreate(message))
+		runCommands(s, wrapMessageCreate(message))
 	})
 
 	discord.AddHandler(func(_ *discordgo.Session, message *discordgo.MessageDelete) {
