@@ -89,14 +89,14 @@ func (s *remind) next() time.Time {
 func (s *remind) miss() bool {
 	switch s.when {
 	case everyDay:
-		t := time.Date(now.Year(), now.Month(), now.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
-		return t.Before(s.lastTime)
+		t1 := time.Date(now.Year(), now.Month(), now.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t1.After(s.lastTime) && t1.AddDate(0, 0, 1).Before(s.lastTime)
 	case everyMonth:
-		t := time.Date(now.Year(), now.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
-		return t.Before(s.lastTime)
+		t1 := time.Date(now.Year(), now.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t1.After(s.lastTime) && t1.AddDate(0, 0, 1).Before(s.lastTime)
 	case everyYear:
-		t := time.Date(now.Year(), s.data.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
-		return t.Before(s.lastTime)
+		t1 := time.Date(now.Year(), s.data.Month(), s.data.Day(), s.data.Hour(), s.data.Minute(), 0, 0, loc)
+		return t1.After(s.lastTime) && t1.AddDate(0, 0, 1).Before(s.lastTime)
 	}
 	return false
 }
