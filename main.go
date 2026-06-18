@@ -613,8 +613,8 @@ func main() {
 	signal.Notify(signalChan, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
 	go func() {
-		seconds := 2
-		limit := 60 * 60
+		delay := 2 * time.Second
+		limit := time.Hour
 		var lastErr string
 		for {
 			select {
@@ -628,9 +628,9 @@ func main() {
 						slog.Error("Erro ao abrir uma sessão no Discord.", "error", err.Error())
 					}
 					slog.Info("Reconectando...")
-					time.Sleep(time.Duration(seconds) * time.Second)
-					if seconds < limit {
-						seconds *= seconds
+					time.Sleep(delay)
+					if delay < limit {
+						delay *= delay
 					}
 				} else {
 					return
