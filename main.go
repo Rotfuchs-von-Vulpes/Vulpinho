@@ -242,9 +242,11 @@ func main() {
 			}
 		}
 		go func() {
-			msg := <-remind.RemberChan
-			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
-				slog.Error("Lembrete falhou", "error", err.Error())
+			for {
+				msg := <-remind.RemberChan
+				if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
+					slog.Error("Lembrete falhou", "error", err.Error())
+				}
 			}
 		}()
 	}
