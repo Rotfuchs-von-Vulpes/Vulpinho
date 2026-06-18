@@ -358,6 +358,13 @@ func formatNotes(note string) string {
 func formatDefinition(def string) string {
 	readingArgument := false
 	readingSubscript := false
+
+	type reading int
+	const (
+		argument reading = iota
+		subscript
+	)
+
 	defBuilder := strings.Builder{}
 	for _, r := range def {
 		if r == '$' {
@@ -378,6 +385,13 @@ func formatDefinition(def string) string {
 			if readingSubscript {
 				if r == '{' || r == '}' {
 					continue
+				}
+				if r == '=' {
+					defBuilder.WriteRune('_')
+					defBuilder.WriteRune('=')
+					defBuilder.WriteRune('_')
+					readingArgument = true
+					readingSubscript = false
 				}
 				switch r {
 				case '0':
