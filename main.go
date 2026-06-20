@@ -18,6 +18,7 @@ import (
 	"vulpinho/commands/bible"
 	"vulpinho/commands/chemistry"
 	"vulpinho/commands/lojban"
+	"vulpinho/commands/react"
 	"vulpinho/commands/remind"
 	"vulpinho/commands/svg"
 	"vulpinho/commands/wh40k"
@@ -100,6 +101,13 @@ func (s *promptProc) testVarious(list []string) bool {
 		if s.testString(str) {
 			return true
 		}
+	}
+	return false
+}
+
+func (s *promptProc) isEmpty() bool {
+	if s.idx == len(s.buff) {
+		return true
 	}
 	return false
 }
@@ -209,6 +217,9 @@ func main() {
 	lojban.LojbanInit()
 	wh40k.ReadWh()
 	chemistry.Init()
+	if !react.Init() {
+		return
+	}
 
 	isRemberOk, missedReminds := remind.Init()
 
@@ -392,51 +403,13 @@ func main() {
 			minimum[serverID] += 1
 		}
 
-		words := strings.Split(strings.ToLower(message.Content), " ")
-
-		fops_list := []string{
-			// Special words and symbols
-			"vulpinho", "vulpinha", "vulpinhos", "vulpinhas", "🦊",
-
-			// Fox species (without "chama" and "cana", common words in portuguese)
-			"vulpini", "lagopus", "velox", "macrotis", "corsac", "pallida", "bengalensis", "ferrilata", "rueppellii", "zerda",
-
-			// Conlang
-			"semimi", "semi", "lorxu", "vulpino", "vulpo", "vulpinoj", "vulpoj", "oram", "kıtta",
-
-			// Portuguese
-			"raposa", "raposo", "raposas", "raposos", "raposinha", "raposinho", "raposinhas", "raposinhos", "poposa", "poposo", "poposas", "poposos", "posa", "poso", "poposinha", "poposinho", "poposinhas", "poposinhos",
-
-			// German
-			"fuchs", "füchse", "fuchse", "füchses", "fuchses",
-
-			// Spanish
-			"zorro", "zorra", "zorros", "zorras", "zorrita", "zorrito", "zorritas", "zorritos",
-
-			// English
-			"fox", "foxe", "foxes", "foxy", "foxys", "foxis", "fxoe", "fxoes", "foex", "foexes", "fux", "fuxes", "fop", "fops", "fopse", "fopses", "vix", "vixes", "vixen", "vixens",
-
-			// French
-			"renard", "renards", "renarde", "renardes", "renardeau", "renardeaux",
-
-			// Italian
-			"volpe", "volpi", "volpes", "volpeses",
-
-			// Russian
-			"лиса", "лисица", "лис", "лисы", "лисички", "лисичка", "лисичкина",
-			"lisa", "lisitsa", "lis", "lisy", "lisichki", "lisichka", "lisichkina",
-
-			// Other languages
-			"狐", "kitsune", "キツネ", "여우", "ثعلب", "الثعالب", "लोमड़ी", "लोमड़ियों", "שׁוּעָל", "שועלים", "αλεπού", "vulpiculus",
-		}
-
 		attachmentURLs := []string{}
 		for _, a := range message.Attachments {
 			attachmentURLs = append(attachmentURLs, a.URL)
 		}
 		proc := newCommand(message.Content, attachmentURLs)
 
-		if proc.testVarious(fops_list) && proc.testRune('!') {
+		if proc.testVarious(react.AllPrefix) && proc.testRune('!') {
 			if proc.testString("ping") {
 				last_time = message.Time
 				waitingPong = true
@@ -529,28 +502,24 @@ func main() {
 						}
 					}
 				}
-			} else {
+			} else if proc.isEmpty() {
 				say("<a:fox_wave:1426439130253885440>")
 			}
-		}
-
-	loop:
-		for _, word := range words {
-			word = removePonctuation(word)
-			for _, fops := range fops_list {
-				if word == fops {
-					discord.MessageReactionAdd(channelID, message.ID, "🦊")
-					break loop
+		} else {
+			text := bible.Versicle(message.Content)
+			if len(text) > 0 {
+				if len(text) == 1 {
+					say(text[0])
+				} else {
+					sayList(text)
 				}
 			}
 		}
 
-		text := bible.Versicle(message.Content)
-		if len(text) > 0 {
-			if len(text) == 1 {
-				say(text[0])
-			} else {
-				sayList(text)
+		reactions := react.Detect(msgText)
+		for _, emoji := range reactions {
+			if err := discord.MessageReactionAdd(channelID, message.ID, emoji); err != nil {
+				slog.Error("Não foi possivel reagir com o emoji especificado.", "error", err.Error())
 			}
 		}
 	}
