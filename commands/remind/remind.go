@@ -134,7 +134,7 @@ func Init() (ok bool, missed []Message) {
 	if errors.Is(err, os.ErrNotExist) {
 		f, err := os.Create("commands/remind/remind.csv")
 		if err != nil {
-			slog.Error("Não foi possivel criar remind.csv", "error", err.Error())
+			slog.Error("Não foi possivel criar remind.csv.", "error", err.Error())
 			ok = false
 			return
 		}
@@ -142,7 +142,7 @@ func Init() (ok bool, missed []Message) {
 		f.Close()
 		return
 	} else if err != nil {
-		slog.Error("Não foi possivel abrir remind.csv", "error", err.Error())
+		slog.Error("Não foi possivel abrir remind.csv.", "error", err.Error())
 		return
 	}
 	defer f.Close()
