@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"log/slog"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -47,8 +46,6 @@ type remind struct {
 	nextTime      time.Time
 	data          time.Time
 	remindIfMiss  bool
-	repeatAmmount uint
-	repeatMax     uint
 }
 
 func (s *remind) next() time.Time {
@@ -106,14 +103,16 @@ func (s *remind) push() {
 		t := s.next()
 		if now.After(t) {
 			s.lastTime = t
-			if s.repeatMax > 0 {
-				s.repeatAmmount += 1
-			}
 		} else {
 			s.nextTime = t
 			break
 		}
 	}
+}
+
+func (s *remind) rember() {
+	RemberChan <- Message{s.whereId, s.message}
+	s.push()
 }
 
 var allReminds = []remind{}
@@ -123,10 +122,11 @@ var RemberChan chan Message
 
 type Message struct {
 	ChannelID string
-	Message   string
+	Text      string
 }
 
 func Init() (ok bool, missed []Message) {
+	ok = false
 	now = time.Now()
 	loc = now.Location()
 	f, err := os.Open("commands/remind/remind.csv")
@@ -137,9 +137,8 @@ func Init() (ok bool, missed []Message) {
 			ok = false
 			return
 		}
-		f.WriteString("when,where,data,ammount,max,message")
+		f.WriteString("when,where,data,message")
 		f.Close()
-		ok = false
 		return
 	}
 	defer f.Close()
@@ -152,33 +151,7 @@ func Init() (ok bool, missed []Message) {
 		var r repetition
 		miss := true
 		var data time.Time
-		ammount, err := strconv.ParseUint(line[3], 10, 64)
-		if err != nil {
-			slog.Error("Cant read ammount field", "error", err)
-			continue
-		}
-		max, err := strconv.ParseUint(line[4], 10, 64)
-		if err != nil {
-			slog.Error("Cant read max field", "error", err)
-			continue
-		}
 		switch line[0] {
-		case "everySecond":
-			r = everySecond
-			miss = false
-			max = 10
-		case "everyMinute":
-			r = everyMinute
-			miss = false
-			max = 10
-		case "everyHour":
-			data, err = time.Parse("04", line[2])
-			if err != nil {
-				continue
-			}
-			r = everyHour
-			miss = false
-			max = 5
 		case "everyDay":
 			data, err = time.Parse("15:04", line[2])
 			if err != nil {
@@ -200,33 +173,20 @@ func Init() (ok bool, missed []Message) {
 		default:
 			continue
 		}
-		remindAdd(line[1], r, data, uint(ammount), uint(max), miss, line[5])
+		remindAdd(line[1], r, data, miss, line[3])
 	}
+	if len(allReminds) == 0 {
+		slog.Info("Não há nenhum lembrete.")
+		return
+	}
+
 	ok = true
 	RemberChan = make(chan Message)
 	missed = remindIsLost()
 	go loop()
+	slog.Info("Todos os reminds serão lembrados.", "count", len(allReminds))
+
 	return
-}
-
-func removeRemind() {
-	remove := func(idx int) {
-		allReminds[idx] = allReminds[len(allReminds)-1]
-		allReminds = allReminds[:len(allReminds)-1]
-	}
-	for idx, remind := range allReminds {
-		if remind.repeatMax == 0 {
-			continue
-		}
-		if remind.repeatAmmount >= remind.repeatMax {
-			remove(idx)
-		}
-	}
-}
-
-func rember(r *remind) {
-	RemberChan <- Message{r.whereId, r.message}
-	r.push()
 }
 
 func remindIsLost() (final []Message) {
@@ -242,31 +202,35 @@ func remindIsLost() (final []Message) {
 }
 
 func remindAll() {
-	for idx, remind := range allReminds {
+	for idx := range allReminds {
+		remind := &allReminds[idx]
 		if now.After(remind.nextTime) {
-			rember(&allReminds[idx])
+			remind.rember()
 		}
 	}
 }
 
 func loop() {
-	ticker := time.NewTicker(10 * time.Second)
-	defer ticker.Stop()
+	now = time.Now()
+	nextRemindTime := allReminds[0].nextTime
+
+	for _, remind := range allReminds {
+		if nextRemindTime.After(remind.nextTime) {
+			nextRemindTime = remind.nextTime
+		}
+	}
 
 	for {
-		<-ticker.C
+		time.Sleep(time.Until(nextRemindTime))
 		now = time.Now()
 		remindAll()
-		removeRemind()
 	}
 }
 
-func remindAdd(where string, when repetition, data time.Time, ammount, max uint, miss bool, message string) {
+func remindAdd(where string, when repetition, data time.Time, miss bool, message string) {
 	var r remind
 	r.whereId = where
 	r.when = when
-	r.repeatAmmount = ammount
-	r.repeatMax = max
 	r.remindIfMiss = miss
 	r.data = data
 	r.lastTime = now

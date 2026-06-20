@@ -216,6 +216,18 @@ func main() {
 		signalChannel := make(chan os.Signal, 1)
 		signal.Notify(signalChannel, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGABRT, syscall.SIGINT)
 
+		if isRemberOk {
+			for _, msg := range missedReminds {
+				slog.Info("Lembrete perdido", "lugar", msg.ChannelID, "msg", msg.Text)
+			}
+			go func() {
+				for {
+					msg := <-remind.RemberChan
+					slog.Info("Lembrete", "lugar", msg.ChannelID, "msg", msg.Text)
+				}
+			}()
+		}
+
 		<-signalChannel
 
 		slog.Info("Desligando...")
@@ -237,14 +249,14 @@ func main() {
 
 	if isRemberOk {
 		for _, msg := range missedReminds {
-			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
+			if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Text); err != nil {
 				slog.Error("Lembrete falhou", "error", err.Error())
 			}
 		}
 		go func() {
 			for {
 				msg := <-remind.RemberChan
-				if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Message); err != nil {
+				if _, err := discord.ChannelMessageSend(msg.ChannelID, msg.Text); err != nil {
 					slog.Error("Lembrete falhou", "error", err.Error())
 				}
 			}
