@@ -2,6 +2,7 @@ package remind
 
 import (
 	"encoding/csv"
+	"errors"
 	"log/slog"
 	"os"
 	"time"
@@ -130,7 +131,7 @@ func Init() (ok bool, missed []Message) {
 	now = time.Now()
 	loc = now.Location()
 	f, err := os.Open("commands/remind/remind.csv")
-	if err != nil {
+	if errors.Is(err, os.ErrNotExist) {
 		f, err := os.Create("commands/remind/remind.csv")
 		if err != nil {
 			slog.Error("Não foi possivel criar remind.csv", "error", err.Error())
@@ -139,6 +140,9 @@ func Init() (ok bool, missed []Message) {
 		}
 		f.WriteString("when,where,data,message")
 		f.Close()
+		return
+	} else if err != nil {
+		slog.Error("Não foi possivel abrir remind.csv", "error", err.Error())
 		return
 	}
 	defer f.Close()
