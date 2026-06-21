@@ -214,20 +214,26 @@ func remindAll() {
 	}
 }
 
-func loop() {
-	now = time.Now()
-	nextRemindTime := allReminds[0].nextTime
-
+func next() (nextRemindTime time.Time) {
+	nextRemindTime = allReminds[0].nextTime
 	for _, remind := range allReminds {
 		if nextRemindTime.After(remind.nextTime) {
 			nextRemindTime = remind.nextTime
 		}
 	}
+	return
+}
+
+func loop() {
+	now = time.Now()
+
+	nextRemindTime := next()
 
 	for {
 		time.Sleep(time.Until(nextRemindTime))
 		now = time.Now()
 		remindAll()
+		nextRemindTime = next()
 	}
 }
 
