@@ -138,7 +138,7 @@ func Init() (ok bool, missed []Message) {
 			ok = false
 			return
 		}
-		f.WriteString("when,where,data,message")
+		f.WriteString("when,where,time,message,miss")
 		f.Close()
 		return
 	} else if err != nil {
@@ -153,7 +153,7 @@ func Init() (ok bool, missed []Message) {
 			continue
 		}
 		var r repetition
-		miss := true
+		miss := false
 		var data time.Time
 		switch line[0] {
 		case "everyDay":
@@ -176,6 +176,9 @@ func Init() (ok bool, missed []Message) {
 			r = everyYear
 		default:
 			continue
+		}
+		if line[4] == "true" {
+			miss = true
 		}
 		remindAdd(line[1], r, data, miss, line[3])
 	}
