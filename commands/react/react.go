@@ -67,7 +67,7 @@ func Detect(text string) (reactions []string) {
 		}
 		b := strings.Builder{}
 		for _, r := range word {
-			if unicode.IsLetter(r) {
+			if unicode.IsLetter(r) || r == '\'' {
 				b.WriteRune(r)
 			}
 		}
