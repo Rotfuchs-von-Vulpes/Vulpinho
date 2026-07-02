@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"strings"
+	"unicode"
+)
 
 type strProcessor struct {
 	buff []rune
@@ -48,6 +51,17 @@ func (s *strProcessor) ConsumeUntil(str string) string {
 		}
 		b.WriteRune(s.buff[pos])
 		s.idx += 1
+	}
+}
+
+func (s *strProcessor) RejectBlankSpace() {
+	for {
+		rr := s.buff[s.idx]
+		if unicode.IsSpace(rr) {
+			s.idx += 1
+		} else {
+			break
+		}
 	}
 }
 

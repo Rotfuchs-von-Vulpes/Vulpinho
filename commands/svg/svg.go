@@ -5,24 +5,21 @@ import (
 	"io"
 	"log/slog"
 	"os/exec"
+	"strings"
 	"vulpinho/util"
 )
 
 func SvgToPng(code string) (out io.Reader, ok bool, errStr string) {
-	process := exec.Command("python", ".\\svgToPng.py", code)
+	process := exec.Command("python", ".\\svgToPng.py")
 	process.Dir = "resources/svgToPng"
-	stdin, err := process.StdinPipe()
-	if err != nil {
-		slog.Error("Não foi possivel preparar comando ao script Python", "error", err.Error())
-		return
-	}
-	defer stdin.Close()
+	process.Stdin = strings.NewReader(code)
 	png := new(bytes.Buffer)
 	errBuff := new(bytes.Buffer)
+
 	process.Stdout = png
 	process.Stderr = errBuff
 
-	if err = process.Run(); err != nil {
+	if err := process.Run(); err != nil {
 		if err.Error() == "exit status 2" {
 			final := "Erro de xml:\n```\n" + errBuff.String() + "```"
 			return nil, true, final
@@ -38,7 +35,7 @@ func SvgToPng(code string) (out io.Reader, ok bool, errStr string) {
 		return nil, false, ""
 	}
 
-	out = bytes.NewReader(png.Bytes())
+	out = png
 	ok = true
 	return
 }
@@ -48,6 +45,7 @@ func ExtractSvgCodeFromMsg(msg string) string {
 	pos := g.Mark()
 	g.ConsumeUntil("```")
 	if g.TestString("```svg") || g.TestString("```") {
+		g.RejectBlankSpace()
 		if text := g.ConsumeUntil("```"); len(text) > 0 {
 			if g.TestString("```") {
 				return text
