@@ -252,6 +252,7 @@ func main() {
 		slog.Error("Erro ao ler arquivo .env.", "error", err.Error())
 		return
 	}
+	owner := os.Getenv("OWNER")
 	discord, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
 	if err != nil {
 		slog.Error("Erro ao se conectar com o discord.", "error", err.Error())
@@ -501,6 +502,10 @@ func main() {
 							say(errStr)
 						}
 					}
+				}
+			} else if proc.testString("say") {
+				if message.Author.ID == owner {
+					say(proc.getRemains())
 				}
 			} else if proc.isEmpty() {
 				say("<a:fox_wave:1426439130253885440>")
