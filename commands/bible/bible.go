@@ -180,6 +180,13 @@ func Versicle(raw string) []string {
 				book = bible
 			}
 			for _, ref := range BookRef.Refs {
+				if ref.Chapter == "noChapter" {
+					if wich == t_ccc {
+						ref.Chapter = "1"
+					} else {
+						continue
+					}
+				}
 				first := true
 				for _, span := range ref.Spans {
 					reading := false

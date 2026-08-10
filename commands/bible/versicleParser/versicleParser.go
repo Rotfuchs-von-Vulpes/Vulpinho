@@ -149,7 +149,7 @@ func (s *Versicle) chapterRef() (bool, ChapterRef) {
 		}
 	}
 	s.scanner.Reset(pos)
-	node.Chapter = "1"
+	node.Chapter = "noChapter"
 	if ok, span := s.span(); ok {
 		node.Spans = append(node.Spans, span)
 		pos := s.scanner.Mark()
