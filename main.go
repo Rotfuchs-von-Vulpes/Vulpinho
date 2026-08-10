@@ -25,6 +25,8 @@ import (
 	"vulpinho/log"
 	"vulpinho/update"
 
+	_ "embed"
+
 	"github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
 )
@@ -193,6 +195,9 @@ func wrapMessageUpdate(message *discordgo.MessageUpdate) Message {
 	return Message{message.ID, message.Author, message.ChannelID, message.GuildID, message.Content, message.Timestamp.UnixMilli(), message.Attachments}
 }
 
+//go:embed resources/help.txt
+var helpText string
+
 func main() {
 	if log.Init() {
 		return
@@ -210,6 +215,10 @@ func main() {
 		case "test":
 			isTest = true
 		}
+	}
+
+	if len(helpText) == 0 {
+		slog.Error("sem helptext")
 	}
 
 	update.GetLastEdit()
@@ -415,11 +424,14 @@ func main() {
 				last_time = message.Time
 				waitingPong = true
 				say("Pong!")
+			} else if proc.testString("help") {
+				say(helpText)
 			} else if proc.testString("teste") {
 				sayEmbed()
 			} else if proc.testString("emojis") {
 				guild, guildErr := s.Guild(serverID)
 				if guildErr != nil {
+					slog.Error("Não foi possivel coletar emojis", "error", guildErr)
 					return
 				}
 				if len(guild.Emojis) == 0 {

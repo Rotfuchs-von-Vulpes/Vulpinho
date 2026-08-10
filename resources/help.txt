@@ -1,0 +1,9 @@
+Os comandos implementados que eu lembro são:
+- ping: testar tempo de resposta
+- emojis: cria um arquivo zip com todos os emojis deste server
+- gerna: parser de gramática de lojban
+- sisku: dicionario lojban-inglês
+- facki: dicionario inglês-lojban
+- wh40k keywords: pesquisa unidades de warhammer 40k tabletop pela keyword das datasheets
+- smiles: desenha moleculas químicas descritas por notação smiles
+- svg: converte texto ou arquivo svg em imagem
