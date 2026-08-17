@@ -162,7 +162,7 @@ func Versicle(raw string) []string {
 		for _, BookRef := range ref.Refs {
 			var wich bookToRead
 			var book [][]string
-			if v, ok := abbrTab[BookRef.Book]; ok {
+			if v, ok := abbrTab[strings.ToLower(BookRef.Book)]; ok {
 				BookRef.Book = v
 			}
 			if BookRef.Book == "ccc" || BookRef.Book == "catechism" {
