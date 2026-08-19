@@ -95,7 +95,6 @@ cantico-dos-canticos 7 5 não existe
 cantico-dos-canticos 7 7 não existe
 cantico-dos-canticos 8 2 não existe
 cantico-dos-canticos 8 7 não existe
-sabedoria 9 5 não existe
 sabedoria 12 7 não existe
 eclesiastico 1 7 não existe
 eclesiastico 1 32 não existe
