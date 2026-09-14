@@ -16,8 +16,8 @@ def main():
         sys.exit(0)
         return
     except Exception as e:
-        sys.stderr.write(f"Erro no CairoSVG: {e}")
-        sys.exit(3)
+        sys.stderr.write(f"{e}")
+        sys.exit(2)
         return
 
 if __name__ == "__main__":

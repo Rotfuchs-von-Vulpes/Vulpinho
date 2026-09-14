@@ -21,10 +21,6 @@ func SvgToPng(code string) (out io.Reader, ok bool, errStr string) {
 
 	if err := process.Run(); err != nil {
 		if err.Error() == "exit status 2" {
-			final := "Erro de xml:\n```\n" + errBuff.String() + "```"
-			return nil, true, final
-		}
-		if err.Error() == "exit status 2" {
 			final := "Erro de svg:\n```\n" + errBuff.String() + "```"
 			return nil, true, final
 		}
