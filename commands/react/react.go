@@ -74,6 +74,7 @@ func Detect(text string) (reactions []string) {
 		words[idx] = b.String()
 	}
 	for _, word := range words {
+		word = strings.ToLower(word)
 		if idx, ok := reactMap[word]; ok && !slices.Contains(reactions, allEmojis[idx]) {
 			ok = true
 			reactions = append(reactions, allEmojis[idx])
