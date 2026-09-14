@@ -99,12 +99,7 @@ func (s *promptProc) testString(str string) bool {
 }
 
 func (s *promptProc) testVarious(list []string) bool {
-	for _, str := range list {
-		if s.testString(str) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(list, s.testString)
 }
 
 func (s *promptProc) isEmpty() bool {
